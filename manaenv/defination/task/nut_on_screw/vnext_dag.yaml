@@ -1,0 +1,515 @@
+graph_task_generator:
+  definition:
+    task_type: nut_on_screw
+    runtime_instruction:
+      plan_id: runtime
+      objects:
+        nut: nut
+        screw: destination
+      template: Pick up the {nut_color} {nut} nut, place it on the matching {screw_color} {screw} screw, twist it on, then
+        return the arm home.
+      subtasks:
+      - Pick up the {nut_color} {nut} nut.
+      - Place the {nut_color} {nut} nut on the matching {screw_color} {screw} screw.
+      - Twist the {nut_color} {nut} nut onto the screw.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        global:
+          parked_slot_collision: keep
+        targets:
+          assets:
+          - id: nut_asset
+            target:
+              type: node
+              id: nut
+            selector:
+              type: uniform
+            cache_size: 4
+          placements:
+          - id: screws_mid
+            target:
+              type: group
+              id: screws_mid
+            sample:
+              type: inherit
+          - id: nut_hand
+            target:
+              type: group
+              id: nut_hand
+            sample:
+              type: inherit
+          materials:
+          - id: pair_a_color
+            target:
+              objects:
+              - screw_a
+              - nut
+              material_slots:
+              - Looks/color
+            policy:
+              type: material_template
+              candidates:
+              - id: red
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 0.0
+                    - 0.0
+              - id: green
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 1.0
+                    - 0.0
+              - id: blue
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 0.0
+                    - 1.0
+              - id: yellow
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 1.0
+                    - 0.0
+            selector:
+              type: uniform
+            apply:
+              clone_shared_materials: true
+          - id: pair_b_color
+            target:
+              objects:
+              - screw_b
+              - nut__slot_1
+              material_slots:
+              - Looks/color
+            policy:
+              type: material_template
+              candidates:
+              - id: red
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 0.0
+                    - 0.0
+              - id: green
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 1.0
+                    - 0.0
+              - id: blue
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 0.0
+                    - 1.0
+              - id: yellow
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 1.0
+                    - 0.0
+            selector:
+              type: uniform
+            apply:
+              clone_shared_materials: true
+          - id: pair_c_color
+            target:
+              objects:
+              - screw_c
+              - nut__slot_2
+              material_slots:
+              - Looks/color
+            policy:
+              type: material_template
+              candidates:
+              - id: red
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 0.0
+                    - 0.0
+              - id: green
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 1.0
+                    - 0.0
+              - id: blue
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 0.0
+                    - 1.0
+              - id: yellow
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 1.0
+                    - 0.0
+            selector:
+              type: uniform
+            apply:
+              clone_shared_materials: true
+          - id: pair_d_color
+            target:
+              objects:
+              - screw_d
+              - nut__slot_3
+              material_slots:
+              - Looks/color
+            policy:
+              type: material_template
+              candidates:
+              - id: red
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 0.0
+                    - 0.0
+              - id: green
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 1.0
+                    - 0.0
+              - id: blue
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 0.0
+                    - 1.0
+              - id: yellow
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 1.0
+                    - 0.0
+            selector:
+              type: uniform
+            apply:
+              clone_shared_materials: true
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the nut, place it on the matching screw, twist it on, then return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the nut.
+        - Place the nut on the matching screw.
+        - Twist the nut onto the screw.
+        - Return the arm home.
+        topic: nut_on_screw
+  roles:
+    pickable: pickable
+    destination: destination
+    reference: reference
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: nut_on_screw_pick_nut
+      roles:
+        pickable: pickable
+        destination: destination
+        reference: reference
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+              - grasp_franka:
+                  _func: gripper_grasps_object
+                  contact_sensor_cfg: gripper_contact
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_nut_on_screw
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp the {nut_color} {nut} nut
+    id: pick_nut
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: nut_on_screw_place_nut
+      roles:
+        pickable: pickable
+        destination: destination
+        reference: reference
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              terms:
+              - nut_on_tip:
+                  _func: object_inserted
+                  object_cfg: '@pickable'
+                  target_cfg: '@destination'
+                  insertion_axis:
+                  - 0.0
+                  - 0.0
+                  - 1.0
+                  axial_threshold: 1.0
+                  lateral_threshold: 0.005
+                  orientation_dot_min: 0.85
+                  velocity_threshold: 1.0
+                  consecutive_steps: 1
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_nut_on_screw
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place the {nut_color} {nut} nut onto the matching {screw_color} {screw} screw
+    id: place_nut
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: nut_on_screw_twist_nut
+      roles:
+        pickable: pickable
+        destination: destination
+        reference: reference
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              terms:
+              - nut_seated:
+                  _func: object_inserted
+                  object_cfg: '@pickable'
+                  target_cfg: '@destination'
+                  insertion_axis:
+                  - 0.0
+                  - 0.0
+                  - 1.0
+                  axial_threshold: 0.045
+                  lateral_threshold: 0.018
+                  orientation_dot_min: 0.9
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_nut_on_screw
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: twist the {nut_color} {nut} nut onto the matching {screw_color} {screw} screw
+    id: twist_nut
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: nut_on_screw_return
+      roles:
+        pickable: pickable
+        destination: destination
+        reference: reference
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              terms:
+              - arm_home:
+                  _func: articulation_joints_near_default
+                  asset_cfg: robot
+                  exclude_joint_name_substrings:
+                  - finger
+                  - gripper
+                  - knuckle
+                  atol: 0.5
+                  consecutive_steps: 3
+              - nut_seated:
+                  _func: object_inserted
+                  object_cfg: '@pickable'
+                  target_cfg: '@destination'
+                  insertion_axis:
+                  - 0.0
+                  - 0.0
+                  - 1.0
+                  axial_threshold: 0.045
+                  lateral_threshold: 0.018
+                  orientation_dot_min: 0.9
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_nut_on_screw
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return the arm to its home pose
+    id: return
+    score: 1
+  edges:
+  - src: pick_nut
+    dst: place_nut
+  - src: place_nut
+    dst: twist_nut
+  - src: twist_nut
+    dst: return

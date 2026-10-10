@@ -1,0 +1,55 @@
+include: x2real/task/challenge/tower_of_hanoi/stages/_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: tower_of_hanoi_4_move_1
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: hanoi_state_matches
+          ring_names:
+          - ring_a
+          - ring_b
+          - ring_c
+          - ring_d
+          - ring_e
+          peg_names:
+          - peg_left
+          - peg_mid
+          - peg_right
+          expected:
+            peg_left:
+            - 4
+            - 3
+            - 2
+            peg_mid:
+            - 1
+            peg_right: []
+          xy_tolerance: 0.03
+          min_z: -1.0
+          velocity_threshold: 0.2
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: move the smallest ring from the left peg to the middle peg
+    planner_skills_component:
+      skills:
+      - type: pick
+        params:
+          object_name: '@disk_1'
+          grasp_label_asset: '@disk_1'
+          arm: left
+          top_k: 20
+      - type: place
+        params:
+          object_name: '@disk_1'
+          arm: current
+          target:
+            strategy: destination_center
+            object_name: peg_mid
+            support_z_face: top
+      - type: stay
+        params:
+          arm: both

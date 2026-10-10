@@ -1,0 +1,33 @@
+include: x2real/task/fine_manipulation/ring_on_cylinder/stages/_ring_on_cylinder_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: ring_on_cylinder_retract_arm
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - arm_home:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.3
+              consecutive_steps: 10
+          - ring_cylinder_contact:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@ring_cylinder_contact_sensor'
+              force_threshold: 0.001
+              consecutive_steps: 5
+          - ring_aligned_with_cylinder:
+              _func: object_position_in_zone
+              object_cfg: '@pickable'
+              reference_cfg: '@destination'
+              xy_distance_threshold: 0.04
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return the arm to its home pose
+    planner_skills_component:
+      skills:
+      - type: home

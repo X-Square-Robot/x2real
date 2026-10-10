@@ -1,0 +1,20 @@
+include: x2real/task/visual_reasoning/balance_scale/stages/_balance_scale_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: balance_scale_settle
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: balance_beam_level
+          object_cfg: '@balance'
+          joint_names:
+          - Joint_Center_Top
+          level_atol: 0.06
+          vel_threshold: 0.1
+          consecutive_steps: 8
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: balance the scale so the beam is level

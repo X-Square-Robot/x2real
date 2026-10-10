@@ -1,0 +1,287 @@
+graph_task_generator:
+  definition:
+    task_type: track_object_under_cup
+    component_sections:
+      event_component:
+        terms:
+          sample_track_object_under_cup:
+            mode: reset
+            cup_target_name: cup_target
+            cup_distractor_name: cup_distractor
+            hidden_object_name: hidden_object
+            grid_center:
+            - 0.12
+            - -0.268246
+            row_spacing: 0.14
+            column_spacing: 0.14
+            cup_height: -0.159
+            hidden_height: -0.225423
+            count_choices:
+            - 1
+            count_log_key: target_swap_count
+            target_slot_log_key: target_cup_slot
+            distractor_slot_log_key: distractor_cup_slot
+            hidden_slot_log_key: hidden_slot
+            cup_orientation:
+            - 0.0
+            - 1.0
+            - 0.0
+            - 0.0
+            hidden_orientation:
+            - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+            instruction_template: Cover the dice with the target cup, swap the two cups once, lift the cup that still covers
+              the dice, then return home.
+      log_component:
+        entries:
+          target_cup:
+            trigger: enter
+            func: track_object_under_cup_role_label
+            params:
+              role: target_cup
+          distractor_cup:
+            trigger: enter
+            func: track_object_under_cup_role_label
+            params:
+              role: distractor_cup
+      instruction_component:
+        instructions:
+        - text: Cover the dice with the target cup, swap the two cups once, lift the cup that still covers the dice, then
+            return home.
+          log:
+            instruction_variant: direct
+        topic: track_object_under_cup
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: target_cup
+          font_size: 20
+        - log_key: distractor_cup
+          font_size: 20
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: track_object_under_cup_cover_object
+      roles:
+        cup_target: cup_target
+        cup_distractor: cup_distractor
+        hidden_object: hidden_object
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: cup_covers_hidden_object
+              cup_cfg: '@cup_target'
+              hidden_cfg: '@hidden_object'
+              min_dot: -1.0
+              max_dot: -0.7
+              xy_distance_threshold: 0.045
+              z_min_offset: -0.12
+              z_max_offset: -0.02
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: track_object_under_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: cover dice (@hidden_object.name) with inverted @cup_target.name
+    id: cover_object
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: track_object_under_cup_swap_cups
+      roles:
+        cup_target: cup_target
+        cup_distractor: cup_distractor
+        hidden_object: hidden_object
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: cups_swapped_n_times
+              cup_a_cfg: '@cup_target'
+              cup_b_cfg: '@cup_distractor'
+              count_log_key: target_swap_count
+              xy_tolerance: 0.12
+              velocity_threshold: 0.15
+              min_pair_separation: 0.03
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: track_object_under_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: swap the two opaque cups once
+    id: swap_cups
+    score: 5
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: track_object_under_cup_lift_covering_cup
+      roles:
+        cup_target: cup_target
+        cup_distractor: cup_distractor
+        hidden_object: hidden_object
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: cup_reveals_hidden_object
+              cup_cfg: '@cup_target'
+              hidden_cfg: '@hidden_object'
+              min_cup_height: -0.18
+              xy_distance_threshold: 0.045
+              z_min_offset: -0.12
+              z_max_offset: 0.08
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: track_object_under_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: lift covering @cup_target.name to reveal @hidden_object.name
+    id: lift_covering_cup
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: track_object_under_cup_return
+      roles:
+        cup_target: cup_target
+        cup_distractor: cup_distractor
+        hidden_object: hidden_object
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: track_object_under_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: cover_object
+    dst: swap_cups
+  - src: swap_cups
+    dst: lift_covering_cup
+  - src: lift_covering_cup
+    dst: return

@@ -1,0 +1,53 @@
+################################################################################
+# Static operation-zone / randomization contract for move_bottle_to_bin (ID).
+# Sourced from mobile_manip5.1 bottle_bin_reset*.py constants (not MMP runtime).
+# Consumed later by a native base_in_operation_zone term (P4); authored here so
+# geometry stays declarative.
+################################################################################
+task: move_bottle_to_bin
+split: id
+roles:
+  pickable: bottle
+  support: table
+  place_target: bin
+robot_start:
+  rectangle:
+    x_range: [-0.7, 0.18]
+    y_range: [-1.1, 1.1]
+    yaw_policy: face_pickable
+place_target_placement:
+  world_xy:
+    x_range: [1.35, 1.5]
+    y_range: [0.1, 0.7]
+  z: 0.0
+  keep_orientation: true
+  # Legacy source authored this external asset quaternion as WXYZ.
+  orientation_wxyz: [0.707107, 0.0, 0.0, -0.707107]
+object_placement:
+  # Table-local XY rewrite after pool load (load pose remains in scene YAML).
+  # support_frame must match scene background.tabletop (single declarative SSOT).
+  table_local_xy:
+    x_range: [-0.25, 0.25]
+    y_range: [-0.05, 0.15]
+  load_pose_world: [1.45, -0.95, 0.86]
+  support_frame:
+    center: [1.5, -0.95, 0.7067]
+    x_axis: [0.0, 1.0, 0.0]
+    y_axis: [-1.0, 0.0, 0.0]
+    normal: [0.0, 0.0, 1.0]
+    object_root_z: 0.86
+operation_zone_sets:
+  bottle_operation_zone:
+    zone:
+      frame: world
+      x_range: [0.63858, 0.93246]
+      y_range: [-1.35137, -0.60714]
+      yaw_deg_range: [-180.0, 179.999]
+  bin_operation_zone:
+    zone:
+      frame: world
+      shape: circle
+      center_role: place_target
+      # A one-metre circle is the validated base operating envelope for
+      # placing into this bin, rather than a narrowly tuned docking point.
+      radius_m: 1.0

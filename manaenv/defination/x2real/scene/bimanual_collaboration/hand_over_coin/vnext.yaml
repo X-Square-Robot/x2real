@@ -1,0 +1,129 @@
+definition:
+  scene_type: hand_over_coin_scene
+  metadata:
+    name: ex001_6r_hand_over_coin_vnext
+    source: hand_over_coin/vnext
+    semantic_goal: Pick the coin with either hand, hand it to the other hand, place
+      it on the coin rack (left, right, or center)
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: coin_aa
+  asset:
+    type: asset_id
+    id: coin_aa
+  spawn_mass:
+  - 0.02
+  - 0.05
+  semantic_tags:
+  - pickable
+  - pickable_1
+- id: rack_ea
+  asset:
+    type: asset_id
+    id: rack_ea
+  semantic_tags:
+  - container
+  - destination
+  kinematic: true
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    coin_aa:
+      object: coin_aa
+    rack_ea:
+      object: rack_ea
+  groups:
+    rack_slots:
+      type: slot
+      nodes:
+      - rack_ea
+      - coin_aa
+      slots:
+        slot_left:
+          type: surface
+          surface: tabletop
+          ranges:
+            x: 0.08
+            y: -0.36
+          yaws: 1.5708
+        slot_right:
+          type: surface
+          surface: tabletop
+          ranges:
+            x: 0.08
+            y: 0.36
+          yaws: 1.5708
+        slot_center:
+          type: surface
+          surface: tabletop
+          ranges:
+            x: 0.0
+            y: 0.0
+          yaws: 0.0
+        coin_center:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.1
+            - 0.22
+            y:
+            - -0.22
+            - 0.22
+          yaws:
+          - -0.3
+          - 0.3
+        coin_front:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.08
+            - 0.2
+            y:
+            - -0.12
+            - 0.12
+          yaws:
+          - -0.3
+          - 0.3
+      assignments:
+        mode: explicit
+        items:
+        - id: rack_left
+          bindings:
+            rack_ea: slot_left
+            coin_aa: coin_center
+        - id: rack_right
+          bindings:
+            rack_ea: slot_right
+            coin_aa: coin_center
+        - id: rack_center
+          bindings:
+            rack_ea: slot_center
+            coin_aa: coin_front
+      default_assignment: rack_left
+variants:
+  materialization: []
+  assignments: []

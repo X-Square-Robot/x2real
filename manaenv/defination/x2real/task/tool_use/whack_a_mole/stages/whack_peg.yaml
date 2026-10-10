@@ -1,0 +1,26 @@
+include: x2real/task/tool_use/whack_a_mole/stages/_whack_a_mole_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: whack_a_mole_whack_peg
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: indexed_joint_above_threshold
+          object_cfg: '@mole_base'
+          joint_names:
+          - red
+          - orange
+          - yellow
+          - green
+          - blue
+          - purple
+          index_log_key: whack_target_peg_index
+          threshold: 0.6
+          openness_gt: true
+          consecutive_steps: 3
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: whack the raised target peg down

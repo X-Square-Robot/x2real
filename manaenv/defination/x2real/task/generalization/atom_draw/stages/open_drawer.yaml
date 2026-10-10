@@ -1,0 +1,21 @@
+include: x2real/task/generalization/atom_draw/stages/_atom_draw_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: atom_draw_open_drawer
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: joint_above_threshold
+          object_cfg: '@containable'
+          joint_names:
+          - PrismaticJoint
+          threshold: 0.04
+          openness_gt: true
+          joint_match: any
+          consecutive_steps: 2
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: open the drawer

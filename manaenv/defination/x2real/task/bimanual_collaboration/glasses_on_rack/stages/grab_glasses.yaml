@@ -1,0 +1,17 @@
+include: x2real/task/bimanual_collaboration/glasses_on_rack/stages/_glasses_on_rack_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: glasses_on_rack_grab_glasses
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_lifted
+          object_cfg: '@pickable'
+          min_lift: 0.03
+          settle_steps: 30
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: pick up @pickable.name

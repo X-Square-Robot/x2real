@@ -1,0 +1,110 @@
+definition:
+  scene_type: schema_vnext_atom_bottle_on_plate
+  metadata:
+    source: atom_bottle_on_plate
+    semantic_goal: Place a bottle on a plate
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: bottle
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: bottle_pool
+      from_file: assets/pools/atom_bottle_on_plate/pickables_bottle.json
+      item_range:
+      - 0
+      - 25
+      bbox_filter:
+        max_longest_edge: 0.24
+  spawn_mass:
+  - 0.05
+  - 0.1
+  semantic_tags:
+  - pickable
+- id: plate
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: plate_pool
+      from_file: assets/pools/atom_bottle_on_plate/placements_plate.json
+      item_range:
+      - 0
+      - 30
+  spawn_mass:
+  - 0.05
+  - 0.1
+  semantic_tags:
+  - destination
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    bottle:
+      object: bottle
+      placement:
+        type: surface
+        surface: tabletop
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.0
+        - 1.0
+        ranges:
+          x:
+          - 0.05
+          - 0.15
+          y:
+          - -0.3
+          - 0.3
+    plate:
+      object: plate
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.1
+          - -0.05
+          y:
+          - -0.08
+          - 0.08
+variants:
+  materialization:
+  - id: bottle_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - bottle.bottle_pool
+      weight: 1.0
+  - id: plate_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - plate.plate_pool
+      weight: 1.0
+  assignments: []

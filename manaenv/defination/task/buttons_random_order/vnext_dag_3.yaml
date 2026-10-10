@@ -1,0 +1,437 @@
+graph_task_generator:
+  definition:
+    task_type: buttons_random_order_3
+    component_sections:
+      event_component:
+        terms:
+          mdp.reset_scene_to_default:
+            mode: reset
+            reset_joint_targets: true
+          sample_button_order:
+            mode: reset
+            num_buttons: 3
+            button_colors:
+            - pink
+            - blue
+            - yellow
+            - green
+            button_prefix: button_
+            order_log_key: button_press_order
+            order_log_width: 4
+            order_bank:
+            - - blue
+              - green
+              - yellow
+            - - blue
+              - pink
+              - green
+            - - blue
+              - yellow
+              - green
+            - - blue
+              - yellow
+              - pink
+            - - green
+              - blue
+              - pink
+            - - green
+              - pink
+              - yellow
+            - - green
+              - yellow
+              - blue
+            - - green
+              - yellow
+              - pink
+            - - pink
+              - blue
+              - green
+            - - pink
+              - green
+              - blue
+            - - pink
+              - green
+              - yellow
+            - - pink
+              - yellow
+              - green
+            - - yellow
+              - blue
+              - green
+            - - yellow
+              - blue
+              - pink
+            - - yellow
+              - pink
+              - blue
+            - - yellow
+              - pink
+              - green
+            instruction_template: 'Press the buttons in this order: {order}, then return the arm home.'
+            region:
+              x:
+              - 0.05
+              - 0.2
+              y:
+              - -0.45
+              - 0.15
+              z:
+              - -0.17
+              - -0.17
+            min_separation: 0.15
+            away_z: -10.0
+      log_component:
+        entries:
+          button_press_order_text:
+            trigger: enter
+            func: button_active_order
+      instruction_component:
+        topic: buttons_random_order
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: button_press_order_text
+          label: Press order
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: buttons_random_order_press_1
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: button_contact_in_order
+              position: 1
+              sensor_cfgs:
+              - '@button_pink_contact_sensor'
+              - '@button_blue_contact_sensor'
+              - '@button_yellow_contact_sensor'
+              - '@button_green_contact_sensor'
+              color_order:
+              - pink
+              - blue
+              - yellow
+              - green
+              force_threshold: 0.1
+              consecutive_steps: 5
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: buttons_random_order_scene
+        sensor_component:
+          sensors:
+          - button_pink_contact_sensor:
+              type: contact
+              source: '@btn_pink'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_blue_contact_sensor:
+              type: contact
+              source: '@btn_blue'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_yellow_contact_sensor:
+              type: contact
+              source: '@btn_yellow'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_green_contact_sensor:
+              type: contact
+              source: '@btn_green'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: press order button 1
+    id: press_1
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: buttons_random_order_press_2
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: button_contact_in_order
+              position: 2
+              sensor_cfgs:
+              - '@button_pink_contact_sensor'
+              - '@button_blue_contact_sensor'
+              - '@button_yellow_contact_sensor'
+              - '@button_green_contact_sensor'
+              color_order:
+              - pink
+              - blue
+              - yellow
+              - green
+              force_threshold: 0.1
+              consecutive_steps: 5
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: buttons_random_order_scene
+        sensor_component:
+          sensors:
+          - button_pink_contact_sensor:
+              type: contact
+              source: '@btn_pink'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_blue_contact_sensor:
+              type: contact
+              source: '@btn_blue'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_yellow_contact_sensor:
+              type: contact
+              source: '@btn_yellow'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_green_contact_sensor:
+              type: contact
+              source: '@btn_green'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: press order button 2
+    id: press_2
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: buttons_random_order_press_3
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: button_contact_in_order
+              position: 3
+              sensor_cfgs:
+              - '@button_pink_contact_sensor'
+              - '@button_blue_contact_sensor'
+              - '@button_yellow_contact_sensor'
+              - '@button_green_contact_sensor'
+              color_order:
+              - pink
+              - blue
+              - yellow
+              - green
+              force_threshold: 0.1
+              consecutive_steps: 5
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: buttons_random_order_scene
+        sensor_component:
+          sensors:
+          - button_pink_contact_sensor:
+              type: contact
+              source: '@btn_pink'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_blue_contact_sensor:
+              type: contact
+              source: '@btn_blue'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_yellow_contact_sensor:
+              type: contact
+              source: '@btn_yellow'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_green_contact_sensor:
+              type: contact
+              source: '@btn_green'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: press order button 3
+    id: press_3
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: buttons_random_order_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.3
+              consecutive_steps: 10
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: buttons_random_order_scene
+        sensor_component:
+          sensors:
+          - button_pink_contact_sensor:
+              type: contact
+              source: '@btn_pink'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_blue_contact_sensor:
+              type: contact
+              source: '@btn_blue'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_yellow_contact_sensor:
+              type: contact
+              source: '@btn_yellow'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - button_green_contact_sensor:
+              type: contact
+              source: '@btn_green'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: press_1
+    dst: press_2
+  - src: press_2
+    dst: press_3
+  - src: press_3
+    dst: return

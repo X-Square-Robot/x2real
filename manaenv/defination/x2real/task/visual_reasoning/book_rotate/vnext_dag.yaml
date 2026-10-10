@@ -1,0 +1,52 @@
+graph_task_generator:
+  definition:
+    task_type: book_rotate
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: book_asset
+            target:
+              type: node
+              id: book
+            selector:
+              type: uniform
+          placements:
+          - id: book
+            target:
+              type: node
+              id: book
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_book_asset:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - book
+      instruction_component:
+        instructions:
+        - text: Rotate the book on the table about Z to about -90 degrees (reader
+            orientation), then return the arms home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_book_asset
+          label: Book
+          font_size: 24
+  nodes:
+  - id: rotate
+    include: x2real/task/visual_reasoning/book_rotate/stages/rotate.yaml
+    score: 8
+  - id: return
+    include: x2real/task/visual_reasoning/book_rotate/stages/return.yaml
+    score: 2
+  edges:
+  - src: rotate
+    dst: return

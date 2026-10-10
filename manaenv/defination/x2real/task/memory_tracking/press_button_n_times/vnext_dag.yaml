@@ -1,0 +1,71 @@
+graph_task_generator:
+  definition:
+    task_type: press_button_n_times
+    component_sections:
+      event_component:
+        terms:
+          sample_press_button_n_times:
+            mode: reset
+            object_name: pump_bottle
+            slot_poses:
+            - - 0.2
+              - -0.1
+              - -0.240423
+            - - 0.2
+              - -0.27
+              - -0.240423
+            - - 0.2
+              - -0.44
+              - -0.240423
+            count_choices:
+            - 3
+            - 4
+            - 5
+            - 6
+            count_log_key: target_press_count
+            slot_log_key: bottle_slot
+            orientation:
+            - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+            instruction_template: Hold the pump bottle steady and press the pump head
+              {n} times, then return home.
+      log_component:
+        entries:
+          target_press_count_text:
+            trigger: enter
+            func: pump_target_press_count_label
+            params:
+              log_key: target_press_count
+          bottle_slot_text:
+            trigger: enter
+            func: pump_bottle_slot_label
+      instruction_component:
+        instruction: Hold the pump bottle steady and press the pump head the target
+          number of times, then return home.
+        topic: press_button_n_times
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: target_press_count_text
+          label: Target presses
+          font_size: 24
+        - log_key: bottle_slot_text
+          label: Bottle slot
+          font_size: 24
+  nodes:
+  - id: fix_bottle
+    include: x2real/task/memory_tracking/press_button_n_times/stages/fix_bottle.yaml
+    score: 3
+  - id: press_loop
+    include: x2real/task/memory_tracking/press_button_n_times/stages/press_loop.yaml
+    score: 5
+  - id: return
+    include: x2real/task/memory_tracking/press_button_n_times/stages/return.yaml
+    score: 2
+  edges:
+  - src: fix_bottle
+    dst: press_loop
+  - src: press_loop
+    dst: return

@@ -1,0 +1,160 @@
+definition:
+  scene_type: object_to_cup_scene
+  metadata:
+    name: ex001_6r_object_to_cup_vnext
+    source: object_to_cup/vnext
+    semantic_goal: Right hand holds the cup, left hand puts two objects into the cup,
+      then right hand sets the cup back down
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: obj_1
+  asset:
+    type: pool
+    cache_size: 4
+    candidates:
+    - id: object_id_pool
+      assets:
+      - toy_dice
+      - toy_f
+      - lipstick_a
+      - block_a
+      scale_normalization:
+        min_shortest_edge: 0.02
+        max_shortest_edge: 0.04
+        max_longest_edge: 0.06
+  spawn_mass:
+  - 0.1
+  - 0.1
+  spawn_static_friction: 1.0
+  spawn_dynamic_friction: 1.0
+  semantic_tags:
+  - pickable
+  - pickable_1
+- id: obj_2
+  asset:
+    type: pool
+    cache_size: 4
+    candidates:
+    - id: object_id_pool
+      assets:
+      - toy_dice
+      - toy_f
+      - lipstick_a
+      - block_a
+      scale_normalization:
+        min_shortest_edge: 0.02
+        max_shortest_edge: 0.04
+        max_longest_edge: 0.06
+  spawn_mass:
+  - 0.1
+  - 0.1
+  spawn_static_friction: 1.0
+  spawn_dynamic_friction: 1.0
+  semantic_tags:
+  - pickable
+  - pickable_2
+- id: cup
+  asset:
+    type: pool
+    cache_size: 4
+    candidates:
+    - id: cup_pool
+      assets:
+      - cup_na
+      - cup_nb
+      - cup_nc
+      - cup_nd
+      scale_normalization:
+        target_shortest_edge: 0.065
+  spawn_mass:
+  - 0.3
+  - 0.3
+  spawn_static_friction: 1.0
+  spawn_dynamic_friction: 1.0
+  semantic_tags:
+  - container
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    cup:
+      object: cup
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - 0.02
+          - 0.14
+          y:
+          - 0.26
+          - 0.34
+    obj_1:
+      object: obj_1
+    obj_2:
+      object: obj_2
+  groups:
+    object_start_region:
+      type: region
+      nodes:
+      - obj_1
+      - obj_2
+      surface: tabletop
+      ranges:
+        x:
+        - 0.04
+        - 0.28
+        y:
+        - -0.42
+        - -0.08
+      yaws:
+      - -1.57
+      - 1.57
+      sample_method: stratified
+      spacing_mode: footprint_gap
+      order_axis: y
+      min_spacing: 0.08
+      jitter: 0.15
+      max_attempts: 2000
+variants:
+  materialization:
+  - id: obj_1_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - obj_1.object_id_pool
+  - id: obj_2_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - obj_2.object_id_pool
+  - id: cup_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - cup.cup_pool
+  assignments: []

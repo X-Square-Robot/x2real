@@ -1,0 +1,190 @@
+################################################################################
+# plug_in_charger Franka-Panda reach layout.
+# Same USB assets / orientation / z as EX001 ``vnext.yaml``; spawn box is
+# retargeted to Franka tabletop reach (surface x [-0.20, 0.15], four tight
+# y-neighbor pairs). Do not reuse ``plug_in_charger_scene`` — the generator
+# indexes by scene_type and the EX001/ARX layout lives on that name.
+################################################################################
+definition:
+  scene_type: plug_in_charger_scene_franka
+  metadata:
+    source: plug_in_charger/franka_vnext
+    semantic_goal: Pick up the USB stick and insert it into the instructed hub port on the dock
+    layout_variant: franka
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: usb
+  asset:
+    type: asset_id
+    id: usb_a
+  orientation:
+  - 0.0
+  - -0.7071
+  - 0.0
+  - 0.7071
+  semantic_tags:
+  - pickable
+  - insertable
+- id: usb_base
+  asset:
+    type: asset_id
+    id: usb_a_base
+  orientation:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 1.0
+  semantic_tags:
+  - destination
+  - fixed
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    usb:
+      object: usb
+    usb_base:
+      object: usb_base
+  groups:
+    usb_hand_side:
+      type: slot
+      nodes:
+      - usb
+      - usb_base
+      slots:
+        usb_y_p1:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.2
+            - 0.15
+            y:
+            - 0.2
+            - 0.3
+          yaws: 0.0
+          fixed_world_z: -0.203
+        base_y_p1:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.2
+            - 0.15
+            y:
+            - 0.33
+            - 0.4
+          yaws: 0.0
+        usb_y_p2:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.2
+            - 0.15
+            y:
+            - 0.02
+            - 0.12
+          yaws: 0.0
+          fixed_world_z: -0.203
+        base_y_p2:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.2
+            - 0.15
+            y:
+            - 0.15
+            - 0.25
+          yaws: 0.0
+        usb_y_p3:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.2
+            - 0.15
+            y:
+            - -0.12
+            - -0.02
+          yaws: 0.0
+          fixed_world_z: -0.203
+        base_y_p3:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.2
+            - 0.15
+            y:
+            - -0.25
+            - -0.15
+          yaws: 0.0
+        usb_y_p4:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.2
+            - 0.15
+            y:
+            - -0.3
+            - -0.2
+          yaws: 0.0
+          fixed_world_z: -0.203
+        base_y_p4:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.2
+            - 0.15
+            y:
+            - -0.4
+            - -0.33
+          yaws: 0.0
+      assignments:
+        mode: explicit
+        items:
+        - id: pair_y_p1
+          bindings:
+            usb: usb_y_p1
+            usb_base: base_y_p1
+        - id: pair_y_p2
+          bindings:
+            usb: usb_y_p2
+            usb_base: base_y_p2
+        - id: pair_y_p3
+          bindings:
+            usb: usb_y_p3
+            usb_base: base_y_p3
+        - id: pair_y_p4
+          bindings:
+            usb: usb_y_p4
+            usb_base: base_y_p4
+      default_assignment: pair_y_p2
+variants:
+  materialization: []
+  assignments: []

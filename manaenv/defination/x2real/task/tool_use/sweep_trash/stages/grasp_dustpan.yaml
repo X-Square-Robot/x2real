@@ -1,0 +1,27 @@
+include: x2real/task/tool_use/sweep_trash/stages/_sweep_trash_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: sweep_trash_grasp_dustpan
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          mode: or
+          terms:
+          - grasp_left:
+              _func: grasp_left_1
+              object_cfg: '@container'
+              force_threshold: 1.0
+              lifted_z_min: -0.2
+              consecutive_steps: 5
+          - grasp_right:
+              _func: grasp_right_1
+              object_cfg: '@container'
+              force_threshold: 1.0
+              lifted_z_min: -0.2
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: grasp @container.name with either hand

@@ -1,0 +1,23 @@
+include: x2real/task/fine_manipulation/ring_on_cylinder/stages/_ring_on_cylinder_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: ring_on_cylinder_pick_ring
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_lifted
+          object_cfg: '@pickable'
+          min_lift: 0.03
+          settle_steps: 30
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: pick up @pickable.name
+    planner_skills_component:
+      skills:
+      - type: pick
+        params:
+          grasp_label_asset: '@pickable'
+          object_name: '@pickable'

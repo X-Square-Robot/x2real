@@ -1,0 +1,34 @@
+include: task/put_bottle_on_woodshelf/stages/_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: put_bottle_on_woodshelf_pick_bottle
+    stage_timeout_steps: 520
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - bottle_lifted:
+              _func: object_lifted
+              object_cfg: "@pickable"
+              min_lift: 0.05
+              settle_steps: 30
+              consecutive_steps: 5
+              _latch: true
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: lift @pickable.name from the table
+    planner_stage_component:
+      type: skill_trajectory
+      params:
+        include_prefix: false
+        include_tail: false
+    planner_skills_component:
+      skills:
+      - type: pick
+        params:
+          object_name: "@pickable"
+          grasp_label_asset: bottle_nongfuspring_s
+          grasp_label_manifest: "manaenv/defination/grasp_labels/manifest.yaml"

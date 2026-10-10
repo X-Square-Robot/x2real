@@ -1,0 +1,25 @@
+include: task/move_bottle_to_bin/stages/_stage_base.yaml
+direct_task_generator:
+  definition: {task_type: move_bottle_to_bin_navigate_to_bottle, stage_timeout_steps: 900}
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - bottle_operation_zone:
+              _func: base_in_operation_zone
+              robot_cfg: robot
+              zone_key: bottle_operation_zone
+              context_namespace: mobile_manip
+              context_plan_id: move_bottle_to_bin
+              linear_speed_max: 0.05
+              angular_speed_max: 0.12
+              consecutive_steps: 3
+              _latch: true
+          - pickable_in_head_hfov:
+              _func: target_in_head_hfov
+              robot_cfg: robot
+              target_cfgs: "@pickable"
+              consecutive_steps: 3
+              _latch: true
+    log_component: {entries: {progress: {trigger: success, value: navigate to the bottle table}}}

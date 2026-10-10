@@ -1,0 +1,64 @@
+################################################################################
+# move_fruit_to_basket graph task (5 scored milestones / 10-point rubric, ID).
+################################################################################
+graph_task_generator:
+  definition:
+    task_type: move_fruit_to_basket
+    episode_length_s: 3600.0
+    max_steps_per_episode: 100000
+    prompt: Navigate to the source fruit table, grasp the correct fruit on the table, navigate to the destination basket table, place the fruit in the basket, and retract the arm safely.
+    layout:
+      runtime_sample:
+        id: runtime
+        seed: 42
+        targets:
+          assets:
+          - {id: fruit_asset, target: {type: node, id: fruit}, selector: {type: uniform}, cache_size: 30}
+          - {id: basket_asset, target: {type: node, id: basket}, selector: {type: uniform}, cache_size: 11}
+          placements:
+          - {id: fruit_table, target: {type: node, id: fruit_table}, sample: {type: inherit}}
+          - {id: basket_table, target: {type: node, id: basket_table}, sample: {type: inherit}}
+          - {id: fruit, target: {type: node, id: fruit}, sample: {type: inherit}}
+          - {id: basket, target: {type: node, id: basket}, sample: {type: inherit}}
+    component_sections:
+      instruction_component:
+        instruction: Navigate to the source fruit table, grasp the correct fruit on the table, navigate to the destination basket table, place the fruit in the basket, and retract the arm safely.
+        topic: move_fruit_to_basket
+      log_component:
+        entries:
+          instruction_text:
+            trigger: enter
+            value: Navigate to the source fruit table, grasp the correct fruit on the table, navigate to the destination basket table, place the fruit in the basket, and retract the arm safely.
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: instruction_text
+          label: Instruction
+          font_size: 22
+      event_component:
+        terms:
+          apply_case_bank_layout:
+            mode: reset
+            _func: apply_case_bank_layout
+            bank_path: task/move_fruit_to_basket/operation_zones.yaml
+            robot_asset: robot
+            context_namespace: mobile_manip
+            context_plan_id: move_fruit_to_basket
+            required_zone_keys: [fruit_table_operation_zone, basket_table_operation_zone]
+            seed: 42
+  roles:
+    pickable: fruit
+    basket: basket
+    fruit_table: fruit_table
+    basket_table: basket_table
+  nodes:
+  - {id: navigate_to_fruit_table, include: task/move_fruit_to_basket/stages/navigate_to_fruit_table.yaml, score: 2}
+  - {id: pick_fruit, include: task/move_fruit_to_basket/stages/pick_fruit.yaml, score: 2}
+  - {id: navigate_to_basket_table, include: task/move_fruit_to_basket/stages/navigate_to_basket_table.yaml, score: 2}
+  - {id: place_fruit, include: task/move_fruit_to_basket/stages/place_fruit.yaml, score: 2}
+  - {id: retract_arm, include: task/move_fruit_to_basket/stages/retract_arm.yaml, score: 2}
+  edges:
+  - {src: navigate_to_fruit_table, dst: pick_fruit}
+  - {src: pick_fruit, dst: navigate_to_basket_table}
+  - {src: navigate_to_basket_table, dst: place_fruit}
+  - {src: place_fruit, dst: retract_arm}

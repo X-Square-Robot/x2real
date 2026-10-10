@@ -1,0 +1,105 @@
+################################################################################
+# adjust_temperature graph task (formerly knob_twist_preview).
+# Sequence: home -> stay -> twist -> stay -> home.
+# Each reset samples a random initial panel temperature and a distinct target
+# (ID: 0..60, ΔT in [0,60] with |ΔT|>=30; see graph event_component below).
+# Prefix boundary supplies leading home+stay; twist stage ends on stay; return
+# is the trailing home. Panel 0..60 maps across [-360, 0] deg (KnobA, 6°/unit)
+# with the shared -599 deg physical stop; the two-digit display remains 0..99.
+# Pairs with scene/adjust_temperature_vnext.yaml (or legacy adjust_temperature.yaml).
+# Robot-specific backoff / stay joints / arm mode live in the embodiment
+# skill_planner YAML (EX0016REmbodiment / FrankaEmbodiment).
+#
+# Benchmark entrypoint: manaenv/scripts/x2real_eval.py --board artixon_arm6a_tabletop
+# --env artixon_arm6a_H_adjust_temperature_id_env
+################################################################################
+graph_task_generator:
+  definition:
+    task_type: adjust_temperature
+    planner_skill_boundary:
+      prefix:
+      - type: home
+      - type: stay
+    planner_skill_defaults:
+      twist:
+        grasp_label_asset: "knob_a"
+        arm: "auto"
+        # Arm joint-vector prefix used to read the arm chain when the EX001
+        # ``{left,right}_arm_joint*`` naming does not match. Franka's arm joints
+        # are ``panda_joint1..7``; without this the twist phase reads an empty
+        # joint vector and aborts with "no valid sparse targets". EX001 is
+        # unaffected (it matches ``left_arm_joint*`` first and never falls back).
+        arm_joint_prefix: "panda_joint"
+        approach_distance: 0.025
+        joint_axis_local: [0.0, 0.0, 1.0]
+        hinge_pivot_local: [0.0, 0.0, 0.0]
+        arc_samples: 12
+        retreat_distance: 0.03
+        top_k: 48
+        winner_plan_failure_cooldown: 8
+        gripper_open: 1.0
+        gripper_close: 0.0
+        gripper_open_fraction: 0.25
+        # Short flip; easing in twist_skill avoids linear hard-stop rebound.
+        flip_joint_steps: 30
+        # Release in place: open the gripper over 8 steps while holding the arm
+        # pose, then let the ``home`` stage lift and move away. Prevents the
+        # gripper opening too fast / dragging the knob at release.
+        release_joint_steps: 8
+      home:
+        gripper: 0.0
+        steps: 10
+      stay:
+        gripper: 0.0
+        steps: 10
+    component_sections:
+      event_component:
+        terms:
+          # Dual-arm EX001: near-center vs far-side y so twist arm:auto samples
+          # left vs right. Orientation kept from scene YAML (faces the robot).
+          randomize_object_pose_from_list:
+            mode: reset
+            asset_cfg: knob_a
+            positions:
+            - [-0.07, -0.08, -0.18]
+            - [-0.07, -0.45, -0.18]
+          set_articulation_joint_position_limit:
+            mode: startup
+            asset_cfg: knob_a
+            joint_name: RevoluteJoint
+            lower_limit_deg: -599.0
+            upper_limit_deg: 0.0
+          sample_turnable_twist_goal:
+            mode: reset
+            asset_cfg: knob_a
+            joint_name: RevoluteJoint
+            initial_temperature_range: [0, 60]
+            target_delta_temperature_range: [0, 60]
+            min_delta_temperature: 30
+            temperature_max: 60
+      instruction_component:
+        instructions:
+        - text: "Adjust the knob from temperature {initial} to {target}, then return the arm home."
+          log: {instruction_variant: direct}
+        subtasks:
+        - "Twist the knob from temperature {initial} to {target}."
+        - "Return the arm home after reaching temperature {target}."
+        topic: adjust_temperature
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: twist_initial_temperature
+          label: Initial temp
+          font_size: 24
+        - log_key: twist_target_temperature
+          label: Target temp
+          font_size: 24
+  nodes:
+  - id: twist
+    include: task/adjust_temperature/stages/twist.yaml
+    score: 3
+  - id: return
+    include: task/adjust_temperature/stages/return.yaml
+    score: 1
+  edges:
+  - {src: twist, dst: return}

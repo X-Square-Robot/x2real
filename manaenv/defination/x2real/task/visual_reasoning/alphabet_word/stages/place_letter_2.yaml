@@ -1,0 +1,21 @@
+include: x2real/task/visual_reasoning/alphabet_word/stages/_alphabet_word_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: alphabet_word_place_letter_2
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: letter_block_in_word_slot
+          position: 2
+          slot_tolerance_x: 0.064
+          slot_tolerance_y: 0.061
+          yaw_target_deg: 180.0
+          yaw_tolerance_deg: 30.0
+          velocity_threshold: 0.2
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place target letter 2 in word slot 2

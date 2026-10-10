@@ -1,0 +1,76 @@
+{
+  "backgrounds": {
+    "green_booth": {
+      "surfaces": {
+        "tabletop": {
+          "center": [
+            -1.2260238828984715,
+            -0.18531015938477946,
+            -0.24042343591579515
+          ],
+          "frame": "background_local",
+          "id": "tabletop",
+          "margin": 0.02,
+          "normal": [
+            -0.0,
+            0.0,
+            1.0
+          ],
+          "shape": "rectangle",
+          "size": [
+            0.7249999791383742,
+            1.1500000022351744
+          ],
+          "x_axis": [
+            0.9961947438496281,
+            -0.0871552197310854,
+            0.0
+          ],
+          "y_axis": [
+            0.08715521973108546,
+            0.996194743849628,
+            0.0
+          ]
+        }
+      }
+    },
+    "green_booth_mesh": {
+      "surfaces": {
+        "tabletop": {
+          "center": [
+            0.0018934537,
+            0.6566536748,
+            0.7445765641
+          ],
+          "frame": "background_local",
+          "id": "tabletop",
+          "margin": 0.02,
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "shape": "rectangle",
+          "size": [
+            0.7249999791383742,
+            1.1500000022351744
+          ],
+          "x_axis": [
+            -0.0051729285,
+            -0.9999866203,
+            0.0
+          ],
+          "y_axis": [
+            0.9999866203,
+            -0.0051729285,
+            0.0
+          ],
+          "provenance": {
+            "source": "derived_green_booth_noblock_ex001_pose_v1"
+          }
+        }
+      }
+    }
+  },
+  "version": 1
+}

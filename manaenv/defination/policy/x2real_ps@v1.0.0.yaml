@@ -1,0 +1,45 @@
+# Policy: x2real_ps — the model-neutral PolicySpace client for x2real eval.
+#
+# Deliberately carries no model name. Every x2real leaderboard model (wallx,
+# dreamzero, cosmos3, openpi, ...) is served through the same PolicySpace
+# WebSocket protocol, so the suite YAML must not encode which one is running.
+# Point it at a server instead:
+#
+#   python manaenv/scripts/x2real_eval.py --board artixon_arm6a_tabletop \
+#     --server-address <host> --server-port <port>
+#
+# ``policy_name`` stays empty so PolicySpaceImpl accepts whatever identity the
+# server reports; a per-model name belongs in that server's deploy.yaml.
+#
+# The parameters below are the EX001 dual-arm ``ik_eef_abs`` control contract.
+# A server that speaks a different contract needs its own policy YAML, not an
+# edited copy of the evaluation suite.
+
+name: x2real_ps@v1.0.0
+
+implementation:
+  policy_space:
+    policy_name: ""
+    endpoint: "ws://127.0.0.1:8001"
+    # Leaderboard models run on shared remote GPUs; first chunk can be slow.
+    timeout_ms: 300000
+    action_type: absolute_ee
+    # Post-echo wire length, not the executed horizon (row 0 is the state echo).
+    action_horizon: 32
+    instruction: ""
+    image_height: 480
+    image_width: 640
+    ingest_observation_each_step: false
+    log_timing: true
+
+# 32 Euler-14 wire rows -> EEAbsoluteIKTransform 16-D XYZW ->
+# temporal_interpolate 1.5x (quat NLERP + normalize, not component lerp) ->
+# 48 rows executed.
+client:
+  chunk_executor:
+    per_env_independent:
+      execute_horizon: 48
+      refill_threshold: 1
+  chunk_postprocessors:
+  - temporal_interpolate:
+      multiplier: 1.5

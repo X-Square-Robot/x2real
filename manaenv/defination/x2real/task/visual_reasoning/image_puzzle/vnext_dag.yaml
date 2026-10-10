@@ -1,0 +1,63 @@
+graph_task_generator:
+  definition:
+    task_type: image_puzzle
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: puzzle_start_slots
+            target:
+              type: group
+              id: puzzle_start_slots
+            sample:
+              type: inherit
+          materials:
+          - id: brick_split_a_pic
+            target:
+              type: object_material
+              object: brick_split_a
+              material: pic
+            selector:
+              type: uniform
+              shared_id: puzzle_pic
+          - id: brick_split_b_pic
+            target:
+              type: object_material
+              object: brick_split_b
+              material: pic
+            selector:
+              type: uniform
+              shared_id: puzzle_pic
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Place the two brick puzzle pieces on the green paper in either order,
+            adjust them so they form one complete image, then return the arm home.
+          log:
+            instruction_variant: direct
+        - text: Move brick split A and brick split B onto the paper (either piece
+            first), fit them together into the complete picture, then return the arm
+            home.
+          log:
+            instruction_variant: descriptive
+  nodes:
+  - id: place_piece_a
+    include: x2real/task/visual_reasoning/image_puzzle/stages/place_piece_a.yaml
+    score: 2
+  - id: place_piece_b
+    include: x2real/task/visual_reasoning/image_puzzle/stages/place_piece_b.yaml
+    score: 3
+  - id: assemble
+    include: x2real/task/visual_reasoning/image_puzzle/stages/assemble.yaml
+    score: 4
+  - id: return
+    include: x2real/task/visual_reasoning/image_puzzle/stages/return.yaml
+    score: 1
+  edges:
+  - src: place_piece_a
+    dst: assemble
+  - src: place_piece_b
+    dst: assemble
+  - src: assemble
+    dst: return

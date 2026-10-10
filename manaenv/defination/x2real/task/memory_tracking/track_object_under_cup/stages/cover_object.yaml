@@ -1,0 +1,23 @@
+include: x2real/task/memory_tracking/track_object_under_cup/stages/_track_object_under_cup_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: track_object_under_cup_cover_object
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: cup_covers_hidden_object
+          cup_cfg: '@cup_target'
+          hidden_cfg: '@hidden_object'
+          min_dot: -1.0
+          max_dot: -0.7
+          xy_distance_threshold: 0.045
+          z_min_offset: -0.12
+          z_max_offset: -0.02
+          velocity_threshold: 0.2
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: cover dice (@hidden_object.name) with inverted @cup_target.name

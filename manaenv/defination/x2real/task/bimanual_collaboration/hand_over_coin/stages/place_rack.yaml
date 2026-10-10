@@ -1,0 +1,17 @@
+include: x2real/task/bimanual_collaboration/hand_over_coin/stages/_hand_over_coin_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: hand_over_coin_place_rack
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_contact_destination
+          contact_sensor_cfgs: '@rack_contact_sensor'
+          force_threshold: 0.1
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: put @pickable.name onto @container.name

@@ -1,0 +1,504 @@
+graph_task_generator:
+  definition:
+    task_type: pick_fruits_into_basket
+    planner_skill_boundary:
+      prefix:
+      - type: stay
+    planner_skill_defaults:
+      pick:
+        grasp_label_manifest: assets/grasp_labels/manifest.yaml
+        arm: auto
+        approach_distance: 0.08
+        lift_height: 0.14
+        top_k: 16
+        winner_plan_failure_cooldown: 8
+      place:
+        arm: current
+        pre_place_z_offset: 0.0
+        place_z_offset: 0.12
+        post_place_z_offset: 0.0
+        hesitate_steps: 20
+        pitch_samples: 8
+        target:
+          strategy: bbox_ratio
+          x_ratio_range:
+          - 0.42
+          - 0.58
+          y_ratio_range:
+          - 0.42
+          - 0.58
+      home:
+        arm: both
+        gripper: closed
+        steps: 20
+      stay:
+        arm: both
+        gripper: closed
+        steps: 20
+        left_stay_joints:
+        - -0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - 0.26
+        right_stay_joints:
+        - 0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - -0.26
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: fruit_1_asset
+            target:
+              type: node
+              id: fruit_1
+            selector:
+              type: uniform
+          - id: fruit_2_asset
+            target:
+              type: node
+              id: fruit_2
+            selector:
+              type: uniform
+          - id: fruit_3_asset
+            target:
+              type: node
+              id: fruit_3
+            selector:
+              type: uniform
+          - id: distractor_1_asset
+            target:
+              type: node
+              id: distractor_1
+            selector:
+              type: uniform
+          - id: distractor_2_asset
+            target:
+              type: node
+              id: distractor_2
+            selector:
+              type: uniform
+          - id: distractor_3_asset
+            target:
+              type: node
+              id: distractor_3
+            selector:
+              type: uniform
+          placements:
+          - id: object_start_region
+            target:
+              type: group
+              id: object_start_region
+            sample:
+              type: inherit
+          - id: basket_b
+            target:
+              type: node
+              id: basket_b
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_fruit_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - fruit_1
+              - fruit_2
+              - fruit_3
+      instruction_component:
+        instructions:
+        - text: Pick up the fruits, put them into the pink basket, keep other items out of the basket, then return the arm
+            home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_fruit_assets
+          label: Target fruits (exactly 3)
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: fruits_to_basket_place_fruit_1
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable_1'
+              reference_cfg: '@container'
+              in_reference_frame: true
+              x_range:
+              - -0.1138
+              - 0.1133
+              y_range:
+              - -0.0845
+              - 0.0845
+              z_range:
+              - -0.12
+              - 0.1769
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: fruits_basket_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @pickable_1.name into @container.name
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              grasp_label_asset: '@pickable_1'
+              object_name: '@pickable_1'
+              filter_x_dir:
+              - downward
+              - 65.0
+          - type: place
+            params:
+              object_name: '@pickable_1'
+              target:
+                strategy: bbox_ratio
+                object_name: '@container'
+                x_ratio_range:
+                - 0.42
+                - 0.58
+                y_ratio_range:
+                - 0.42
+                - 0.58
+          - type: stay
+    id: place_fruit_1
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: fruits_to_basket_place_fruit_2
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable_2'
+              reference_cfg: '@container'
+              in_reference_frame: true
+              x_range:
+              - -0.1138
+              - 0.1133
+              y_range:
+              - -0.0845
+              - 0.0845
+              z_range:
+              - -0.12
+              - 0.1769
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: fruits_basket_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @pickable_2.name into @container.name
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              grasp_label_asset: '@pickable_2'
+              object_name: '@pickable_2'
+              filter_x_dir:
+              - downward
+              - 65.0
+          - type: place
+            params:
+              object_name: '@pickable_2'
+              target:
+                strategy: bbox_ratio
+                object_name: '@container'
+                x_ratio_range:
+                - 0.42
+                - 0.58
+                y_ratio_range:
+                - 0.42
+                - 0.58
+          - type: stay
+    id: place_fruit_2
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: fruits_to_basket_place_fruit_3
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable_3'
+              reference_cfg: '@container'
+              in_reference_frame: true
+              x_range:
+              - -0.1138
+              - 0.1133
+              y_range:
+              - -0.0845
+              - 0.0845
+              z_range:
+              - -0.12
+              - 0.1769
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: fruits_basket_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @pickable_3.name into @container.name
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              grasp_label_asset: '@pickable_3'
+              object_name: '@pickable_3'
+              filter_x_dir:
+              - downward
+              - 65.0
+          - type: place
+            params:
+              object_name: '@pickable_3'
+              target:
+                strategy: bbox_ratio
+                object_name: '@container'
+                x_ratio_range:
+                - 0.42
+                - 0.58
+                y_ratio_range:
+                - 0.42
+                - 0.58
+          - type: stay
+    id: place_fruit_3
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: fruits_to_basket_clear_distractors
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: consecutive_merged
+              consecutive_steps: 10
+              state_key: fruits_to_basket_final_home_clear
+              terms:
+              - distractors_clear:
+                  _func: objects_outside_zone
+                  object_cfgs: '@distractor'
+                  reference_cfg: '@container'
+                  in_reference_frame: true
+                  x_range:
+                  - -0.1138
+                  - 0.1133
+                  y_range:
+                  - -0.0845
+                  - 0.0845
+                  z_range:
+                  - -0.12
+                  - 0.1769
+                  consecutive_steps: 1
+              - arm_home:
+                  _func: articulation_joints_near_default
+                  asset_cfg: robot
+                  atol: 0.4
+                  consecutive_steps: 1
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: fruits_basket_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return home with non-fruit items out of @container.name
+        planner_skills_component:
+          skills: []
+    id: clear_distractors
+    score: 1
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: fruits_to_basket_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: fruits_basket_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+        planner_skills_component:
+          skills:
+          - type: home
+    id: return
+    score: 1
+  edges:
+  # Basket-clean is owned by clear_distractors, not return. It is the sink so a
+  # late distractor drop-in after home cannot inherit an early latch.
+  - src: place_fruit_1
+    dst: return
+  - src: place_fruit_2
+    dst: return
+  - src: place_fruit_3
+    dst: return
+  - src: return
+    dst: clear_distractors

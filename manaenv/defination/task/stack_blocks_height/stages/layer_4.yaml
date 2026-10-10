@@ -1,0 +1,21 @@
+# Stage: layer_4 — tower reaches height 4 (relative to paper top).
+# Keyboard-teleop / ID eval only (no planner_skills / offline datacollection).
+include: task/stack_blocks_height/stages/_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: stack_blocks_height_layer_4
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: stack_height_reached
+          object_names: [block_1_blue, block_2_green, block_3_red, block_4_orange, block_5_blue, block_6_green, block_7_red, block_8_orange, block_9_blue, block_10_green, block_11_red, block_12_orange, block_13_blue, block_14_green, block_15_red]
+          target_height: 4
+          x_range: [-0.035, 0.085]
+          y_range: [-0.328, -0.208]
+          minimum_height: -0.3
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: 'stack the fourth block on the tower'

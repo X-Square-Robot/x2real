@@ -1,0 +1,1908 @@
+################################################################################
+# X2Real formal public ID evaluation catalog.
+# Adapted from manaenv dev-6.0 ab197fa0611937e5bff2c90bf6f1e35145470199.
+# Run through manaenv/scripts/x2real_eval.py; boards.yaml is the case authority.
+# Contains exactly 73 benchmark assemblies and no held-out-axis definitions.
+################################################################################
+
+data_center:
+  type: default_data_center
+task_factory:
+  type: default_task_factory
+scene_factory:
+  type: default_scene_factory
+  scene_runtime:
+    include: runtime/timestep/normal.yaml
+  render_settings:
+    include: runtime/renderer/x2bench_realtime.yaml
+    enable_dlssg: false
+    dlssg_multiplier: null
+robot_factory:
+  type: default_robot_factory
+assembly_factory:
+  type: default_assembly_factory
+rollout_factory: {}
+pipeline:
+  pipeline_runtime:
+    include: runtime/solver/physx_cpu_async.yaml
+    stream_viewports:
+      include: runtime/viewport/three_camera_stream_layout.yaml
+      cameras:
+      - left_wrist_camera
+      - name: head_camera
+        width: 960
+        height: 540
+      - right_wrist_camera
+  pipeline_dag:
+    nodes:
+    - pipeline_dag_node:
+        cfg_key: data_center
+        orders:
+        - output
+    - pipeline_dag_node:
+        cfg_key: task_factory
+        orders:
+        - task_orders
+        after:
+        - data_center
+        deps:
+          data_center: data_center
+    - pipeline_dag_node:
+        cfg_key: scene_factory
+        orders:
+        - scene_orders
+        after:
+        - data_center
+        deps:
+          data_center: data_center
+    - pipeline_dag_node:
+        cfg_key: robot_factory
+        orders:
+        - robot_orders
+        after:
+        - data_center
+        deps:
+          data_center: data_center
+        runtime: pipeline_runtime
+    - pipeline_dag_node:
+        cfg_key: assembly_factory
+        orders:
+        - assembly_orders
+        after:
+        - task_factory
+        - scene_factory
+        - robot_factory
+        deps:
+          data_center: data_center
+          task_factory: task_factory
+        runtime: pipeline_runtime
+    - pipeline_dag_node:
+        cfg_key: rollout_factory
+        orders:
+        - rollout
+        after:
+        - assembly_factory
+        deps:
+          data_center: data_center
+          assembly_factory: assembly_factory
+        foreach: env_ref
+robot_orders:
+- robot_generator:
+    include: robot/ex001_6r_tabletop_stablepd.yaml
+    name: EX001-6R-H
+    asset_name: EX001-6R
+    gripper_variant: H
+    actuator_device: cpu
+    actuator_cuda_graph: false
+- robot_generator:
+    include: robot/ex001_6r_tabletop_stablepd.yaml
+    name: EX001-6R-G
+    asset_name: EX001-6R
+    gripper_variant: G
+    actuator_device: cpu
+    actuator_cuda_graph: false
+- robot_generator:
+    include: robot/ex001_wholebody_g.yaml
+    name: EX001-WB-G
+    asset_name: ex001
+    gripper_variant: G
+- robot_generator:
+    include: robot/arx_r5_tabletop.yaml
+    name: ARX-R5-default
+    asset_name: ARX-R5
+- robot_generator:
+    include: robot/franka_tabletop.yaml
+    name: franka-panda
+    asset_name: franka
+scene_orders:
+- include: x2real/scene/visual_reasoning/adjust_temperature/vnext.yaml
+- include: x2real/scene/visual_reasoning/alphabet_word/vnext.yaml
+- include: x2real/scene/visual_reasoning/balance_scale/vnext.yaml
+- include: x2real/scene/visual_reasoning/book_rotate/vnext.yaml
+- include: x2real/scene/memory_tracking/brick_round_trip/vnext.yaml
+- include: x2real/scene/memory_tracking/buttons_random_order/vnext.yaml
+- include: x2real/scene/visual_reasoning/classify_object_shape/vnext.yaml
+- include: x2real/scene/visual_reasoning/classify_objects_color/vnext.yaml
+- include: x2real/scene/generalization/cup_upright_on_plate/vnext.yaml
+- include: x2real/scene/memory_tracking/find_drawer/vnext.yaml
+- include: x2real/scene/fine_manipulation/flowers_in_vase/vnext.yaml
+- include: x2real/scene/language_reasoning/fruits_to_basket/vnext.yaml
+- include: x2real/scene/bimanual_collaboration/glasses_on_rack/vnext.yaml
+- include: x2real/scene/bimanual_collaboration/hand_over_coin/vnext.yaml
+- include: x2real/scene/bimanual_collaboration/handover/vnext.yaml
+- include: x2real/scene/visual_reasoning/image_puzzle/vnext.yaml
+- include: x2real/scene/fine_manipulation/inverted_triangle_cups/vnext.yaml
+- include: x2real/scene/bimanual_collaboration/object_to_cup/vnext.yaml
+- include: x2real/scene/dynamic_objects/pick_and_place_on_turnable/vnext.yaml
+- include: x2real/scene/language_reasoning/pick_by_attribute/vnext.yaml
+- include: x2real/scene/fine_manipulation/plug_in_charger/vnext.yaml
+- include: x2real/scene/memory_tracking/press_button_n_times/vnext.yaml
+- include: x2real/scene/generalization/put_in_microwave/vnext.yaml
+- include: x2real/scene/fine_manipulation/ring_on_cylinder/vnext.yaml
+- include: x2real/scene/generalization/atom_bottle_on_plate/vnext.yaml
+- include: x2real/scene/generalization/atom_draw/vnext.yaml
+- include: x2real/scene/generalization/atom_fruit_in_basket/vnext.yaml
+- include: x2real/scene/generalization/atom_objects_beside_block/vnext.yaml
+- include: x2real/scene/generalization/atom_spoon/vnext.yaml
+- include: x2real/scene/tool_use/nut_on_screw/vnext.yaml
+- include: x2real/scene/language_reasoning/specific_position/vnext.yaml
+- include: x2real/scene/fine_manipulation/stack_blocks/vnext.yaml
+- include: x2real/scene/tool_use/sweep_trash/vnext.yaml
+- include: x2real/scene/memory_tracking/track_object_under_cup/vnext.yaml
+- include: x2real/scene/tool_use/whack_a_mole/vnext.yaml
+- include: x2real/scene/challenge/buttons_press_sequence/vnext.yaml
+- include: x2real/scene/challenge/tower_of_hanoi/vnext_2.yaml
+- include: x2real/scene/challenge/tower_of_hanoi/vnext_3.yaml
+- include: x2real/scene/challenge/tower_of_hanoi/vnext_4.yaml
+- include: x2real/scene/challenge/tower_of_hanoi/vnext_5.yaml
+- include: x2real/scene/challenge/stack_blocks_height/vnext.yaml
+- include: scene/move_bottle_to_bin/vnext.yaml
+- include: scene/move_fruit_to_basket/vnext.yaml
+- include: scene/put_bottle_on_woodshelf/vnext.yaml
+- include: x2real/scene/visual_reasoning/adjust_temperature/vnext_franka.yaml
+- include: x2real/scene/language_reasoning/fruits_to_basket/vnext_franka.yaml
+- include: x2real/scene/fine_manipulation/plug_in_charger/franka_vnext.yaml
+- include: x2real/scene/memory_tracking/press_button_n_times/vnext_franka.yaml
+- include: x2real/scene/fine_manipulation/ring_on_cylinder/vnext_franka.yaml
+- include: x2real/scene/generalization/atom_bottle_on_plate/vnext_franka.yaml
+- include: x2real/scene/generalization/atom_fruit_in_basket/vnext_franka.yaml
+- include: x2real/scene/generalization/atom_objects_beside_block/vnext_franka.yaml
+- include: x2real/scene/generalization/atom_spoon/vnext_franka.yaml
+task_orders:
+- include: x2real/task/visual_reasoning/adjust_temperature/vnext_dag.yaml
+- include: x2real/task/visual_reasoning/alphabet_word/vnext_dag_word3.yaml
+- include: x2real/task/visual_reasoning/alphabet_word/vnext_dag_word4.yaml
+- include: x2real/task/fine_manipulation/inverted_triangle_cups/vnext_dag.yaml
+- include: x2real/task/fine_manipulation/flowers_in_vase/vnext_dag.yaml
+- include: x2real/task/generalization/atom_draw/vnext_dag.yaml
+- include: x2real/task/visual_reasoning/balance_scale/vnext_dag_add1.yaml
+- include: x2real/task/visual_reasoning/balance_scale/vnext_dag_add2.yaml
+- include: x2real/task/visual_reasoning/book_rotate/vnext_dag.yaml
+- include: x2real/task/memory_tracking/brick_round_trip/vnext_dag.yaml
+- include: x2real/task/memory_tracking/buttons_random_order/vnext_dag_3.yaml
+- include: x2real/task/memory_tracking/buttons_random_order/vnext_dag_4.yaml
+- include: x2real/task/visual_reasoning/classify_object_shape/vnext_dag.yaml
+- include: x2real/task/visual_reasoning/classify_objects_color/vnext_dag.yaml
+- include: x2real/task/generalization/cup_upright_on_plate/vnext_dag.yaml
+- include: x2real/task/memory_tracking/find_drawer/vnext_dag.yaml
+- include: x2real/task/bimanual_collaboration/hand_over_coin/vnext_dag.yaml
+- include: x2real/task/bimanual_collaboration/handover/vnext_dag.yaml
+- include: x2real/task/visual_reasoning/image_puzzle/vnext_dag.yaml
+- include: x2real/task/tool_use/nut_on_screw/vnext_dag.yaml
+- include: x2real/task/bimanual_collaboration/object_to_cup/vnext_dag.yaml
+- include: x2real/task/dynamic_objects/pick_and_place_on_turnable/vnext_dag.yaml
+- include: x2real/task/language_reasoning/pick_by_attribute/vnext_dag.yaml
+- include: x2real/task/language_reasoning/fruits_to_basket/vnext_dag.yaml
+- include: x2real/task/fine_manipulation/plug_in_charger/vnext_dag.yaml
+- include: x2real/task/memory_tracking/press_button_n_times/vnext_dag.yaml
+- include: x2real/task/generalization/atom_bottle_on_plate/vnext_dag.yaml
+- include: x2real/task/generalization/atom_fruit_in_basket/vnext_dag.yaml
+- include: x2real/task/bimanual_collaboration/glasses_on_rack/vnext_dag.yaml
+- include: x2real/task/generalization/put_in_microwave/vnext_dag.yaml
+- include: x2real/task/generalization/atom_objects_beside_block/vnext_dag.yaml
+- include: x2real/task/fine_manipulation/ring_on_cylinder/vnext_dag.yaml
+- include: x2real/task/generalization/atom_spoon/vnext_dag.yaml
+- include: x2real/task/language_reasoning/specific_position/vnext_dag.yaml
+- include: x2real/task/fine_manipulation/stack_blocks/vnext_dag_3.yaml
+- include: x2real/task/tool_use/sweep_trash/vnext_dag.yaml
+- include: x2real/task/memory_tracking/track_object_under_cup/vnext_dag.yaml
+- include: x2real/task/tool_use/whack_a_mole/vnext_dag.yaml
+- include: x2real/task/challenge/buttons_press_sequence/vnext_dag_12.yaml
+- include: x2real/task/challenge/buttons_press_sequence/vnext_dag_16.yaml
+- include: x2real/task/challenge/buttons_press_sequence/vnext_dag_20.yaml
+- include: x2real/task/challenge/buttons_press_sequence/vnext_dag_4.yaml
+- include: x2real/task/challenge/buttons_press_sequence/vnext_dag_8.yaml
+- include: x2real/task/challenge/stack_blocks_height/vnext_dag.yaml
+- include: x2real/task/challenge/tower_of_hanoi/vnext_dag_2.yaml
+- include: x2real/task/challenge/tower_of_hanoi/vnext_dag_3.yaml
+- include: x2real/task/challenge/tower_of_hanoi/vnext_dag_4.yaml
+- include: x2real/task/challenge/tower_of_hanoi/vnext_dag_5.yaml
+- include: task/move_bottle_to_bin/vnext_dag.yaml
+- include: task/move_fruit_to_basket/vnext_dag.yaml
+- include: task/put_bottle_on_woodshelf/vnext_dag.yaml
+assembly_orders:
+- assembly_generator:
+    name: artixon_arm6a_G_put_glasses_on_woodshelf_id_env
+    scene_generator_name: glasses_on_rack_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: put_glasses_on_woodshelf
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_hand_over_coin_id_env
+    scene_generator_name: hand_over_coin_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: hand_over_coin
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_handover_id_env
+    scene_generator_name: handover_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: handover
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_object_to_cup_id_env
+    scene_generator_name: object_to_cup_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: object_to_cup
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_pick_and_place_on_turnable_id_env
+    scene_generator_name: pick_and_place_on_turnable_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: pick_and_place_on_turnable
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_arrange_flowers_in_vase_id_env
+    scene_generator_name: flowers_in_vase_vnext_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: arrange_flowers_in_vase
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_arrange_cup_inverted_triangle_id_env
+    scene_generator_name: inverted_triangle_cups_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: arrange_cup_inverted_triangle
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_plug_in_charger_id_env
+    scene_generator_name: plug_in_charger_scene
+    robot_generator_name: EX001-6R-H
+    task_generator_name: plug_in_charger
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_put_ring_onto_rod_id_env
+    scene_generator_name: ring_on_cylinder_scene
+    robot_generator_name: EX001-6R-H
+    task_generator_name: put_ring_onto_rod
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_stack_blocks_3_id_env
+    scene_generator_name: stack_blocks_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: stack_blocks_3
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_put_bottle_on_plate_id_env
+    scene_generator_name: schema_vnext_atom_bottle_on_plate
+    robot_generator_name: EX001-6R-H
+    task_generator_name: put_bottle_on_plate
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_atom_draw_id_env
+    scene_generator_name: schema_vnext_atom_draw
+    robot_generator_name: EX001-6R-H
+    task_generator_name: atom_draw
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_put_fruit_in_basket_id_env
+    scene_generator_name: schema_vnext_atom_fruit_in_basket
+    robot_generator_name: EX001-6R-H
+    task_generator_name: put_fruit_in_basket
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_put_object_beside_block_id_env
+    scene_generator_name: schema_vnext_atom_objects_beside_block
+    robot_generator_name: EX001-6R-H
+    task_generator_name: put_object_beside_block
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_put_spoon_in_bowl_id_env
+    scene_generator_name: schema_vnext_atom_spoon
+    robot_generator_name: EX001-6R-H
+    task_generator_name: put_spoon_in_bowl
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_cup_upright_on_plate_id_env
+    scene_generator_name: cup_upright_on_plate_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: cup_upright_on_plate
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_put_in_microwave_id_env
+    scene_generator_name: put_in_microwave_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: put_in_microwave
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_pick_fruits_into_basket_id_env
+    scene_generator_name: fruits_basket_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: pick_fruits_into_basket
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_pick_by_attribute_id_env
+    scene_generator_name: pick_by_attribute_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: pick_by_attribute
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_specific_position_id_env
+    scene_generator_name: specific_position_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: specific_position
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_brick_round_trip_id_env
+    scene_generator_name: brick_round_trip_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: brick_round_trip
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_buttons_random_order_3_id_env
+    scene_generator_name: buttons_random_order_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: buttons_random_order_3
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_buttons_random_order_4_id_env
+    scene_generator_name: buttons_random_order_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: buttons_random_order_4
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_find_drawer_id_env
+    scene_generator_name: find_drawer_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: find_drawer
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_press_button_n_times_id_env
+    scene_generator_name: press_button_n_times_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: press_button_n_times
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_track_object_under_cup_id_env
+    scene_generator_name: track_object_under_cup_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: track_object_under_cup
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_nut_on_screw_id_env
+    scene_generator_name: schema_vnext_nut_on_screw
+    robot_generator_name: EX001-6R-H
+    task_generator_name: nut_on_screw
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_sweep_trash_id_env
+    scene_generator_name: sweep_trash_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: sweep_trash
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_whack_a_mole_id_env
+    scene_generator_name: whack_a_mole_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: whack_a_mole
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_adjust_temperature_id_env
+    scene_generator_name: adjust_temperature_scene
+    robot_generator_name: EX001-6R-H
+    task_generator_name: adjust_temperature
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_alphabet_word_spelling_3_id_env
+    scene_generator_name: alphabet_word_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: alphabet_word_spelling_3
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_alphabet_word_spelling_4_id_env
+    scene_generator_name: alphabet_word_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: alphabet_word_spelling_4
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_balance_scale_add1_id_env
+    scene_generator_name: balance_scale_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: balance_scale_add1
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_balance_scale_add2_id_env
+    scene_generator_name: balance_scale_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: balance_scale_add2
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_book_rotate_id_env
+    scene_generator_name: book_rotate_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: book_rotate
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_classify_object_shape_id_env
+    scene_generator_name: classify_object_shape_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: classify_object_shape
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_classify_objects_color_id_env
+    scene_generator_name: classify_objects_color_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: classify_objects_color
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_G_image_puzzle_id_env
+    scene_generator_name: image_puzzle_scene
+    robot_generator_name: EX001-6R-G
+    task_generator_name: image_puzzle
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-G
+        board: artixon_arm6a_tabletop
+- assembly_generator:
+    name: artixon_arm6a_H_stack_blocks_height_id_env
+    scene_generator_name: stack_blocks_height_scene
+    robot_generator_name: EX001-6R-H
+    task_generator_name: stack_blocks_height
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: artixon_arm6a_H_tower_of_hanoi_2_id_env
+    scene_generator_name: schema_vnext_tower_of_hanoi_2
+    robot_generator_name: EX001-6R-H
+    task_generator_name: tower_of_hanoi_2
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: artixon_arm6a_H_tower_of_hanoi_3_id_env
+    scene_generator_name: schema_vnext_tower_of_hanoi_3
+    robot_generator_name: EX001-6R-H
+    task_generator_name: tower_of_hanoi_3
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: artixon_arm6a_H_tower_of_hanoi_4_id_env
+    scene_generator_name: schema_vnext_tower_of_hanoi_4
+    robot_generator_name: EX001-6R-H
+    task_generator_name: tower_of_hanoi_4
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: artixon_arm6a_H_tower_of_hanoi_5_id_env
+    scene_generator_name: schema_vnext_tower_of_hanoi_5
+    robot_generator_name: EX001-6R-H
+    task_generator_name: tower_of_hanoi_5
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: artixon_arm6a_H_buttons_press_sequence_4_id_env
+    scene_generator_name: buttons_press_sequence_scene
+    robot_generator_name: EX001-6R-H
+    task_generator_name: buttons_press_sequence_4
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: artixon_arm6a_H_buttons_press_sequence_8_id_env
+    scene_generator_name: buttons_press_sequence_scene
+    robot_generator_name: EX001-6R-H
+    task_generator_name: buttons_press_sequence_8
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: artixon_arm6a_H_buttons_press_sequence_12_id_env
+    scene_generator_name: buttons_press_sequence_scene
+    robot_generator_name: EX001-6R-H
+    task_generator_name: buttons_press_sequence_12
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: artixon_arm6a_H_buttons_press_sequence_16_id_env
+    scene_generator_name: buttons_press_sequence_scene
+    robot_generator_name: EX001-6R-H
+    task_generator_name: buttons_press_sequence_16
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: artixon_arm6a_H_buttons_press_sequence_20_id_env
+    scene_generator_name: buttons_press_sequence_scene
+    robot_generator_name: EX001-6R-H
+    task_generator_name: buttons_press_sequence_20
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: artixon_arm6a
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-6R-H
+        board: artixon_arm6a_challenge
+- assembly_generator:
+    name: quanta_x1_G_move_bottle_to_bin_id_env
+    scene_generator_name: move_bottle_to_bin_scene
+    robot_generator_name: EX001-WB-G
+    task_generator_name: move_bottle_to_bin
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: quanta_x1
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-WB-G
+        board: quanta_x1_mobile
+- assembly_generator:
+    name: quanta_x1_G_move_fruit_to_basket_id_env
+    scene_generator_name: move_fruit_to_basket_scene
+    robot_generator_name: EX001-WB-G
+    task_generator_name: move_fruit_to_basket
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: quanta_x1
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-WB-G
+        board: quanta_x1_mobile
+- assembly_generator:
+    name: quanta_x1_G_put_bottle_on_woodshelf_id_env
+    scene_generator_name: put_bottle_on_woodshelf_scene
+    robot_generator_name: EX001-WB-G
+    task_generator_name: put_bottle_on_woodshelf
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: quanta_x1
+        capabilities:
+        - benchmark
+        robot_generator_identity: EX001-WB-G
+        board: quanta_x1_mobile
+- assembly_generator:
+    name: arx_r5_default_put_object_beside_block_id_env
+    scene_generator_name: schema_vnext_atom_objects_beside_block
+    robot_generator_name: ARX-R5-default
+    task_generator_name: put_object_beside_block
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_put_bottle_on_plate_id_env
+    scene_generator_name: schema_vnext_atom_bottle_on_plate
+    robot_generator_name: ARX-R5-default
+    task_generator_name: put_bottle_on_plate
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_put_fruit_in_basket_id_env
+    scene_generator_name: schema_vnext_atom_fruit_in_basket
+    robot_generator_name: ARX-R5-default
+    task_generator_name: put_fruit_in_basket
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_put_spoon_in_bowl_id_env
+    scene_generator_name: schema_vnext_atom_spoon
+    robot_generator_name: ARX-R5-default
+    task_generator_name: put_spoon_in_bowl
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_atom_draw_id_env
+    scene_generator_name: schema_vnext_atom_draw
+    robot_generator_name: ARX-R5-default
+    task_generator_name: atom_draw
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_adjust_temperature_id_env
+    scene_generator_name: adjust_temperature_scene
+    robot_generator_name: ARX-R5-default
+    task_generator_name: adjust_temperature
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_press_button_n_times_id_env
+    scene_generator_name: press_button_n_times_scene
+    robot_generator_name: ARX-R5-default
+    task_generator_name: press_button_n_times
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_pick_fruits_into_basket_id_env
+    scene_generator_name: fruits_basket_scene
+    robot_generator_name: ARX-R5-default
+    task_generator_name: pick_fruits_into_basket
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_stack_blocks_3_id_env
+    scene_generator_name: stack_blocks_scene
+    robot_generator_name: ARX-R5-default
+    task_generator_name: stack_blocks_3
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_put_ring_onto_rod_id_env
+    scene_generator_name: ring_on_cylinder_scene
+    robot_generator_name: ARX-R5-default
+    task_generator_name: put_ring_onto_rod
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_usb_plug_id_env
+    scene_generator_name: plug_in_charger_scene
+    robot_generator_name: ARX-R5-default
+    task_generator_name: plug_in_charger
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: arx_r5_default_nut_on_screw_id_env
+    scene_generator_name: schema_vnext_nut_on_screw
+    robot_generator_name: ARX-R5-default
+    task_generator_name: nut_on_screw
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: arx_r5
+        capabilities:
+        - benchmark
+        robot_generator_identity: ARX-R5-default
+        board: arx_r5_tabletop
+- assembly_generator:
+    name: franka_panda_put_object_beside_block_id_env
+    scene_generator_name: schema_vnext_atom_objects_beside_block_franka
+    robot_generator_name: franka-panda
+    task_generator_name: put_object_beside_block
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+- assembly_generator:
+    name: franka_panda_put_bottle_on_plate_id_env
+    scene_generator_name: schema_vnext_atom_bottle_on_plate_franka
+    robot_generator_name: franka-panda
+    task_generator_name: put_bottle_on_plate
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+- assembly_generator:
+    name: franka_panda_put_fruit_in_basket_id_env
+    scene_generator_name: schema_vnext_atom_fruit_in_basket_franka
+    robot_generator_name: franka-panda
+    task_generator_name: put_fruit_in_basket
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+- assembly_generator:
+    name: franka_panda_put_spoon_in_bowl_id_env
+    scene_generator_name: schema_vnext_atom_spoon_franka
+    robot_generator_name: franka-panda
+    task_generator_name: put_spoon_in_bowl
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+- assembly_generator:
+    name: franka_panda_adjust_temperature_id_env
+    scene_generator_name: adjust_temperature_scene_franka
+    robot_generator_name: franka-panda
+    task_generator_name: adjust_temperature
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+- assembly_generator:
+    name: franka_panda_press_button_n_times_id_env
+    scene_generator_name: press_button_n_times_scene_franka
+    robot_generator_name: franka-panda
+    task_generator_name: press_button_n_times
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+- assembly_generator:
+    name: franka_panda_pick_fruits_into_basket_id_env
+    scene_generator_name: fruits_basket_scene_franka
+    robot_generator_name: franka-panda
+    task_generator_name: pick_fruits_into_basket
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+- assembly_generator:
+    name: franka_panda_stack_blocks_3_id_env
+    scene_generator_name: stack_blocks_scene
+    robot_generator_name: franka-panda
+    task_generator_name: stack_blocks_3
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+- assembly_generator:
+    name: franka_panda_put_ring_onto_rod_id_env
+    scene_generator_name: ring_on_cylinder_scene_franka
+    robot_generator_name: franka-panda
+    task_generator_name: put_ring_onto_rod
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+- assembly_generator:
+    name: franka_panda_usb_plug_id_env
+    scene_generator_name: plug_in_charger_scene_franka
+    robot_generator_name: franka-panda
+    task_generator_name: plug_in_charger
+    num_envs: 1
+    metadata:
+      x2real:
+        embodiment: franka_panda
+        capabilities:
+        - benchmark
+        robot_generator_identity: franka-panda
+        board: franka_panda_tabletop
+rollout:
+- env_ref: artixon_arm6a_G_put_glasses_on_woodshelf_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_hand_over_coin_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_handover_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_object_to_cup_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_pick_and_place_on_turnable_id_env
+  num_episodes: 40
+  episode_length_s: 40
+  max_steps: 1200
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_arrange_flowers_in_vase_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_arrange_cup_inverted_triangle_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_plug_in_charger_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_put_ring_onto_rod_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_stack_blocks_3_id_env
+  num_episodes: 40
+  episode_length_s: 75
+  max_steps: 2250
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_put_bottle_on_plate_id_env
+  num_episodes: 40
+  episode_length_s: 30
+  max_steps: 900
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_atom_draw_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_put_fruit_in_basket_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_put_object_beside_block_id_env
+  num_episodes: 40
+  episode_length_s: 30
+  max_steps: 900
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_put_spoon_in_bowl_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_cup_upright_on_plate_id_env
+  num_episodes: 40
+  episode_length_s: 75
+  max_steps: 2250
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_put_in_microwave_id_env
+  num_episodes: 40
+  episode_length_s: 75
+  max_steps: 2250
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_pick_fruits_into_basket_id_env
+  num_episodes: 40
+  episode_length_s: 50
+  max_steps: 1500
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_pick_by_attribute_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_specific_position_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_brick_round_trip_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_buttons_random_order_3_id_env
+  num_episodes: 40
+  episode_length_s: 30
+  max_steps: 900
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_buttons_random_order_4_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_find_drawer_id_env
+  num_episodes: 40
+  episode_length_s: 90
+  max_steps: 2700
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_press_button_n_times_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_track_object_under_cup_id_env
+  num_episodes: 40
+  episode_length_s: 75
+  max_steps: 2250
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_nut_on_screw_id_env
+  num_episodes: 40
+  episode_length_s: 90
+  max_steps: 2700
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_sweep_trash_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_whack_a_mole_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_adjust_temperature_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_alphabet_word_spelling_3_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_alphabet_word_spelling_4_id_env
+  num_episodes: 40
+  episode_length_s: 75
+  max_steps: 2250
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_balance_scale_add1_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_balance_scale_add2_id_env
+  num_episodes: 40
+  episode_length_s: 75
+  max_steps: 2250
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_book_rotate_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_classify_object_shape_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_classify_objects_color_id_env
+  num_episodes: 40
+  episode_length_s: 80
+  max_steps: 2400
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_G_image_puzzle_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_stack_blocks_height_id_env
+  num_episodes: 40
+  episode_length_s: 300
+  max_steps: 9000
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_tower_of_hanoi_2_id_env
+  num_episodes: 40
+  episode_length_s: 180
+  max_steps: 5400
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_tower_of_hanoi_3_id_env
+  num_episodes: 40
+  episode_length_s: 300
+  max_steps: 9000
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_tower_of_hanoi_4_id_env
+  num_episodes: 40
+  episode_length_s: 450
+  max_steps: 13500
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_tower_of_hanoi_5_id_env
+  num_episodes: 40
+  episode_length_s: 600
+  max_steps: 18000
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_buttons_press_sequence_4_id_env
+  num_episodes: 40
+  episode_length_s: 90
+  max_steps: 2700
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_buttons_press_sequence_8_id_env
+  num_episodes: 40
+  episode_length_s: 150
+  max_steps: 4500
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_buttons_press_sequence_12_id_env
+  num_episodes: 40
+  episode_length_s: 210
+  max_steps: 6300
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_buttons_press_sequence_16_id_env
+  num_episodes: 40
+  episode_length_s: 270
+  max_steps: 8100
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: artixon_arm6a_H_buttons_press_sequence_20_id_env
+  num_episodes: 40
+  episode_length_s: 330
+  max_steps: 9900
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: quanta_x1_G_move_bottle_to_bin_id_env
+  num_episodes: 40
+  episode_length_s: 180
+  max_steps: 1200
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/pi05_ex001_wholebody@v1.0.0.yaml
+- env_ref: quanta_x1_G_move_fruit_to_basket_id_env
+  num_episodes: 40
+  episode_length_s: 180
+  max_steps: 1200
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/pi05_ex001_wholebody@v1.0.0.yaml
+- env_ref: quanta_x1_G_put_bottle_on_woodshelf_id_env
+  num_episodes: 40
+  episode_length_s: 180
+  max_steps: 1200
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/pi05_ex001_wholebody@v1.0.0.yaml
+- env_ref: arx_r5_default_put_object_beside_block_id_env
+  num_episodes: 40
+  episode_length_s: 30
+  max_steps: 900
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_put_bottle_on_plate_id_env
+  num_episodes: 40
+  episode_length_s: 30
+  max_steps: 900
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_put_fruit_in_basket_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_put_spoon_in_bowl_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_atom_draw_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_adjust_temperature_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_press_button_n_times_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_pick_fruits_into_basket_id_env
+  num_episodes: 40
+  episode_length_s: 50
+  max_steps: 1500
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_stack_blocks_3_id_env
+  num_episodes: 40
+  episode_length_s: 75
+  max_steps: 2250
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_put_ring_onto_rod_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_usb_plug_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: arx_r5_default_nut_on_screw_id_env
+  num_episodes: 40
+  episode_length_s: 90
+  max_steps: 2700
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_put_object_beside_block_id_env
+  num_episodes: 40
+  episode_length_s: 30
+  max_steps: 900
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_put_bottle_on_plate_id_env
+  num_episodes: 40
+  episode_length_s: 30
+  max_steps: 900
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_put_fruit_in_basket_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_put_spoon_in_bowl_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_adjust_temperature_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_press_button_n_times_id_env
+  num_episodes: 40
+  episode_length_s: 60
+  max_steps: 1800
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_pick_fruits_into_basket_id_env
+  num_episodes: 40
+  episode_length_s: 50
+  max_steps: 1500
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_stack_blocks_3_id_env
+  num_episodes: 40
+  episode_length_s: 75
+  max_steps: 2250
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_put_ring_onto_rod_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+- env_ref: franka_panda_usb_plug_id_env
+  num_episodes: 40
+  episode_length_s: 45
+  max_steps: 1350
+  num_parallel_envs: 4
+  show_evaluation_overlay: true
+  planner:
+    PolicyPlanner:
+      policy_cfg:
+        include: policy/x2real_ps@v1.0.0.yaml
+output:
+- type: benchmark
+  save_path: ./outputs/x2real_eval/benchmark
+  report_format: json
+  record_video: true

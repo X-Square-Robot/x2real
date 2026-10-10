@@ -1,0 +1,17 @@
+solver: physx
+device: cpu
+cuda_graph: false
+diff_ik_device: cpu
+diff_ik_cuda_graph: false
+disable_fabric: false
+use_warp_diff_ik: true
+physics_step_mode: async
+kit_render_mode: async_handshake
+solver_params:
+  solver_type: 1
+  min_position_iteration_count: 32
+  min_velocity_iteration_count: 4
+  enable_ccd: true
+  enable_all_rigid_body_ccd: true
+  enable_all_rigid_body_speculative_ccd: true
+  fabric_skip: true

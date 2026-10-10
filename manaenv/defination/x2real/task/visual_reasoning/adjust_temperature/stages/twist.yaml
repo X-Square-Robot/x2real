@@ -1,0 +1,39 @@
+include: x2real/task/visual_reasoning/adjust_temperature/stages/_adjust_temperature_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: adjust_temperature_twist
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: joint_reaches_sampled_openness
+          object_cfg: knob_a
+          joint_names:
+          - RevoluteJoint
+          tolerance: 0.052
+          consecutive_steps: 2
+    log_component:
+      entries:
+        twist_initial_temperature:
+          trigger: enter
+          func: twist_episode_initial_temperature
+        twist_target_temperature:
+          trigger: enter
+          func: twist_episode_target_temperature
+        twist_result:
+          trigger: success
+          func: twist_episode_result_label
+          update_mode: last
+        progress:
+          trigger: success
+          func: twist_episode_progress_message
+          params:
+            template: twist the knob from {initial} to the sampled {target} temperature
+    planner_skills_component:
+      skills:
+      - type: twist
+        params:
+          object_name: knob_a
+          handle_body_name: knob
+          joint_name: RevoluteJoint
+      - type: stay

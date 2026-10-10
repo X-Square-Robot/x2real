@@ -1,0 +1,12 @@
+name: ARX-R5
+initial_position:
+- -0.32165
+- -0.25918
+- -0.25
+initial_orientation:
+- 0.0
+- 0.0
+- 0.0
+- 1.0
+enable_cameras: true
+gripper_mode: raw_joint

@@ -1,0 +1,73 @@
+graph_task_generator:
+  definition:
+    task_type: cup_upright_on_plate
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: cup_asset
+            target:
+              type: node
+              id: cup
+            selector:
+              type: uniform
+          - id: plate_asset
+            target:
+              type: node
+              id: plate
+            selector:
+              type: uniform
+          placements:
+          - id: cup
+            target:
+              type: node
+              id: cup
+            sample:
+              type: inherit
+          - id: plate
+            target:
+              type: node
+              id: plate
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_cup_plate_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - cup
+              - plate
+      instruction_component:
+        instruction: Flip the cup upright if necessary, move the plate to the center,
+          and place the cup on the plate, then return the arms home.
+        topic: cup_upright_on_plate
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_cup_plate_assets
+          label: Assets
+          font_size: 24
+  nodes:
+  - id: pick_and_flip
+    score: 4
+    include: x2real/task/generalization/cup_upright_on_plate/stages/pick_and_flip.yaml
+  - id: push_plate_to_center
+    score: 3
+    include: x2real/task/generalization/cup_upright_on_plate/stages/push_plate_to_center.yaml
+  - id: place_on_plate
+    score: 2
+    include: x2real/task/generalization/cup_upright_on_plate/stages/place_on_plate.yaml
+  - id: return_home
+    score: 1
+    include: x2real/task/generalization/cup_upright_on_plate/stages/return_home.yaml
+  edges:
+  - src: pick_and_flip
+    dst: push_plate_to_center
+  - src: push_plate_to_center
+    dst: place_on_plate
+  - src: place_on_plate
+    dst: return_home

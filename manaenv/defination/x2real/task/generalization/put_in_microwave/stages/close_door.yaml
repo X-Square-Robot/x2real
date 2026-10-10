@@ -1,0 +1,42 @@
+include: x2real/task/generalization/put_in_microwave/stages/_put_in_microwave_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: put_in_microwave_close_door
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: merged
+          mode: and
+          terms:
+          - door_closed:
+              _func: joint_above_threshold
+              object_cfg: '@openable'
+              joint_names:
+              - RevoluteJoint_01
+              threshold: 0.15
+              openness_gt: false
+              joint_match: all
+              consecutive_steps: 2
+          - fruit_inside:
+              _func: object_position_in_zone
+              _latch: true
+              object_cfg: '@pickable'
+              reference_cfg: '@containable'
+              in_reference_frame: true
+              x_range:
+              - -0.08
+              - 0.04
+              y_range:
+              - -0.08
+              - 0.06
+              z_range:
+              - -0.07
+              - 0.03
+              velocity_threshold: 0.5
+              consecutive_steps: 2
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: close the microwave door with the fruit inside

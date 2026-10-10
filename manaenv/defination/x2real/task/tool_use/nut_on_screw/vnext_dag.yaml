@@ -1,0 +1,267 @@
+graph_task_generator:
+  definition:
+    task_type: nut_on_screw
+    runtime_instruction:
+      plan_id: runtime
+      objects:
+        nut: nut
+        screw: destination
+      template: Pick up the {nut_color} {nut} nut, place it on the matching {screw_color}
+        {screw} screw, twist it on, then return the arm home.
+      subtasks:
+      - Pick up the {nut_color} {nut} nut.
+      - Place the {nut_color} {nut} nut on the matching {screw_color} {screw} screw.
+      - Twist the {nut_color} {nut} nut onto the screw.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        global:
+          parked_slot_collision: keep
+        targets:
+          assets:
+          - id: nut_asset
+            target:
+              type: node
+              id: nut
+            selector:
+              type: weighted
+              default_weight: 1.0
+              weights:
+                a: 0.0
+            cache_size: 4
+          placements:
+          - id: screws_mid
+            target:
+              type: group
+              id: screws_mid
+            sample:
+              type: inherit
+          - id: nut_hand
+            target:
+              type: group
+              id: nut_hand
+            sample:
+              type: inherit
+          materials:
+          - id: pair_a_color
+            target:
+              objects:
+              - screw_a
+              - nut
+              material_slots:
+              - Looks/color
+            policy:
+              type: material_template
+              candidates:
+              - id: red
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 0.0
+                    - 0.0
+              - id: green
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 1.0
+                    - 0.0
+              - id: blue
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 0.0
+                    - 1.0
+              - id: yellow
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 1.0
+                    - 0.0
+            selector:
+              type: uniform
+            apply:
+              clone_shared_materials: true
+          - id: pair_b_color
+            target:
+              objects:
+              - screw_b
+              - nut__slot_1
+              material_slots:
+              - Looks/color
+            policy:
+              type: material_template
+              candidates:
+              - id: red
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 0.0
+                    - 0.0
+              - id: green
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 1.0
+                    - 0.0
+              - id: blue
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 0.0
+                    - 1.0
+              - id: yellow
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 1.0
+                    - 0.0
+            selector:
+              type: uniform
+            apply:
+              clone_shared_materials: true
+          - id: pair_c_color
+            target:
+              objects:
+              - screw_c
+              - nut__slot_2
+              material_slots:
+              - Looks/color
+            policy:
+              type: material_template
+              candidates:
+              - id: red
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 0.0
+                    - 0.0
+              - id: green
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 1.0
+                    - 0.0
+              - id: blue
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 0.0
+                    - 1.0
+              - id: yellow
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 1.0
+                    - 0.0
+            selector:
+              type: uniform
+            apply:
+              clone_shared_materials: true
+          - id: pair_d_color
+            target:
+              objects:
+              - screw_d
+              - nut__slot_3
+              material_slots:
+              - Looks/color
+            policy:
+              type: material_template
+              candidates:
+              - id: red
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 0.0
+                    - 0.0
+              - id: green
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 1.0
+                    - 0.0
+              - id: blue
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 0.0
+                    - 0.0
+                    - 1.0
+              - id: yellow
+                channels:
+                  base_color:
+                    source: constant
+                    value:
+                    - 1.0
+                    - 1.0
+                    - 0.0
+            selector:
+              type: uniform
+            apply:
+              clone_shared_materials: true
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the nut, place it on the matching screw, twist it on, then
+            return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the nut.
+        - Place the nut on the matching screw.
+        - Twist the nut onto the screw.
+        - Return the arm home.
+        topic: nut_on_screw
+  roles:
+    pickable: pickable
+    destination: destination
+    reference: reference
+  nodes:
+  - id: pick_nut
+    score: 2
+    include: x2real/task/tool_use/nut_on_screw/stages/pick_nut.yaml
+  - id: place_nut
+    score: 2
+    include: x2real/task/tool_use/nut_on_screw/stages/place_nut.yaml
+  - id: twist_nut
+    score: 5
+    include: x2real/task/tool_use/nut_on_screw/stages/twist_nut.yaml
+  - id: return
+    score: 1
+    include: x2real/task/tool_use/nut_on_screw/stages/return.yaml
+  edges:
+  - src: pick_nut
+    dst: place_nut
+  - src: place_nut
+    dst: twist_nut
+  - src: twist_nut
+    dst: return

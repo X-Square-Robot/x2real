@@ -1,0 +1,13 @@
+id: runtime
+seed: 42
+targets:
+  placements:
+  - id: usb_hand_side
+    target:
+      type: group
+      id: usb_hand_side
+    sample:
+      type: inherit
+      selectors:
+        assignments:
+          type: uniform

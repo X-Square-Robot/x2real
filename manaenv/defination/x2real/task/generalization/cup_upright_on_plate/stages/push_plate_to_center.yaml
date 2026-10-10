@@ -1,0 +1,22 @@
+include: x2real/task/generalization/cup_upright_on_plate/stages/_cup_upright_on_plate_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: cup_upright_on_plate_push_plate_to_center
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_position_in_zone
+          object_cfg: '@destination'
+          x_range:
+          - 0.05
+          - 0.35
+          y_range:
+          - -0.42
+          - -0.12
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: push @destination.name to the center of the table

@@ -1,0 +1,36 @@
+name: knob_twist_preview
+render_settings_component:
+  asset: green_booth
+background_component:
+  asset: green_booth_mesh
+  initial_position:
+  - -0.452
+  - -0.271
+  - -0.985
+  initial_orientation:
+  - 0.0
+  - 0.0
+  - -0.704
+  - 0.709
+objects_component:
+- id: knob_a
+  asset: knob_a
+  semantic_tags:
+  - turnable
+  initial_position:
+  - 0.03
+  - -0.45
+  - -0.18
+  initial_orientation:
+  - 0.0
+  - 0.0
+  - 1.0
+  - 0.0
+scene_generator:
+  scene_type: knob_twist_preview_scene
+  nums: 1
+  sim_fps: 240
+  render_decremental: 8
+  metadata:
+    name: ex001_6r_knob_twist_preview
+    description: Minimal knob scene for previewing twist (display digit advances every 36 deg)

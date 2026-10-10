@@ -1,0 +1,27 @@
+# Shared stage base for move_fruit_to_basket (P3 static). No MMP reset / posture joint map.
+# Lift/head initial posture is owned by EX001 whole-body USD defaults.
+direct_task_generator:
+  definition:
+    task_type: move_fruit_to_basket_stage_base
+    episode_length_s: 3600.0
+    max_steps_per_episode: 100000
+    prompt: Navigate to the source fruit table, grasp the correct fruit on the table, navigate to the destination basket table, place the fruit in the basket, and retract the arm safely.
+  roles: {pickable: fruit, basket: basket, fruit_table: fruit_table, basket_table: basket_table}
+  component_sections:
+    instruction_component:
+      instruction: Navigate to the source fruit table, grasp the correct fruit on the table, navigate to the destination basket table, place the fruit in the basket, and retract the arm safely.
+      topic: move_fruit_to_basket
+    termination_component:
+      terms:
+        mdp.time_out:
+          time_out: true
+    event_component:
+      terms:
+        mdp.reset_scene_to_default:
+          mode: reset
+          reset_joint_targets: true
+    viewer_component:
+      terms:
+        look_at_object:
+          lookat_object: "@pickable"
+          offset: [-1.0, 0.0, 1.2]

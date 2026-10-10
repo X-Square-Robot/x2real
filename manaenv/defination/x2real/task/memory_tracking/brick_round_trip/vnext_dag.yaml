@@ -1,0 +1,123 @@
+graph_task_generator:
+  definition:
+    task_type: brick_round_trip
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: central_plate_asset
+            target:
+              type: node
+              id: central_plate
+            selector:
+              type: uniform
+          - id: front_plate_1_asset
+            target:
+              type: node
+              id: front_plate_1
+            selector:
+              type: uniform
+              shared_id: front_plate
+          - id: front_plate_2_asset
+            target:
+              type: node
+              id: front_plate_2
+            selector:
+              type: uniform
+              shared_id: front_plate
+          - id: front_plate_3_asset
+            target:
+              type: node
+              id: front_plate_3
+            selector:
+              type: uniform
+              shared_id: front_plate
+          placements:
+          - id: central_plate
+            target:
+              type: node
+              id: central_plate
+            sample:
+              type: inherit
+          - id: front_plate_1
+            target:
+              type: node
+              id: front_plate_1
+            sample:
+              type: inherit
+          - id: front_plate_2
+            target:
+              type: node
+              id: front_plate_2
+            sample:
+              type: inherit
+          - id: front_plate_3
+            target:
+              type: node
+              id: front_plate_3
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_brick_round_trip:
+            mode: reset
+            brick_names:
+            - brick_blue
+            - brick_green
+            - brick_red
+            - brick_orange
+            brick_colors:
+            - blue
+            - green
+            - red
+            - orange
+            front_slot_positions:
+            - - 0.1
+              - -0.068
+              - -0.19
+            - - 0.06
+              - -0.268
+              - -0.19
+            - - 0.1
+              - -0.468
+              - -0.19
+            source_log_key: brick_round_trip_source_slot
+            brick_log_key: brick_round_trip_brick
+            instruction_template: Move the {color} brick from its plate to the central
+              plate, keep it there for a few seconds, then put it back on the same
+              plate and return the arm home.
+      log_component:
+        entries:
+          brick_round_trip_plan:
+            trigger: enter
+            func: brick_round_trip_active_label
+      instruction_component:
+        topic: brick_round_trip
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: brick_round_trip_plan
+          label: Task
+          font_size: 24
+  nodes:
+  - id: to_center
+    include: x2real/task/memory_tracking/brick_round_trip/stages/to_center.yaml
+    score: 3
+  - id: hold
+    include: x2real/task/memory_tracking/brick_round_trip/stages/hold.yaml
+    score: 2
+  - id: back_to_source
+    include: x2real/task/memory_tracking/brick_round_trip/stages/back_to_source.yaml
+    score: 4
+  - id: return
+    include: x2real/task/memory_tracking/brick_round_trip/stages/return.yaml
+    score: 1
+  edges:
+  - src: to_center
+    dst: hold
+  - src: hold
+    dst: back_to_source
+  - src: back_to_source
+    dst: return

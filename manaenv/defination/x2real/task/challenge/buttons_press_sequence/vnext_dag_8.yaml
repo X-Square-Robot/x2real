@@ -1,0 +1,178 @@
+################################################################################
+# buttons_press_sequence L=8 graph task.
+# Shared scene; reset samples a with-replacement order of length 8.
+# Nodes include stages/press.yaml and override success.position only.
+################################################################################
+graph_task_generator:
+  definition:
+    task_type: buttons_press_sequence_8
+    component_sections:
+      event_component:
+        terms:
+          sample_button_press_sequence:
+            mode: reset
+            seed: 8008
+            sequence_length: 8
+            button_colors: [blue, yellow, red, green]
+            button_prefix: button_
+            order_log_key: button_press_order
+            order_log_width: 8
+            instruction_template: "Press the buttons in this order: {order}, then return the arm home."
+            region: {x: [0.004, 0.156], y: [-0.719, 0.182], z: [-0.2186, -0.2186]}
+            min_separation: 0.15
+      log_component:
+        entries:
+          button_press_order_text:
+            trigger: enter
+            func: button_active_order
+            params:
+              state_attr: _mana_buttons_press_sequence_state
+      instruction_component:
+        topic: buttons_press_sequence
+      overlay_component:
+        evaluation: true
+        entries:
+          - log_key: button_press_order_text
+            label: Press order
+            font_size: 24
+  nodes:
+  - id: press_1
+    score: 3
+    include: x2real/task/challenge/buttons_press_sequence/stages/press.yaml
+    direct_task_generator:
+      definition:
+        task_type: buttons_press_sequence_press_1
+      component_sections:
+        termination_component:
+          terms:
+            success:
+              position: 1
+        log_component:
+          entries:
+            progress:
+              params:
+                position: 1
+  - id: press_2
+    score: 3
+    include: x2real/task/challenge/buttons_press_sequence/stages/press.yaml
+    direct_task_generator:
+      definition:
+        task_type: buttons_press_sequence_press_2
+      component_sections:
+        termination_component:
+          terms:
+            success:
+              position: 2
+        log_component:
+          entries:
+            progress:
+              params:
+                position: 2
+  - id: press_3
+    score: 3
+    include: x2real/task/challenge/buttons_press_sequence/stages/press.yaml
+    direct_task_generator:
+      definition:
+        task_type: buttons_press_sequence_press_3
+      component_sections:
+        termination_component:
+          terms:
+            success:
+              position: 3
+        log_component:
+          entries:
+            progress:
+              params:
+                position: 3
+  - id: press_4
+    score: 3
+    include: x2real/task/challenge/buttons_press_sequence/stages/press.yaml
+    direct_task_generator:
+      definition:
+        task_type: buttons_press_sequence_press_4
+      component_sections:
+        termination_component:
+          terms:
+            success:
+              position: 4
+        log_component:
+          entries:
+            progress:
+              params:
+                position: 4
+  - id: press_5
+    score: 3
+    include: x2real/task/challenge/buttons_press_sequence/stages/press.yaml
+    direct_task_generator:
+      definition:
+        task_type: buttons_press_sequence_press_5
+      component_sections:
+        termination_component:
+          terms:
+            success:
+              position: 5
+        log_component:
+          entries:
+            progress:
+              params:
+                position: 5
+  - id: press_6
+    score: 3
+    include: x2real/task/challenge/buttons_press_sequence/stages/press.yaml
+    direct_task_generator:
+      definition:
+        task_type: buttons_press_sequence_press_6
+      component_sections:
+        termination_component:
+          terms:
+            success:
+              position: 6
+        log_component:
+          entries:
+            progress:
+              params:
+                position: 6
+  - id: press_7
+    score: 3
+    include: x2real/task/challenge/buttons_press_sequence/stages/press.yaml
+    direct_task_generator:
+      definition:
+        task_type: buttons_press_sequence_press_7
+      component_sections:
+        termination_component:
+          terms:
+            success:
+              position: 7
+        log_component:
+          entries:
+            progress:
+              params:
+                position: 7
+  - id: press_8
+    score: 3
+    include: x2real/task/challenge/buttons_press_sequence/stages/press.yaml
+    direct_task_generator:
+      definition:
+        task_type: buttons_press_sequence_press_8
+      component_sections:
+        termination_component:
+          terms:
+            success:
+              position: 8
+        log_component:
+          entries:
+            progress:
+              params:
+                position: 8
+  - id: return
+    score: 1
+    include: x2real/task/challenge/buttons_press_sequence/stages/return.yaml
+  edges:
+  - {src: press_1, dst: press_2}
+  - {src: press_2, dst: press_3}
+  - {src: press_3, dst: press_4}
+  - {src: press_4, dst: press_5}
+  - {src: press_5, dst: press_6}
+  - {src: press_6, dst: press_7}
+  - {src: press_7, dst: press_8}
+  - {src: press_8, dst: return}

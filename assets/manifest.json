@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "bundle_name": "x2real-public-id-assets",
+  "bundle_version": "2026.09.01-a00f574f5be7",
+  "asset_layout_commit": "57009c64ef0866c0acff1c564b4243d095c59901",
+  "runtime": {
+    "asset_root_environment_variable": "MANAENV_ASSET_ROOT",
+    "remote_streaming_supported": false
+  },
+  "payload": {
+    "file_count": 1687,
+    "directory_count": 802,
+    "total_bytes": 2927577633,
+    "tree_sha256": "a00f574f5be73fd74e21e0f7f8dd389e1409fac6238e95df40d9c499aca5f379",
+    "tree_hash_algorithm": "SHA-256 of path NUL decimal-size NUL file-SHA256 LF records sorted bytewise by relative path",
+    "excluded_control_files": [
+      "README.md",
+      "manifest.json"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+include: x2real/task/generalization/put_in_microwave/stages/_put_in_microwave_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: put_in_microwave_pick_fruit
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          mode: or
+          terms:
+          - grasp_left:
+              _func: grasp_left_1
+              object_cfg: '@pickable'
+              force_threshold: 0.1
+              lifted_z_min: null
+              consecutive_steps: 5
+          - grasp_right:
+              _func: grasp_right_1
+              object_cfg: '@pickable'
+              force_threshold: 0.1
+              lifted_z_min: null
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: pick up the fruit

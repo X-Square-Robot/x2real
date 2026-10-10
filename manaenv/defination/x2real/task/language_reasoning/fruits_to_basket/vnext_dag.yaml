@@ -1,0 +1,155 @@
+graph_task_generator:
+  definition:
+    task_type: pick_fruits_into_basket
+    planner_skill_boundary:
+      prefix:
+      - type: stay
+    planner_skill_defaults:
+      pick:
+        grasp_label_manifest: manaenv/defination/grasp_labels/manifest.yaml
+        arm: auto
+        approach_distance: 0.08
+        lift_height: 0.14
+        top_k: 16
+        winner_plan_failure_cooldown: 8
+      place:
+        arm: current
+        pre_place_z_offset: 0.0
+        place_z_offset: 0.12
+        post_place_z_offset: 0.0
+        hesitate_steps: 20
+        pitch_samples: 8
+        target:
+          strategy: bbox_ratio
+          x_ratio_range:
+          - 0.42
+          - 0.58
+          y_ratio_range:
+          - 0.42
+          - 0.58
+      home:
+        arm: both
+        gripper: closed
+        steps: 20
+      stay:
+        arm: both
+        gripper: closed
+        steps: 20
+        left_stay_joints:
+        - -0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - 0.26
+        right_stay_joints:
+        - 0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - -0.26
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: fruit_1_asset
+            target:
+              type: node
+              id: fruit_1
+            selector:
+              type: uniform
+          - id: fruit_2_asset
+            target:
+              type: node
+              id: fruit_2
+            selector:
+              type: uniform
+          - id: fruit_3_asset
+            target:
+              type: node
+              id: fruit_3
+            selector:
+              type: uniform
+          - id: distractor_1_asset
+            target:
+              type: node
+              id: distractor_1
+            selector:
+              type: uniform
+          - id: distractor_2_asset
+            target:
+              type: node
+              id: distractor_2
+            selector:
+              type: uniform
+          - id: distractor_3_asset
+            target:
+              type: node
+              id: distractor_3
+            selector:
+              type: uniform
+          placements:
+          - id: object_start_region
+            target:
+              type: group
+              id: object_start_region
+            sample:
+              type: inherit
+          - id: basket_b
+            target:
+              type: node
+              id: basket_b
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_fruit_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - fruit_1
+              - fruit_2
+              - fruit_3
+      instruction_component:
+        instructions:
+        - text: Pick up the fruits, put them into the pink basket, keep other items
+            out of the basket, then return the arm home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_fruit_assets
+          label: Target fruits (exactly 3)
+          font_size: 24
+  nodes:
+  - id: place_fruit_1
+    include: x2real/task/language_reasoning/fruits_to_basket/stages/place_fruit_1.yaml
+    score: 2
+  - id: place_fruit_2
+    include: x2real/task/language_reasoning/fruits_to_basket/stages/place_fruit_2.yaml
+    score: 3
+  - id: place_fruit_3
+    include: x2real/task/language_reasoning/fruits_to_basket/stages/place_fruit_3.yaml
+    score: 3
+  - id: return
+    include: x2real/task/language_reasoning/fruits_to_basket/stages/return.yaml
+    score: 1
+  - id: clear_distractors
+    include: x2real/task/language_reasoning/fruits_to_basket/stages/clear_distractors.yaml
+    score: 1
+  edges:
+  # Basket-clean is owned by clear_distractors, not return. It is the sink so a
+  # late distractor drop-in after home cannot inherit an early latch.
+  - src: place_fruit_1
+    dst: return
+  - src: place_fruit_2
+    dst: return
+  - src: place_fruit_3
+    dst: return
+  - src: return
+    dst: clear_distractors

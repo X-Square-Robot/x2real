@@ -1,0 +1,92 @@
+################################################################################
+# move_fruit_to_basket schema-vNext scene (ID). Static migration from mobile_manip5.1.
+# Fruit×30 / basket×11 pools match source bench candidate ranges.
+################################################################################
+definition:
+  scene_type: move_fruit_to_basket_scene
+  seed: 42
+  nums: 1
+  sim_fps: 240
+  render_decremental: 8
+  simulation_decimation: 4
+  metadata:
+    name: move_fruit_to_basket
+    split: id
+    semantic_goal: Pick one fruit from the fruit table and place it in the basket.
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset: {type: asset_id, id: move_fruit_to_basket_green_booth}
+  # Standard AssetBasedComponent preload (not SceneGeneratorCFG).
+  asset_module: manaenv.assets.objects.move_fruit_to_basket
+  # XYZW identity (5.1 WXYZ [1,0,0,0]; P7R).
+  pose: {position: [0.0, 0.0, 0.0], orientation: [0.0, 0.0, 0.0, 1.0]}
+objects:
+- id: fruit_table
+  asset: {type: asset_id, id: move_fruit_to_basket_table}
+  semantic_tags: [table, navigation_target]
+  anchors: &tabletop_anchor
+    local_surfaces:
+      top:
+        center: [0.0, 0.0, 0.7505]
+        x_axis: [1.0, 0.0, 0.0]
+        y_axis: [0.0, 1.0, 0.0]
+        bounds: {x: [-0.51514, 0.51269], y: [-0.19576, 0.20072]}
+- id: basket_table
+  asset: {type: asset_id, id: move_fruit_to_basket_table}
+  semantic_tags: [table, navigation_target]
+  anchors: *tabletop_anchor
+- id: fruit
+  asset:
+    type: pool
+    cache_size: 30
+    candidates:
+    - id: fruit_pool
+      from_file: assets/pools/atom_fruit_in_basket/pickables_fruit.json
+      bbox_filter:
+        max_longest_edge: 0.10
+  semantic_tags: [pickable]
+- id: basket
+  asset:
+    type: pool
+    cache_size: 11
+    candidates:
+    - id: basket_pool
+      from_file: assets/pools/atom_fruit_in_basket/containers_basket.json
+  semantic_tags: [container]
+layout:
+  surfaces:
+    fruit_tabletop:
+      type: ref
+      ref: fruit_table.top
+    basket_tabletop:
+      type: ref
+      ref: basket_table.top
+  nodes:
+    fruit_table:
+      object: fruit_table
+      # XYZW yaw≈-90° (5.1 WXYZ [0.707107,0,0,-0.707107]; P7R).
+      placement: {type: pose, poses: [{id: fixed, position: [1.5, 1.0, 0.0], orientation: [0.0, 0.0, -0.707107, 0.707107]}]}
+    basket_table:
+      object: basket_table
+      # XYZW yaw≈-90° (5.1 WXYZ [0.707107,0,0,-0.707107]; P7R).
+      placement: {type: pose, poses: [{id: fixed, position: [1.5, -0.95, 0.0], orientation: [0.0, 0.0, -0.707107, 0.707107]}]}
+    fruit:
+      object: fruit
+      placement:
+        type: surface
+        surface: fruit_tabletop
+        ranges: {x: [-0.26, 0.26], y: [-0.12, 0.12]}
+    basket:
+      object: basket
+      placement:
+        type: surface
+        surface: basket_tabletop
+        ranges: {x: [-0.08, 0.08], y: [-0.06, 0.06]}
+variants:
+  materialization:
+  - {id: fruit_pick, type: asset_pool_choice, choices: [{id: pick, candidate_refs: [fruit.fruit_pool], weight: 1.0}]}
+  - {id: basket_pick, type: asset_pool_choice, choices: [{id: pick, candidate_refs: [basket.basket_pool], weight: 1.0}]}
+  assignments: []

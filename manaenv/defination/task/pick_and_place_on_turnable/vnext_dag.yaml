@@ -1,0 +1,271 @@
+graph_task_generator:
+  definition:
+    task_type: pick_and_place_on_turnable
+    component_sections:
+      event_component:
+        terms:
+          sample_pick_item_from_turntable:
+            mode: reset
+            object_names:
+            - brick_red
+            - brick_green
+            - brick_yellow
+            object_colors:
+            - red
+            - green
+            - yellow
+            turntable_name: turntable_bricks
+            joint_name: RevoluteJoint
+            index_log_key: turntable_target_index
+            instruction_template: Pick the {color} brick from the turntable and place it on the plate.
+          sample_bricks_turntable_angular_velocity:
+            _func: sample_turntable_angular_velocity
+            mode: reset
+            angular_velocity_ranges:
+            - - 0.3
+              - 0.5
+            state_attr: _mana_bricks_turntable_omega
+            randomize_sign: true
+          sample_plate_turntable_angular_velocity:
+            _func: sample_turntable_angular_velocity
+            mode: reset
+            angular_velocity_ranges:
+            - - 0.3
+              - 0.5
+            state_attr: _mana_plate_turntable_omega
+            turntable_name: turntable_plate
+            joint_name: RevoluteJoint
+            randomize_sign: true
+          drive_turntable_bricks:
+            _func: drive_turntable
+            mode: interval
+            interval_range_s:
+            - 0.02
+            - 0.02
+            is_global_time: true
+            object_name: turntable_bricks
+            joint_name: RevoluteJoint
+            angular_velocity_attr: _mana_bricks_turntable_omega
+            carry_object_names:
+            - brick_red
+            - brick_green
+            - brick_yellow
+            carry_release_height: 0.15
+            carry_radius: 0.22
+          drive_turntable_plate:
+            _func: drive_turntable
+            mode: interval
+            interval_range_s:
+            - 0.02
+            - 0.02
+            is_global_time: true
+            object_name: turntable_plate
+            joint_name: RevoluteJoint
+            angular_velocity_attr: _mana_plate_turntable_omega
+            carry_object_names:
+            - plate_d
+            - brick_red
+            - brick_green
+            - brick_yellow
+            carry_release_height: 0.15
+            carry_radius: 0.22
+      log_component:
+        entries:
+          turntable_plan:
+            trigger: enter
+            func: turntable_pick_active_label
+      instruction_component:
+        topic: pick_and_place_on_turnable
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: turntable_plan
+          label: Target
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: pick_and_place_on_turnable_pick
+      roles:
+        turntable_bricks: turntable_bricks
+        turntable_plate: turntable_plate
+        destination: destination
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: indexed_object_lifted
+              object_names:
+              - brick_red
+              - brick_green
+              - brick_yellow
+              index_log_key: turntable_target_index
+              min_lift: 0.04
+              settle_steps: 20
+              consecutive_steps: 3
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.2
+              - -0.24
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: pick_and_place_on_turnable_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick target brick from turntable
+    id: pick
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: pick_and_place_on_turnable_place
+      roles:
+        turntable_bricks: turntable_bricks
+        turntable_plate: turntable_plate
+        destination: destination
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: indexed_object_position_in_zone
+              object_names:
+              - brick_red
+              - brick_green
+              - brick_yellow
+              index_log_key: turntable_target_index
+              reference_cfg: '@destination'
+              xy_distance_threshold: 0.1
+              z_min_offset: -0.02
+              z_max_offset: 0.18
+              velocity_threshold: 0.3
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.2
+              - -0.24
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: pick_and_place_on_turnable_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place target brick on plate
+    id: place
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: pick_and_place_on_turnable_return
+      roles:
+        turntable_bricks: turntable_bricks
+        turntable_plate: turntable_plate
+        destination: destination
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.2
+              - -0.24
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: pick_and_place_on_turnable_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 2
+  edges:
+  - src: pick
+    dst: place
+  - src: place
+    dst: return

@@ -1,0 +1,73 @@
+# Public X2Real ID evaluation boards.
+# Adapted from manaenv dev-6.0 ab197fa0611937e5bff2c90bf6f1e35145470199.
+# Held-out axes and service-only metadata are intentionally absent.
+boards:
+  artixon_arm6a_tabletop:
+    robot: artixon_arm6a
+    grippers:
+    - G
+    - H
+    num_episodes: 40
+    num_parallel_envs: 4
+    leaderboard_csv: x2real/task/x2real_artixon_arm6a_tabletop_leaderboard.csv
+    suite: x2real.yaml
+    scoring: id_only
+    capabilities:
+    - benchmark
+    case_count: 38
+    save_path: ./outputs/x2real_eval/artixon_arm6a_tabletop/benchmark
+  artixon_arm6a_challenge:
+    robot: artixon_arm6a
+    grippers:
+    - H
+    num_episodes: 40
+    num_parallel_envs: 4
+    leaderboard_csv: x2real/task/x2real_artixon_arm6a_challenge_leaderboard.csv
+    suite: x2real.yaml
+    scoring: id_only
+    capabilities:
+    - benchmark
+    case_count: 10
+    save_path: ./outputs/x2real_eval/artixon_arm6a_challenge/benchmark
+  quanta_x1_mobile:
+    robot: quanta_x1
+    grippers:
+    - G
+    num_episodes: 40
+    num_parallel_envs: 4
+    episode_length_s: 180
+    max_steps: 1200
+    policy: policy/pi05_ex001_wholebody@v1.0.0.yaml
+    leaderboard_csv: x2real/task/x2real_quanta_x1_mobile_leaderboard.csv
+    suite: x2real.yaml
+    scoring: id_only
+    capabilities:
+    - benchmark
+    case_count: 3
+    save_path: ./outputs/x2real_eval/quanta_x1_mobile/benchmark
+  arx_r5_tabletop:
+    robot: arx_r5
+    grippers:
+    - default
+    num_episodes: 40
+    num_parallel_envs: 4
+    leaderboard_csv: x2real/task/x2real_arx_r5_tabletop_leaderboard.csv
+    suite: x2real.yaml
+    scoring: id_only
+    capabilities:
+    - benchmark
+    case_count: 12
+    save_path: ./outputs/x2real_eval/arx_r5_tabletop/benchmark
+  franka_panda_tabletop:
+    robot: franka_panda
+    grippers:
+    - panda
+    num_episodes: 40
+    num_parallel_envs: 4
+    leaderboard_csv: x2real/task/x2real_franka_panda_tabletop_leaderboard.csv
+    suite: x2real.yaml
+    scoring: id_only
+    capabilities:
+    - benchmark
+    case_count: 10
+    save_path: ./outputs/x2real_eval/franka_panda_tabletop/benchmark

@@ -1,0 +1,82 @@
+graph_task_generator:
+  definition:
+    task_type: track_object_under_cup
+    component_sections:
+      event_component:
+        terms:
+          sample_track_object_under_cup:
+            mode: reset
+            cup_target_name: cup_target
+            cup_distractor_name: cup_distractor
+            hidden_object_name: hidden_object
+            grid_center:
+            - 0.12
+            - -0.268246
+            row_spacing: 0.14
+            column_spacing: 0.14
+            cup_height: -0.159
+            hidden_height: -0.225423
+            count_choices:
+            - 1
+            count_log_key: target_swap_count
+            target_slot_log_key: target_cup_slot
+            distractor_slot_log_key: distractor_cup_slot
+            hidden_slot_log_key: hidden_slot
+            cup_orientation:
+            - 0.0
+            - 1.0
+            - 0.0
+            - 0.0
+            hidden_orientation:
+            - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+            instruction_template: Cover the dice with the target cup, swap the two
+              cups once, lift the cup that still covers the dice, then return home.
+      log_component:
+        entries:
+          target_cup:
+            trigger: enter
+            func: track_object_under_cup_role_label
+            params:
+              role: target_cup
+          distractor_cup:
+            trigger: enter
+            func: track_object_under_cup_role_label
+            params:
+              role: distractor_cup
+      instruction_component:
+        instructions:
+        - text: Cover the dice with the target cup, swap the two cups once, lift the
+            cup that still covers the dice, then return home.
+          log:
+            instruction_variant: direct
+        topic: track_object_under_cup
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: target_cup
+          font_size: 20
+        - log_key: distractor_cup
+          font_size: 20
+  nodes:
+  - id: cover_object
+    include: x2real/task/memory_tracking/track_object_under_cup/stages/cover_object.yaml
+    score: 3
+  - id: swap_cups
+    include: x2real/task/memory_tracking/track_object_under_cup/stages/swap_loop.yaml
+    score: 3
+  - id: lift_covering_cup
+    include: x2real/task/memory_tracking/track_object_under_cup/stages/lift_covering_cup.yaml
+    score: 3
+  - id: return
+    include: x2real/task/memory_tracking/track_object_under_cup/stages/return.yaml
+    score: 1
+  edges:
+  - src: cover_object
+    dst: swap_cups
+  - src: swap_cups
+    dst: lift_covering_cup
+  - src: lift_covering_cup
+    dst: return

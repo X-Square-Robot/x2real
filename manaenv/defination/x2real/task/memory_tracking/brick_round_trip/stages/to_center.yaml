@@ -1,0 +1,30 @@
+include: x2real/task/memory_tracking/brick_round_trip/stages/_brick_round_trip_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: brick_round_trip_to_center
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: any_object_in_zone
+          object_names:
+          - brick_blue
+          - brick_green
+          - brick_red
+          - brick_orange
+          x_range:
+          - 0.22
+          - 0.42
+          y_range:
+          - -0.368
+          - -0.168
+          z_range:
+          - -0.24
+          - -0.14
+          velocity_threshold: 0.2
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: move the brick onto the central plate

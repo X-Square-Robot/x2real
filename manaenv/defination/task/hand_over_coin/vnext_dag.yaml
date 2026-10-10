@@ -1,0 +1,308 @@
+graph_task_generator:
+  definition:
+    task_type: hand_over_coin
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: rack_slots
+            target:
+              type: group
+              id: rack_slots
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the coin with either hand, hand it to the other hand, put it onto the coin rack (left, right, or across
+            the center), then return the arms home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries: []
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: hand_over_coin_pick_left
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@left_gripper_contact_sensor'
+              force_threshold: 0.1
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: hand_over_coin_scene
+        sensor_component:
+          sensors:
+          - rack_contact_sensor:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+          - left_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - right_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp @pickable.name with the left hand
+    id: pick_left
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: hand_over_coin_pick_right
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@right_gripper_contact_sensor'
+              force_threshold: 0.1
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: hand_over_coin_scene
+        sensor_component:
+          sensors:
+          - rack_contact_sensor:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+          - left_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - right_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp @pickable.name with the right hand
+    id: pick_right
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: hand_over_coin_place_rack
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@rack_contact_sensor'
+              force_threshold: 0.1
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: hand_over_coin_scene
+        sensor_component:
+          sensors:
+          - rack_contact_sensor:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+          - left_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - right_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @pickable.name onto @container.name
+    id: place_rack
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: hand_over_coin_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: hand_over_coin_scene
+        sensor_component:
+          sensors:
+          - rack_contact_sensor:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+          - left_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - right_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: pick_left
+    dst: place_rack
+  - src: pick_right
+    dst: place_rack
+  - src: place_rack
+    dst: return

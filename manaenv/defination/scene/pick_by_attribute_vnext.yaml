@@ -1,0 +1,191 @@
+definition:
+  scene_type: pick_by_attribute_scene
+  metadata:
+    name: ex001_6r_pick_by_attribute_vnext
+    source: pick_by_attribute/vnext
+    semantic_goal: Put the objects matching a color/shape/logic predicate into the basket
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: obj_1
+  asset:
+    type: pool
+    cache_size: 6
+    candidates:
+    - id: any_object
+      from_file: assets/manipulation/attribute_objects.json
+      scale_normalization:
+        min_shortest_edge: 0.03
+        max_shortest_edge: 0.06
+        max_longest_edge: 0.08
+  spawn_mass:
+  - 0.15
+  - 0.25
+  semantic_tags:
+  - pickable
+  - pickable_1
+- id: obj_2
+  asset:
+    type: pool
+    cache_size: 6
+    candidates:
+    - id: any_object
+      from_file: assets/manipulation/attribute_objects.json
+      scale_normalization:
+        min_shortest_edge: 0.03
+        max_shortest_edge: 0.06
+        max_longest_edge: 0.08
+  spawn_mass:
+  - 0.15
+  - 0.25
+  semantic_tags:
+  - pickable
+  - pickable_2
+- id: obj_3
+  asset:
+    type: pool
+    cache_size: 6
+    candidates:
+    - id: any_object
+      from_file: assets/manipulation/attribute_objects.json
+      scale_normalization:
+        min_shortest_edge: 0.03
+        max_shortest_edge: 0.06
+        max_longest_edge: 0.08
+  spawn_mass:
+  - 0.15
+  - 0.25
+  semantic_tags:
+  - pickable
+  - pickable_3
+- id: obj_4
+  asset:
+    type: pool
+    cache_size: 6
+    candidates:
+    - id: any_object
+      from_file: assets/manipulation/attribute_objects.json
+      scale_normalization:
+        min_shortest_edge: 0.03
+        max_shortest_edge: 0.06
+        max_longest_edge: 0.08
+  spawn_mass:
+  - 0.15
+  - 0.25
+  semantic_tags:
+  - pickable
+  - pickable_4
+- id: basket_b
+  asset:
+    type: asset_id
+    id: basket_b
+  semantic_tags:
+  - container
+  scale:
+  - 0.7
+  - 0.7
+  - 0.7
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    obj_1:
+      object: obj_1
+    obj_2:
+      object: obj_2
+    obj_3:
+      object: obj_3
+    obj_4:
+      object: obj_4
+    basket_b:
+      object: basket_b
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.14
+          - -0.07
+          y:
+          - -0.08
+          - 0.08
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.7071
+        - 0.7071
+  groups:
+    object_start_region:
+      type: region
+      nodes:
+      - obj_1
+      - obj_2
+      - obj_3
+      - obj_4
+      surface: tabletop
+      ranges:
+        x:
+        - 0.05
+        - 0.38
+        y:
+        - -0.36
+        - 0.36
+      yaws:
+      - -0.1
+      - 0.1
+      sample_method: stratified
+      spacing_mode: footprint_gap
+      min_spacing: 0.05
+      jitter: 0.35
+      max_attempts: 2000
+variants:
+  materialization:
+  - id: obj_1_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - obj_1.any_object
+      weight: 1.0
+  - id: obj_2_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - obj_2.any_object
+      weight: 1.0
+  - id: obj_3_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - obj_3.any_object
+      weight: 1.0
+  - id: obj_4_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - obj_4.any_object
+      weight: 1.0
+  assignments: []

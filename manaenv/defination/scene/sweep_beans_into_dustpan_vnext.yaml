@@ -1,0 +1,163 @@
+definition:
+  scene_type: sweep_beans_into_dustpan_scene
+  metadata:
+    name: ex001_6r_sweep_beans_into_dustpan_vnext
+    source: sweep_beans_into_dustpan/vnext
+    semantic_goal: Hold the dustpan and broom (either side), sweep all ten beans into the dustpan
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: beans
+  asset:
+    type: pool
+    cache_size: 4
+    candidates:
+    - id: yellow
+      assets:
+      - beans_e
+    - id: green
+      assets:
+      - beans_b
+    - id: red
+      assets:
+      - beans_d
+    - id: black
+      assets:
+      - beans_c
+  scale: 2.5
+  instances:
+    type: auto
+    count: 10
+    template: bean_{i}
+    start_index: 1
+  spawn_mass:
+  - 0.005
+  - 0.015
+  semantic_tags:
+  - pickable
+  - content
+- id: dustpan
+  asset:
+    type: asset_id
+    id: broom_mini_b
+  semantic_tags:
+  - dustpan
+  - container
+- id: broom
+  asset:
+    type: asset_id
+    id: broom_a
+  semantic_tags:
+  - broom
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    dustpan:
+      object: dustpan
+    broom:
+      object: broom
+  groups:
+    tools_slots:
+      type: slot
+      nodes:
+      - dustpan
+      - broom
+      slots:
+        slot_left:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.04
+            - 0.1
+            y:
+            - -0.4
+            - -0.26
+          yaws:
+          - 2.8416
+          - 3.4416
+        slot_right:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.04
+            - 0.1
+            y:
+            - 0.26
+            - 0.4
+          yaws:
+          - 2.8416
+          - 3.4416
+      assignments:
+        mode: permutation
+        nodes:
+        - dustpan
+        - broom
+        slots:
+        - slot_left
+        - slot_right
+      default_assignment: perm_0
+    beans_start_region:
+      type: region
+      nodes: '@instances:beans'
+      surface: tabletop
+      ranges:
+        x:
+        - 0.06
+        - 0.16
+        y:
+        - -0.06
+        - 0.06
+      yaws:
+      - -3.14
+      - 3.14
+      sample_method: stratified
+      spacing_mode: center_distance
+      min_spacing: 0.012
+      jitter: 0.25
+      max_attempts: 2000
+      ignore_intra_group_collision: true
+variants:
+  materialization:
+  - id: bean_type
+    type: asset_pool_choice
+    choices:
+    - id: yellow
+      candidate_refs:
+      - beans.yellow
+      weight: 1.0
+    - id: green
+      candidate_refs:
+      - beans.green
+      weight: 1.0
+    - id: red
+      candidate_refs:
+      - beans.red
+      weight: 1.0
+    - id: black
+      candidate_refs:
+      - beans.black
+      weight: 1.0
+  assignments: []

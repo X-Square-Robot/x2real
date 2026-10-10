@@ -1,0 +1,308 @@
+graph_task_generator:
+  definition:
+    task_type: put_ring_onto_rod
+    planner_skill_boundary:
+      prefix:
+      - type: home
+      - type: stay
+    planner_skill_defaults:
+      pick:
+        grasp_label_manifest: assets/grasp_labels/manifest.yaml
+        arm: auto
+        approach_distance: 0.08
+        lift_height: 0.08
+        top_k: 20
+        filter_x_dir:
+        - downward
+        - 40.0
+        - 70.0
+        filter_y_dir:
+        - upward
+        - 85.0
+        - 95.0
+        filter_z_dir:
+        - upward
+        - 90.0
+      place:
+        arm: current
+        batch_size: 1
+        pre_place_z_offset: 0.06
+        place_z_offset: 0.04
+        post_place_z_offset: 0.04
+        hesitate_steps: 10
+        object_pose_constraint:
+          enabled: true
+          filter_x_dir:
+          - downward
+          - 40.0
+          - 70.0
+          filter_y_dir:
+          - upward
+          - 85.0
+          - 95.0
+      home:
+        arm: both
+        gripper: closed
+        steps: 20
+      stay:
+        arm: both
+        gripper: open
+        steps: 20
+        left_stay_joints:
+        - -0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - 0.26
+        right_stay_joints:
+        - 0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - -0.26
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: ring
+            target:
+              type: node
+              id: ring
+            sample:
+              type: inherit
+          - id: peg
+            target:
+              type: node
+              id: peg
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instruction: Put the ring onto the vertical pole.
+        topic: ring_on_cylinder
+      overlay_component:
+        evaluation: true
+        entries: []
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: ring_on_cylinder_pick_ring
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: object_lifted
+              object_cfg: '@pickable'
+              min_lift: 0.03
+              settle_steps: 30
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: ring_on_cylinder_scene
+        sensor_component:
+          sensors:
+          - ring_cylinder_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against: '@destination'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up @pickable.name
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              grasp_label_asset: '@pickable'
+              object_name: '@pickable'
+    id: pick_ring
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: ring_on_cylinder_place_on_cylinder
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - ring_cylinder_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@ring_cylinder_contact_sensor'
+                  force_threshold: 0.001
+                  consecutive_steps: 5
+              - ring_aligned_with_cylinder:
+                  _func: object_position_in_zone
+                  object_cfg: '@pickable'
+                  reference_cfg: '@destination'
+                  xy_distance_threshold: 0.04
+                  consecutive_steps: 5
+              - gripper_released:
+                  _func: object_no_contact_destination
+                  contact_sensor_cfgs:
+                  - left_gripper_contact
+                  - right_gripper_contact
+                  force_threshold: 0.01
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: ring_on_cylinder_scene
+        sensor_component:
+          sensors:
+          - ring_cylinder_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against: '@destination'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place @pickable.name onto @destination.name
+        planner_skills_component:
+          skills:
+          - type: place
+            params:
+              object_name: '@pickable'
+              target:
+                strategy: destination_center
+                object_name: '@destination'
+          - type: stay
+    id: place_on_cylinder
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: ring_on_cylinder_retract_arm
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - arm_home:
+                  _func: articulation_joints_near_default
+                  asset_cfg: robot
+                  atol: 0.3
+                  consecutive_steps: 10
+              - ring_cylinder_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@ring_cylinder_contact_sensor'
+                  force_threshold: 0.001
+                  consecutive_steps: 5
+              - ring_aligned_with_cylinder:
+                  _func: object_position_in_zone
+                  object_cfg: '@pickable'
+                  reference_cfg: '@destination'
+                  xy_distance_threshold: 0.04
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: ring_on_cylinder_scene
+        sensor_component:
+          sensors:
+          - ring_cylinder_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against: '@destination'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return the arm to its home pose
+        planner_skills_component:
+          skills:
+          - type: home
+    id: retract_arm
+    score: 1
+  edges:
+  - src: pick_ring
+    dst: place_on_cylinder
+  - src: place_on_cylinder
+    dst: retract_arm

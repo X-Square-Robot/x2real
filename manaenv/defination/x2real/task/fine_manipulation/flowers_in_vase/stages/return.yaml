@@ -1,0 +1,51 @@
+include: x2real/task/fine_manipulation/flowers_in_vase/stages/_flowers_in_vase_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: flowers_in_vase_return
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - arm_home:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+          - flower_1_in_vase:
+              _func: object_position_in_zone
+              object_cfg: '@pickable_1'
+              reference_cfg: '@container'
+              reference_footprint_zone: true
+              xy_inset_ratio: 0.1
+              z_range: [-0.03, 0.35]
+              velocity_threshold: 0.5
+              consecutive_steps: 1
+          - flower_1_upright:
+              _func: object_tilt_in_range
+              object_cfg: '@pickable_1'
+              axis: x
+              min_abs_dot: 0.6
+              velocity_threshold: 0.5
+              consecutive_steps: 1
+          - flower_2_in_vase:
+              _func: object_position_in_zone
+              object_cfg: '@pickable_2'
+              reference_cfg: '@container'
+              reference_footprint_zone: true
+              xy_inset_ratio: 0.1
+              z_range: [-0.03, 0.35]
+              velocity_threshold: 0.5
+              consecutive_steps: 1
+          - flower_2_upright:
+              _func: object_tilt_in_range
+              object_cfg: '@pickable_2'
+              axis: x
+              min_abs_dot: 0.6
+              velocity_threshold: 0.5
+              consecutive_steps: 1
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return to home

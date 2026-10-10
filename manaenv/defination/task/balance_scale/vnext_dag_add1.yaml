@@ -1,0 +1,275 @@
+graph_task_generator:
+  definition:
+    task_type: balance_scale_add1
+    component_sections:
+      event_component:
+        terms:
+          sample_balance_problem:
+            mode: reset
+            denoms:
+            - 50
+            - 100
+            - 200
+            count_per_denom: 2
+            add_count: 1
+            final_total_cap: 4
+            problem_limit:
+            - 0
+            - 10
+            same_target_pan: true
+            empty_target_denoms: true
+            weight_prefix: weight_
+            weight_orientation:
+            - 0.0
+            - 0.0
+            - 0.0
+            - 1.0
+            left_pan_pos:
+            - 0.2
+            - -0.179
+            - -0.06
+            right_pan_pos:
+            - 0.2
+            - -0.361
+            - -0.06
+            pan_slot_spacing: 0.045
+            pile_region:
+              x:
+              - -0.05
+              - 0.08
+              y:
+              - -0.35
+              - -0.19
+              z:
+              - -0.2
+              - -0.2
+            distractor_count: 2
+            unique_solution: true
+            min_separation: 0.05
+            denom_log_key: balance_add_denom
+            pan_log_key: balance_add_pan
+            instruction_template: Add weights from the pile to balance the two-pan scale, then return the arm home.
+            detailed_instruction_template: 'Add weights from the pile to balance the scale: {plan}. Then return the arm home.'
+      log_component:
+        entries:
+          balance_plan:
+            trigger: enter
+            func: balance_active_plan
+      instruction_component:
+        instruction: Add weights from the pile to balance the two-pan scale, then return the arm home.
+        topic: balance_scale
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: balance_plan
+          label: Add plan
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: balance_scale_place_weight_1
+      roles:
+        balance: balance
+        weight: weight
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@weight'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: weight_in_target_pan
+              step_index: 0
+              denoms:
+              - 50
+              - 100
+              - 200
+              weight_prefix: weight_
+              count_per_denom: 2
+              left_zone:
+                x_range:
+                - 0.13
+                - 0.27
+                y_range:
+                - -0.245
+                - -0.11
+                z_range:
+                - -0.2
+                - 0.05
+              right_zone:
+                x_range:
+                - 0.13
+                - 0.27
+                y_range:
+                - -0.43
+                - -0.295
+                z_range:
+                - -0.2
+                - 0.05
+              denom_log_key: balance_add_denom
+              pan_log_key: balance_add_pan
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.2
+              - -0.27
+              - -0.1
+              offset:
+              - -1.0
+              - 0.0
+              - 1.2
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: balance_scale_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place the 1st required weight on its target pan
+    id: place_weight_1
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: balance_scale_settle
+      roles:
+        balance: balance
+        weight: weight
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@weight'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: balance_beam_level
+              object_cfg: '@balance'
+              joint_names:
+              - Joint_Center_Top
+              level_atol: 0.06
+              vel_threshold: 0.1
+              consecutive_steps: 8
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.2
+              - -0.27
+              - -0.1
+              offset:
+              - -1.0
+              - 0.0
+              - 1.2
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: balance_scale_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: balance the scale so the beam is level
+    id: settle
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: balance_scale_return
+      roles:
+        balance: balance
+        weight: weight
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@weight'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: consecutive_merged
+              consecutive_steps: 10
+              state_key: balance_scale_final_home_level
+              terms:
+              - articulation_joints_near_default:
+                  asset_cfg: robot
+                  atol: 0.4
+                  consecutive_steps: 1
+              - balance_beam_level:
+                  object_cfg: '@balance'
+                  joint_names: [Joint_Center_Top]
+                  level_atol: 0.06
+                  vel_threshold: 0.1
+                  consecutive_steps: 1
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.2
+              - -0.27
+              - -0.1
+              offset:
+              - -1.0
+              - 0.0
+              - 1.2
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: balance_scale_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return home while the scale remains balanced
+    id: return
+    score: 2
+  edges:
+  - src: place_weight_1
+    dst: settle
+  - src: settle
+    dst: return

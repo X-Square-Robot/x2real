@@ -1,0 +1,49 @@
+# Final point: released glasses stay on the rack and both arms return home.
+# Keep the stage ID and score stable for reports; the live contact gates must not latch.
+include: x2real/task/bimanual_collaboration/glasses_on_rack/stages/_glasses_on_rack_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: glasses_on_rack_retract_arm
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - arm_home:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.3
+              consecutive_steps: 10
+          - glasses_on_rack_contact:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@destination_contact_sensor'
+              force_threshold: 0.01
+              consecutive_steps: 5
+          - glasses_still_lifted:
+              _func: object_lifted
+              object_cfg: '@pickable'
+              min_lift: 0.03
+              settle_steps: 30
+          - glasses_direction_maintained:
+              _func: object_yaw_in_range
+              object_cfg: '@pickable'
+              yaw_ranges:
+              - - 150.0
+                - 210.0
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+          - left_gripper_released:
+              _func: object_no_contact_destination
+              contact_sensor_cfgs: '@left_gripper_contact_sensor'
+              force_threshold: 0.1
+              consecutive_steps: 5
+          - right_gripper_released:
+              _func: object_no_contact_destination
+              contact_sensor_cfgs: '@right_gripper_contact_sensor'
+              force_threshold: 0.1
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return the arm to its home pose

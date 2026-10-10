@@ -1,0 +1,295 @@
+graph_task_generator:
+  definition:
+    task_type: sweep_beans_into_dustpan
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: beans_asset
+            target:
+              type: node
+              id: bean_1
+            selector:
+              type: uniform
+          placements:
+          - id: beans_start_region
+            target:
+              type: group
+              id: beans_start_region
+            sample:
+              type: inherit
+          - id: tools_slots
+            target:
+              type: group
+              id: tools_slots
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_bean_type:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - bean_1
+      instruction_component:
+        instructions:
+        - text: Hold the dustpan with one hand and the broom with the other (either hand first; sides may swap). Sweep all
+            the beans into the dustpan, then return the arms home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_bean_type
+          label: Bean type
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: sweep_beans_into_dustpan_grasp_dustpan
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@container'
+                  force_threshold: 1.0
+                  lifted_z_min: -0.2
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@container'
+                  force_threshold: 1.0
+                  lifted_z_min: -0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: sweep_beans_into_dustpan_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp @container.name with either hand
+    id: grasp_dustpan
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: sweep_beans_into_dustpan_grasp_broom
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@broom'
+                  force_threshold: 1.0
+                  lifted_z_min: -0.145
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@broom'
+                  force_threshold: 1.0
+                  lifted_z_min: -0.145
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: sweep_beans_into_dustpan_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp @broom.name with either hand
+    id: grasp_broom
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: sweep_beans_into_dustpan_sweep_all
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: objects_fraction_in_relative_zone
+              object_names:
+              - bean_1
+              - bean_2
+              - bean_3
+              - bean_4
+              - bean_5
+              - bean_6
+              - bean_7
+              - bean_8
+              - bean_9
+              - bean_10
+              reference_cfg: '@container'
+              min_fraction: 1.0
+              xy_distance_threshold: 0.08
+              z_min_offset: -0.02
+              z_max_offset: 0.08
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: sweep_beans_into_dustpan_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: sweep all beans into @container.name
+    id: sweep_all
+    score: 9
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: sweep_beans_into_dustpan_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: sweep_beans_into_dustpan_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: grasp_dustpan
+    dst: sweep_all
+  - src: grasp_broom
+    dst: sweep_all
+  - src: sweep_all
+    dst: return

@@ -1,0 +1,429 @@
+graph_task_generator:
+  definition:
+    task_type: classify_object_shape
+    planner_skill_boundary:
+      prefix:
+      - type: home
+      - type: stay
+    planner_skill_defaults:
+      pick:
+        grasp_label_manifest: assets/grasp_labels/manifest.yaml
+        arm: auto
+        approach_distance: 0.08
+        lift_height: 0.18
+        top_k: 20
+      place:
+        arm: current
+        pre_place_z_offset: 0.16
+        place_z_offset: 0.015
+        post_place_z_offset: 0.12
+        hesitate_steps: 10
+        pitch_samples: 8
+        target:
+          strategy: bbox_ratio
+          x_ratio_range:
+          - 0.15
+          - 0.85
+          y_ratio_range:
+          - 0.15
+          - 0.85
+      home:
+        arm: both
+        gripper: closed
+        steps: 20
+      stay:
+        arm: both
+        gripper: open
+        steps: 20
+        left_stay_joints:
+        - -0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - 0.26
+        right_stay_joints:
+        - 0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - -0.26
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: shape_cube_asset
+            target:
+              type: node
+              id: shape_cube
+            selector:
+              type: uniform
+          - id: shape_cylinder_asset
+            target:
+              type: node
+              id: shape_cylinder
+            selector:
+              type: uniform
+          - id: shape_sphere_asset
+            target:
+              type: node
+              id: shape_sphere
+            selector:
+              type: uniform
+          placements:
+          - id: sortable_start_region
+            target:
+              type: group
+              id: sortable_start_region
+            sample:
+              type: inherit
+          - id: basket_c
+            target:
+              type: node
+              id: basket_c
+            sample:
+              type: inherit
+          - id: basket_d
+            target:
+              type: node
+              id: basket_d
+            sample:
+              type: inherit
+          - id: basket_e
+            target:
+              type: node
+              id: basket_e
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_shape_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - shape_cube
+              - shape_cylinder
+              - shape_sphere
+      instruction_component:
+        instructions:
+        - text: Sort each object into the basket that matches its shape, then return the arm home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_shape_assets
+          label: Active shapes (cube / cylinder / sphere)
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: classify_object_shape_place_cube
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@sortable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@sortable_cube'
+              reference_cfg: '@destination_cube'
+              xy_distance_threshold: 0.1
+              z_min_offset: -0.06
+              z_max_offset: 0.2
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+            randomize_object_mass:
+              mode: reset
+              asset_cfg: '@sortable_sphere'
+              mass_range:
+              - 0.013
+              - 2.13
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: classify_object_shape_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @sortable_cube.name into @destination_cube.name
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              grasp_label_asset: '@sortable_cube'
+              object_name: '@sortable_cube'
+          - type: place
+            params:
+              object_name: '@sortable_cube'
+              target:
+                strategy: bbox_ratio
+                object_name: '@destination_cube'
+                x_ratio_range:
+                - 0.15
+                - 0.85
+                y_ratio_range:
+                - 0.15
+                - 0.85
+          - type: stay
+    id: place_cube
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: classify_object_shape_place_cylinder
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@sortable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@sortable_cylinder'
+              reference_cfg: '@destination_cylinder'
+              xy_distance_threshold: 0.1
+              z_min_offset: -0.06
+              z_max_offset: 0.2
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+            randomize_object_mass:
+              mode: reset
+              asset_cfg: '@sortable_sphere'
+              mass_range:
+              - 0.013
+              - 2.13
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: classify_object_shape_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @sortable_cylinder.name into @destination_cylinder.name
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              grasp_label_asset: '@sortable_cylinder'
+              object_name: '@sortable_cylinder'
+          - type: place
+            params:
+              object_name: '@sortable_cylinder'
+              target:
+                strategy: bbox_ratio
+                object_name: '@destination_cylinder'
+                x_ratio_range:
+                - 0.15
+                - 0.85
+                y_ratio_range:
+                - 0.15
+                - 0.85
+          - type: stay
+    id: place_cylinder
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: classify_object_shape_place_sphere
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@sortable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@sortable_sphere'
+              reference_cfg: '@destination_sphere'
+              xy_distance_threshold: 0.1
+              z_min_offset: -0.06
+              z_max_offset: 0.2
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+            randomize_object_mass:
+              mode: reset
+              asset_cfg: '@sortable_sphere'
+              mass_range:
+              - 0.013
+              - 2.13
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: classify_object_shape_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @sortable_sphere.name into @destination_sphere.name
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              grasp_label_asset: '@sortable_sphere'
+              object_name: '@sortable_sphere'
+          - type: place
+            params:
+              object_name: '@sortable_sphere'
+              target:
+                strategy: bbox_ratio
+                object_name: '@destination_sphere'
+                x_ratio_range:
+                - 0.15
+                - 0.85
+                y_ratio_range:
+                - 0.15
+                - 0.85
+          - type: stay
+    id: place_sphere
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: classify_object_shape_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@sortable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+            randomize_object_mass:
+              mode: reset
+              asset_cfg: '@sortable_sphere'
+              mass_range:
+              - 0.013
+              - 2.13
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: classify_object_shape_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+        planner_skills_component:
+          skills:
+          - type: home
+    id: return
+    score: 1
+  edges:
+  - src: place_cube
+    dst: return
+  - src: place_cylinder
+    dst: return
+  - src: place_sphere
+    dst: return

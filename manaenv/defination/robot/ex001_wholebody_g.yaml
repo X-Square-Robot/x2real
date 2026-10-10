@@ -1,0 +1,9 @@
+################################################################################
+# EX001 whole-body + G for X2Real mobile-manipulation benchmark assemblies.
+# Asset is the full EX001 embodiment (not PointNav wheel-only ex001_navigation).
+# Generator name / gripper_variant are set by the including robot_orders entry.
+################################################################################
+name: ex001
+initial_position: [0.0, 0.0, 0.0]
+initial_orientation: [0.0, 0.0, 0.0, 1.0]
+enable_cameras: true

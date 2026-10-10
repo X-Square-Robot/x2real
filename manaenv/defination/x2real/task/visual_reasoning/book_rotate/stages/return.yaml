@@ -1,0 +1,27 @@
+include: x2real/task/visual_reasoning/book_rotate/stages/_book_rotate_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: book_rotate_return
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - arm_home:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+          - reader_yaw:
+              _func: object_yaw_in_range
+              object_cfg: '@rotatable'
+              signed: true
+              min_yaw_deg: -110.0
+              max_yaw_deg: -70.0
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return to home

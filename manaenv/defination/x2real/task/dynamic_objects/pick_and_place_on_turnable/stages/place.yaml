@@ -1,0 +1,25 @@
+include: x2real/task/dynamic_objects/pick_and_place_on_turnable/stages/_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: pick_and_place_on_turnable_place
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: indexed_object_position_in_zone
+          object_names:
+          - brick_red
+          - brick_green
+          - brick_yellow
+          index_log_key: turntable_target_index
+          reference_cfg: '@destination'
+          xy_distance_threshold: 0.1
+          z_min_offset: -0.02
+          z_max_offset: 0.18
+          velocity_threshold: 0.3
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place target brick on plate

@@ -1,0 +1,193 @@
+definition:
+  scene_type: glasses_on_rack_scene
+  metadata:
+    name: ex001_6r_glasses_on_rack_vnext
+    source: glasses_on_rack/vnext
+    semantic_goal: Pick up the glasses and hang them on the wooden rack
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: glasses
+  asset:
+    type: asset_id
+    id: glasses_a
+  semantic_tags:
+  - pickable
+- id: rack
+  asset:
+    type: asset_id
+    id: rack_a
+  semantic_tags:
+  - destination
+  - rackable
+  scale:
+  - 0.5
+  - 0.5
+  - 0.5
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    glasses:
+      object: glasses
+      placement:
+        type: pose
+        poses:
+        - id: p0
+          position:
+          - 0.05
+          - -0.038
+          - -0.15
+          orientation:
+          - 0.0
+          - 0.0
+          - 1.0
+          - 0.0
+        - id: p1
+          position:
+          - 0.05
+          - -0.51
+          - -0.15
+          orientation:
+          - 0.0
+          - 0.0
+          - 1.0
+          - 0.0
+        - id: p2
+          position:
+          - 0.25
+          - -0.038
+          - -0.15
+          orientation:
+          - 0.0
+          - 0.0
+          - 1.0
+          - 0.0
+        - id: p3
+          position:
+          - 0.25
+          - -0.51
+          - -0.15
+          orientation:
+          - 0.0
+          - 0.0
+          - 1.0
+          - 0.0
+    rack:
+      object: rack
+      placement:
+        type: pose
+        poses:
+        - id: r00
+          position:
+          - 0.11
+          - -0.314
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+        - id: r01
+          position:
+          - 0.11
+          - -0.274
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+        - id: r02
+          position:
+          - 0.11
+          - -0.234
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+        - id: r10
+          position:
+          - 0.15
+          - -0.314
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+        - id: r11
+          position:
+          - 0.15
+          - -0.274
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+        - id: r12
+          position:
+          - 0.15
+          - -0.234
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+        - id: r20
+          position:
+          - 0.19
+          - -0.314
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+        - id: r21
+          position:
+          - 0.19
+          - -0.274
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+        - id: r22
+          position:
+          - 0.19
+          - -0.234
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+variants:
+  materialization: []
+  assignments: []

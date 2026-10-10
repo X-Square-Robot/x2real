@@ -1,0 +1,27 @@
+include: x2real/task/challenge/stack_blocks_height/stages/_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: stack_blocks_height_return
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: stack_height_and_joints_near_default
+          object_names: [block_1_blue, block_2_green, block_3_red, block_4_orange, block_5_blue, block_6_green, block_7_red, block_8_orange, block_9_blue, block_10_green, block_11_red, block_12_orange, block_13_blue, block_14_green, block_15_red]
+          target_height_log_key: stack_tower_height
+          support_cfg: stack_base
+          x_range: [-0.035, 0.085]
+          y_range: [-0.328, -0.208]
+          minimum_height: -0.3
+          asset_cfg: robot
+          atol: 0.4
+          consecutive_steps: 10
+          exclude_joint_name_substrings:
+          - finger
+          - gripper
+          - knuckle
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return to home

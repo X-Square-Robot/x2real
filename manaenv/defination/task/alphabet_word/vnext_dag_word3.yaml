@@ -1,0 +1,283 @@
+graph_task_generator:
+  definition:
+    task_type: alphabet_word_spelling_3
+    component_sections:
+      event_component:
+        terms:
+          sample_alphabet_word:
+            mode: reset
+            word_bank:
+            - cat
+            - dog
+            - pen
+            - sun
+            - cup
+            - bed
+            - map
+            - leg
+            - ice
+            - fly
+            - hit
+            - win
+            - run
+            - eat
+            - sit
+            - red
+            - top
+            - lot
+            - key
+            - box
+            letters_log_key: target_word_letters
+            word_log_key: target_word
+            instruction_template: Select the correct blocks to spell {word}, then return the arm home.
+            block_prefix: block_alphabet_
+            slot_marker_prefix: alphabet_word_slot_
+            slot_marker_count: 6
+            slot_marker_center:
+            - 0.02
+            - -0.268
+            - -0.235423
+            slot_marker_spacing: 0.14
+            region:
+              x:
+              - 0.1
+              - 0.32
+              y:
+              - -0.6
+              - 0.08
+              z:
+              - -0.15
+              - -0.15
+            distractor_count: 5
+            min_separation: 0.11
+            block_yaw: 3.141592653589793
+      log_component:
+        entries:
+          target_word:
+            trigger: enter
+            func: alphabet_active_word
+          target_word_letters_episode:
+            trigger: enter
+            func: alphabet_active_word_letters
+      instruction_component:
+        topic: alphabet_spelling
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: target_word
+          label: Target word
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: alphabet_word_place_letter_1
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: letter_block_in_word_slot
+              position: 1
+              slot_tolerance_x: 0.064
+              slot_tolerance_y: 0.061
+              yaw_target_deg: 180.0
+              yaw_tolerance_deg: 30.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: alphabet_word_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place target letter 1 in word slot 1
+    id: place_letter_1
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: alphabet_word_place_letter_2
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: letter_block_in_word_slot
+              position: 2
+              slot_tolerance_x: 0.064
+              slot_tolerance_y: 0.061
+              yaw_target_deg: 180.0
+              yaw_tolerance_deg: 30.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: alphabet_word_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place target letter 2 in word slot 2
+    id: place_letter_2
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: alphabet_word_place_letter_3
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: letter_block_in_word_slot
+              position: 3
+              slot_tolerance_x: 0.064
+              slot_tolerance_y: 0.061
+              yaw_target_deg: 180.0
+              yaw_tolerance_deg: 30.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: alphabet_word_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place target letter 3 in word slot 3
+    id: place_letter_3
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: alphabet_word_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: alphabet_word_and_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              slot_tolerance_x: 0.064
+              slot_tolerance_y: 0.061
+              yaw_target_deg: 180.0
+              yaw_tolerance_deg: 30.0
+              velocity_threshold: 0.2
+              strict: true
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: alphabet_word_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return home with the complete target word and no distractors in its slots
+    id: return
+    score: 1
+  edges:
+  - src: place_letter_1
+    dst: place_letter_2
+  - src: place_letter_2
+    dst: place_letter_3
+  - src: place_letter_3
+    dst: return

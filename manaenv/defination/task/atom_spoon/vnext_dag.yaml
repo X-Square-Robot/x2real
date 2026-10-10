@@ -1,0 +1,225 @@
+graph_task_generator:
+  definition:
+    task_type: put_spoon_in_bowl
+    runtime_instruction:
+      plan_id: runtime
+      tag_mode: kind
+      objects:
+        spoon: spoon
+      template: Pick up the spoon and put it into the bowl, then return the arm home.
+      subtasks:
+      - Pick up the spoon.
+      - Put the spoon into the bowl.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: bowl_asset
+            target:
+              type: node
+              id: bowl
+            selector:
+              type: uniform
+            cache_size: 30
+          placements:
+          - id: spoon
+            target:
+              type: node
+              id: spoon
+            sample:
+              type: inherit
+          - id: bowl
+            target:
+              type: node
+              id: bowl
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the spoon and put it into the bowl, then return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the spoon.
+        - Put the spoon into the bowl.
+        - Return the arm home.
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: atom_spoon_pick_spoon
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+              - grasp_franka:
+                  _func: gripper_grasps_object
+                  contact_sensor_cfg: gripper_contact
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_spoon
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp @pickable.name
+    id: pick_spoon
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: atom_spoon_place_spoon
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable'
+              reference_cfg: '@destination'
+              reference_footprint_zone: true
+              xy_inset_ratio: 0.1
+              z_range:
+              - -0.03
+              - 0.18
+              velocity_threshold: 0.1
+              consecutive_steps: 3
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_spoon
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @pickable.name into @destination.name
+    id: place_spoon
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: atom_spoon_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+              exclude_joint_name_substrings:
+              - finger
+              - gripper
+              - knuckle
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_spoon
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: pick_spoon
+    dst: place_spoon
+  - src: place_spoon
+    dst: return

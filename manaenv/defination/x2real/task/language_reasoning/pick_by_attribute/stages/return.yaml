@@ -1,0 +1,17 @@
+include: x2real/task/language_reasoning/pick_by_attribute/stages/_pick_by_attribute_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: pick_by_attribute_return
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: articulation_joints_near_default
+          asset_cfg: robot
+          atol: 0.4
+          consecutive_steps: 10
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return to home

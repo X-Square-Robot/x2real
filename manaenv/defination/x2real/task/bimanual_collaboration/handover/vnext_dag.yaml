@@ -1,0 +1,69 @@
+graph_task_generator:
+  definition:
+    task_type: handover
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: handover_object_asset
+            target:
+              type: node
+              id: handover_object
+            selector:
+              type: uniform
+          placements:
+          - id: object_start_region
+            target:
+              type: group
+              id: object_start_region
+            sample:
+              type: inherit
+          - id: basket_b
+            target:
+              type: node
+              id: basket_b
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_handover_asset:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - handover_object
+      instruction_component:
+        instructions:
+        - text: With the left hand pick up the object on the left, hand it to the
+            right hand, put it into the basket on the right with the right hand, then
+            return the arms home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_handover_asset
+          label: Target object
+          font_size: 24
+  nodes:
+  - id: pick_left
+    include: x2real/task/bimanual_collaboration/handover/stages/pick_left.yaml
+    score: 3
+  - id: pick_right
+    include: x2real/task/bimanual_collaboration/handover/stages/pick_right.yaml
+    score: 3
+  - id: place_basket
+    include: x2real/task/bimanual_collaboration/handover/stages/place_basket.yaml
+    score: 3
+  - id: return
+    include: x2real/task/bimanual_collaboration/handover/stages/return.yaml
+    score: 1
+  edges:
+  - src: pick_left
+    dst: pick_right
+  - src: pick_right
+    dst: place_basket
+  - src: place_basket
+    dst: return

@@ -1,0 +1,242 @@
+graph_task_generator:
+  definition:
+    task_type: put_object_beside_block
+    beside_placement:
+      pickable: object
+      reference: block
+      gap: 0.1
+      zone_half_width: 0.08
+    runtime_instruction:
+      plan_id: runtime
+      tag_mode: kind
+      objects:
+        object: object
+      template: Pick up the green object and place it {direction} the block, then return the arm home.
+      subtasks:
+      - Pick up the green object and place it {direction} the block.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: object_asset
+            target:
+              type: node
+              id: object
+            selector:
+              type: uniform
+          - id: block_asset
+            target:
+              type: node
+              id: block
+            selector:
+              type: uniform
+          placements:
+          - id: beside_pair
+            target:
+              type: group
+              id: beside_pair
+            sample:
+              type: inherit
+              selectors:
+                assignments:
+                  type: uniform
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the green object and place it beside the block, then return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the green object and place it beside the block.
+        - Return the arm home.
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: atom_objects_beside_block_pick_object
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+              - grasp_franka:
+                  _func: gripper_grasps_object
+                  contact_sensor_cfg: gripper_contact
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_objects_beside_block
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp @pickable.name
+    id: pick_object
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: atom_objects_beside_block_place_object
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable'
+              reference_cfg: '@reference'
+              use_runtime_place_beside: true
+              z_min_offset: -0.12
+              z_max_offset: 0.18
+              velocity_threshold: 0.06
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_objects_beside_block
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @pickable.name beside @reference.name (runtime direction)
+            object_beside_block_zone:
+              trigger: enter
+              func: object_position_in_zone
+              params:
+                object_cfg: '@pickable'
+                reference_cfg: '@reference'
+                use_runtime_place_beside: true
+                z_min_offset: -0.12
+                z_max_offset: 0.18
+                velocity_threshold: 0.06
+                consecutive_steps: 1
+                log_prefix: object_beside_block
+                log_interval: 0
+              update_mode: max
+    id: place_object
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: atom_objects_beside_block_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+              exclude_joint_name_substrings:
+              - finger
+              - gripper
+              - knuckle
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_objects_beside_block
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: pick_object
+    dst: place_object
+  - src: place_object
+    dst: return

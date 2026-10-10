@@ -1,0 +1,280 @@
+graph_task_generator:
+  definition:
+    task_type: pick_by_attribute
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: obj_1_asset
+            target:
+              type: node
+              id: obj_1
+            selector:
+              type: uniform
+          - id: obj_2_asset
+            target:
+              type: node
+              id: obj_2
+            selector:
+              type: uniform
+          - id: obj_3_asset
+            target:
+              type: node
+              id: obj_3
+            selector:
+              type: uniform
+          - id: obj_4_asset
+            target:
+              type: node
+              id: obj_4
+            selector:
+              type: uniform
+          placements:
+          - id: object_start_region
+            target:
+              type: group
+              id: object_start_region
+            sample:
+              type: inherit
+          - id: basket_b
+            target:
+              type: node
+              id: basket_b
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_attribute_pick:
+            mode: reset
+            object_names:
+            - obj_1
+            - obj_2
+            - obj_3
+            - obj_4
+            catalog_file: assets/manipulation/attribute_objects.json
+            target_mask_log_key: attribute_target_mask
+            predicate_bank:
+            - id: color_red
+              text: Put the red objects into the basket.
+              any_of:
+              - color: red
+            - id: color_green
+              text: Put the green objects into the basket.
+              any_of:
+              - color: green
+            - id: color_blue
+              text: Put the blue objects into the basket.
+              any_of:
+              - color: blue
+            - id: shape_ball
+              text: Put the balls into the basket.
+              any_of:
+              - shape: ball
+            - id: shape_cube
+              text: Put the cubes into the basket.
+              any_of:
+              - shape: cube
+            - id: shape_cylinder
+              text: Put the cylinders into the basket.
+              any_of:
+              - shape: cylinder
+      log_component:
+        entries:
+          attribute_plan:
+            trigger: enter
+            func: attribute_pick_active_label
+          active_attribute_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - obj_1
+              - obj_2
+              - obj_3
+              - obj_4
+      instruction_component:
+        topic: pick_by_attribute
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: attribute_plan
+          label: Target predicate
+          font_size: 24
+        - log_key: active_attribute_assets
+          label: Active assets
+          font_size: 22
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: pick_by_attribute_place_targets
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: attribute_targets_in_basket
+              object_names:
+              - obj_1
+              - obj_2
+              - obj_3
+              - obj_4
+              reference_cfg: '@container'
+              target_mask_log_key: attribute_target_mask
+              xy_distance_threshold: 0.1
+              z_min_offset: -0.06
+              z_max_offset: 0.2
+              velocity_threshold: 0.5
+              strict: true
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: pick_by_attribute_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put every predicate-matching object into @container.name
+    id: place_targets
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: pick_by_attribute_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: pick_by_attribute_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: pick_by_attribute_validate_basket
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: attribute_targets_in_basket
+              object_names:
+              - obj_1
+              - obj_2
+              - obj_3
+              - obj_4
+              reference_cfg: '@container'
+              target_mask_log_key: attribute_target_mask
+              xy_distance_threshold: 0.1
+              z_min_offset: -0.06
+              z_max_offset: 0.2
+              velocity_threshold: 0.5
+              strict: true
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: pick_by_attribute_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: confirm target objects are in @container.name and other objects are out
+        planner_skills_component:
+          skills: []
+    id: validate_basket
+    score: 0
+  edges:
+  - src: place_targets
+    dst: return
+  - src: return
+    dst: validate_basket

@@ -1,0 +1,44 @@
+include: x2real/task/fine_manipulation/plug_in_charger/stages/_plug_in_charger_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: plug_in_charger_return
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - arm_home:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+              exclude_joint_name_substrings:
+              - finger
+              - gripper
+              - knuckle
+          - usb_still_xy:
+              _func: object_near_nearest_reference_child_xy
+              object_cfg: usb
+              reference_cfg: usb_base
+              reference_child_prims:
+              - slot_a
+              - slot_b
+              - slot_c
+              target_child_log_key: target_dock_slot
+              xy_distance_threshold: 0.005
+              velocity_threshold: 0.05
+              consecutive_steps: 8
+          - usb_still_orient:
+              _func: object_orientation_near_default
+              object_cfg: usb
+              min_quat_dot: 0.95
+              velocity_threshold: 0.05
+              consecutive_steps: 8
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return to home
+    planner_skills_component:
+      skills:
+      - type: home

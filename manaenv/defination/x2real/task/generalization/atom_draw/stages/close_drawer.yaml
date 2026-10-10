@@ -1,0 +1,40 @@
+include: x2real/task/generalization/atom_draw/stages/_atom_draw_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: atom_draw_close_drawer
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - drawer_closed:
+              _func: joint_above_threshold
+              object_cfg: '@containable'
+              joint_names:
+              - PrismaticJoint
+              threshold: 0.05
+              openness_gt: false
+              joint_match: all
+              consecutive_steps: 2
+          - object_still_inside:
+              _func: object_in_opened_joint_region
+              object_cfg: '@pickable'
+              reference_cfg: '@containable'
+              sliding_body_name: drawer
+              joint_name: PrismaticJoint
+              joint_axis_local:
+              - 1.0
+              - 0.0
+              - 0.0
+              protruding_only: false
+              xy_inset_ratio: 0.05
+              z_range:
+              - 0.0
+              - 0.15
+              velocity_threshold: 0.15
+              consecutive_steps: 2
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: close the drawer with object inside

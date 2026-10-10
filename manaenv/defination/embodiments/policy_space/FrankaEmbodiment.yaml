@@ -1,0 +1,27 @@
+# PolicyEmbodimentCFG: policy_space  ->  FrankaEmbodiment
+#
+# Path == identity:
+#   embodiments/<implementation>/<EmbodimentClassName>.yaml
+#   implementation        = "policy_space"
+#   EmbodimentClassName   = "FrankaEmbodiment"
+#
+# Single-arm Panda/FR3 joint control (7 arm joints + 1 gripper = 8-D).
+# Used by dreamzero_droid / cosmos3_droid PolicySpace absolute_joint policies.
+
+action_mode: joint_position
+action_dim: 8
+
+obs_field_map:
+  joint_position: arm_joint_pos
+  gripper_position: gripper_pos
+  wrist: wrist_cam_rgb
+  exterior_1: exterior_1_cam_rgb
+  exterior_2: exterior_2_cam_rgb
+
+obs_dims:
+  joint_position: 7
+  gripper_position: 1
+
+state_dtype: float32
+image_encode: raw
+instruction_key: instruction

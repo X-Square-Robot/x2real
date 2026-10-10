@@ -1,0 +1,67 @@
+graph_task_generator:
+  definition:
+    task_type: arrange_flowers_in_vase
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: flower_1_asset
+            target:
+              type: node
+              id: flower_1
+            selector:
+              type: uniform
+          - id: flower_2_asset
+            target:
+              type: node
+              id: flower_2
+            selector:
+              type: uniform
+          - id: vase_asset
+            target:
+              type: node
+              id: vase
+            selector:
+              type: uniform
+          placements:
+          - id: flower_1
+            target:
+              type: node
+              id: flower_1
+            sample:
+              type: inherit
+          - id: flower_2
+            target:
+              type: node
+              id: flower_2
+            sample:
+              type: inherit
+          - id: vase
+            target:
+              type: node
+              id: vase
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the flowers by the stem, insert them upright into the vase,
+            then return the arm home.
+          log:
+            instruction_variant: direct
+  nodes:
+  - id: place_flower_1
+    include: x2real/task/fine_manipulation/flowers_in_vase/stages/place_flower_1.yaml
+    score: 4
+  - id: place_flower_2
+    include: x2real/task/fine_manipulation/flowers_in_vase/stages/place_flower_2.yaml
+    score: 5
+  - id: return
+    include: x2real/task/fine_manipulation/flowers_in_vase/stages/return.yaml
+    score: 1
+  edges:
+  - src: place_flower_1
+    dst: return
+  - src: place_flower_2
+    dst: return

@@ -1,0 +1,142 @@
+definition:
+  scene_type: flowers_in_vase_vnext_scene
+  metadata:
+    name: ex001_6r_flowers_in_vase_vnext
+    source: flowers_in_vase/vnext
+    semantic_goal: Insert two flower_fa stems upright into a vase
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: flower_1
+  asset:
+    type: pool
+    candidates:
+    - id: any_flower
+      assets:
+      - flower_fa
+  semantic_tags:
+  - pickable
+  - pickable_1
+  scale:
+  - 0.8
+  - 0.8
+  - 0.8
+- id: flower_2
+  asset:
+    type: pool
+    candidates:
+    - id: any_flower
+      assets:
+      - flower_fa
+  semantic_tags:
+  - pickable
+  - pickable_2
+  scale:
+  - 0.8
+  - 0.8
+  - 0.8
+- id: vase
+  asset:
+    type: pool
+    candidates:
+    - id: any_vase
+      assets:
+      - vase_b
+      - vase_e
+  semantic_tags:
+  - container
+  scale:
+  - 0.8
+  - 0.8
+  - 0.8
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    flower_1:
+      object: flower_1
+      placement:
+        type: surface
+        surface: tabletop
+        orientation:
+        - 0.0
+        - 0.0
+        - 1.0
+        - 0.0
+        ranges:
+          x: 0.12
+          y: -0.12
+    flower_2:
+      object: flower_2
+      placement:
+        type: surface
+        surface: tabletop
+        orientation:
+        - 0.0
+        - 0.0
+        - 1.0
+        - 0.0
+        ranges:
+          x: 0.12
+          y: 0.12
+    vase:
+      object: vase
+      placement:
+        type: surface
+        surface: tabletop
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.0
+        - 1.0
+        ranges:
+          x:
+          - -0.16
+          - -0.1
+          y:
+          - -0.06
+          - 0.06
+variants:
+  materialization:
+  - id: flower_1_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - flower_1.any_flower
+      weight: 1.0
+  - id: flower_2_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - flower_2.any_flower
+      weight: 1.0
+  - id: vase_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - vase.any_vase
+      weight: 1.0
+  assignments: []

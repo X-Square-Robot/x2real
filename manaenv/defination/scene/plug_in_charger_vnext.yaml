@@ -1,0 +1,245 @@
+definition:
+  scene_type: plug_in_charger_scene
+  metadata:
+    name: ex001_6r_plug_in_charger_vnext
+    source: plug_in_charger/vnext
+    semantic_goal: Pick up the USB stick, orient it correctly, and insert it fully into the instructed hub port
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: usb
+  asset:
+    type: asset_id
+    id: usb_a
+  spawn_mass:
+  - 0.05
+  - 0.05
+  semantic_tags:
+  - pickable
+- id: usb_base
+  asset:
+    type: asset_id
+    id: usb_a_base
+  spawn_mass:
+  - 1.5
+  - 1.5
+  semantic_tags:
+  - destination
+- id: port_left
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - port
+  - port_0
+  scale:
+  - 0.04
+  - 0.08
+  - 0.4
+  kinematic: true
+- id: port_mid
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - port
+  - port_1
+  scale:
+  - 0.04
+  - 0.08
+  - 0.4
+  kinematic: true
+- id: port_right
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - port
+  - port_2
+  scale:
+  - 0.04
+  - 0.08
+  - 0.4
+  kinematic: true
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    usb_base:
+      object: usb_base
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.22
+          - -0.1
+          - -0.240423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    port_left:
+      object: port_left
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.2048
+          - -0.13
+          - -0.229423
+          orientation:
+          - 0.7071
+          - 0.0
+          - 0.0
+          - 0.7071
+    port_mid:
+      object: port_mid
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.22
+          - -0.13
+          - -0.229423
+          orientation:
+          - 0.7071
+          - 0.0
+          - 0.0
+          - 0.7071
+    port_right:
+      object: port_right
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.2352
+          - -0.13
+          - -0.229423
+          orientation:
+          - 0.7071
+          - 0.0
+          - 0.0
+          - 0.7071
+    usb:
+      object: usb
+      placement:
+        type: pose
+        poses:
+        - id: 左上
+          position:
+          - 0.08
+          - -0.42
+          - -0.21
+          orientation:
+          - 0.0
+          - -0.7071
+          - 0.0
+          - 0.7071
+        - id: 中上
+          position:
+          - 0.08
+          - -0.34
+          - -0.21
+          orientation:
+          - 0.0
+          - -0.7071
+          - 0.0
+          - 0.7071
+        - id: 右上
+          position:
+          - 0.08
+          - -0.26
+          - -0.21
+          orientation:
+          - 0.0
+          - -0.7071
+          - 0.0
+          - 0.7071
+        - id: 左中
+          position:
+          - 0.16
+          - -0.42
+          - -0.21
+          orientation:
+          - 0.0
+          - -0.7071
+          - 0.0
+          - 0.7071
+        - id: 中中
+          position:
+          - 0.16
+          - -0.34
+          - -0.21
+          orientation:
+          - 0.0
+          - -0.7071
+          - 0.0
+          - 0.7071
+        - id: 右中
+          position:
+          - 0.16
+          - -0.26
+          - -0.21
+          orientation:
+          - 0.0
+          - -0.7071
+          - 0.0
+          - 0.7071
+        - id: 左下
+          position:
+          - 0.24
+          - -0.42
+          - -0.21
+          orientation:
+          - 0.0
+          - -0.7071
+          - 0.0
+          - 0.7071
+        - id: 中下
+          position:
+          - 0.24
+          - -0.34
+          - -0.21
+          orientation:
+          - 0.0
+          - -0.7071
+          - 0.0
+          - 0.7071
+        - id: 右下
+          position:
+          - 0.24
+          - -0.26
+          - -0.21
+          orientation:
+          - 0.0
+          - -0.7071
+          - 0.0
+          - 0.7071
+variants:
+  materialization: []
+  assignments: []

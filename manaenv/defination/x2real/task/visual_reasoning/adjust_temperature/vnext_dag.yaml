@@ -1,0 +1,96 @@
+graph_task_generator:
+  definition:
+    task_type: adjust_temperature
+    planner_skill_boundary:
+      prefix:
+      - type: home
+      - type: stay
+    planner_skill_defaults:
+      twist:
+        grasp_label_asset: knob_a
+        arm: auto
+        arm_joint_prefix: panda_joint
+        approach_distance: 0.025
+        joint_axis_local:
+        - 0.0
+        - 0.0
+        - 1.0
+        hinge_pivot_local:
+        - 0.0
+        - 0.0
+        - 0.0
+        arc_samples: 12
+        retreat_distance: 0.03
+        top_k: 48
+        winner_plan_failure_cooldown: 8
+        gripper_open: 1.0
+        gripper_close: 0.0
+        gripper_open_fraction: 0.25
+        flip_joint_steps: 30
+        release_joint_steps: 8
+      home:
+        gripper: 0.0
+        steps: 10
+      stay:
+        gripper: 0.0
+        steps: 10
+    component_sections:
+      event_component:
+        terms:
+          randomize_object_pose_from_list:
+            mode: reset
+            asset_cfg: knob_a
+            positions:
+            - - -0.07
+              - -0.08
+              - -0.18
+            - - -0.07
+              - -0.45
+              - -0.18
+          set_articulation_joint_position_limit:
+            mode: startup
+            asset_cfg: knob_a
+            joint_name: RevoluteJoint
+            lower_limit_deg: -599.0
+            upper_limit_deg: 0.0
+          sample_turnable_twist_goal:
+            mode: reset
+            asset_cfg: knob_a
+            joint_name: RevoluteJoint
+            initial_temperature_range:
+            - 0
+            - 60
+            target_delta_temperature_range:
+            - 0
+            - 60
+            min_delta_temperature: 30
+            temperature_max: 60
+      instruction_component:
+        instructions:
+        - text: Adjust the knob from temperature {initial} to {target}, then return
+            the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Twist the knob from temperature {initial} to {target}.
+        - Return the arm home after reaching temperature {target}.
+        topic: adjust_temperature
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: twist_initial_temperature
+          label: Initial temp
+          font_size: 24
+        - log_key: twist_target_temperature
+          label: Target temp
+          font_size: 24
+  nodes:
+  - id: twist
+    include: x2real/task/visual_reasoning/adjust_temperature/stages/twist.yaml
+    score: 8
+  - id: return
+    include: x2real/task/visual_reasoning/adjust_temperature/stages/return.yaml
+    score: 2
+  edges:
+  - src: twist
+    dst: return

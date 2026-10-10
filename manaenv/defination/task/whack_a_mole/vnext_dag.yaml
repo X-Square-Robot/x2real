@@ -1,0 +1,342 @@
+graph_task_generator:
+  definition:
+    task_type: whack_a_mole
+    component_sections:
+      event_component:
+        terms:
+          sample_whack_a_mole:
+            mode: reset
+            mole_base_name: mole_base
+            hammer_name: hammer
+            mole_base_poses:
+            - - 0.34
+              - -0.1
+              - -0.1907
+            - - 0.34
+              - -0.27
+              - -0.1907
+            - - 0.34
+              - -0.44
+              - -0.1907
+            mole_base_orientation:
+            - 0.0
+            - 0.0
+            - 0.7071
+            - 0.7071
+            hammer_poses:
+            - - 0.2
+              - -0.08
+              - -0.2254
+            - - 0.2
+              - -0.27
+              - -0.2254
+            - - 0.2
+              - -0.46
+              - -0.2254
+            - - 0.13
+              - -0.08
+              - -0.2254
+            - - 0.13
+              - -0.27
+              - -0.2254
+            - - 0.13
+              - -0.46
+              - -0.2254
+            - - 0.06
+              - -0.08
+              - -0.2254
+            - - 0.06
+              - -0.27
+              - -0.2254
+            - - 0.06
+              - -0.46
+              - -0.2254
+            hammer_orientation:
+            - 0.0
+            - 0.0
+            - 1.0
+            - 0.0
+            peg_colors:
+            - red
+            - orange
+            - yellow
+            - green
+            - blue
+            - purple
+            peg_joint_names:
+            - red
+            - orange
+            - yellow
+            - green
+            - blue
+            - purple
+            raised_openness: 0.0
+            down_openness: 1.0
+            peg_index_log_key: whack_target_peg_index
+            hammer_slot_log_key: hammer_slot
+            mole_base_slot_log_key: mole_base_slot
+            instruction_template: Pick up the wooden hammer, whack the raised {color} peg so it drops below the panel, put
+              the hammer back on the table, then return the arm home.
+      log_component:
+        entries:
+          whack_a_mole_plan:
+            trigger: enter
+            func: whack_a_mole_active_label
+      instruction_component:
+        topic: whack_a_mole
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: whack_a_mole_plan
+          label: Task
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: whack_a_mole_grasp_hammer
+      roles:
+        mole_base: mole_base
+        hammer: hammer
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            failure_object_dropped:
+              _func: object_dropped
+              object_cfg: '@hammer'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@hammer'
+                  force_threshold: 0.1
+                  lifted_z_min: -0.2
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@hammer'
+                  force_threshold: 0.1
+                  lifted_z_min: -0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: whack_a_mole_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp @hammer.name with either hand
+    id: grasp_hammer
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: whack_a_mole_whack_peg
+      roles:
+        mole_base: mole_base
+        hammer: hammer
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            failure_object_dropped:
+              _func: object_dropped
+              object_cfg: '@hammer'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: indexed_joint_above_threshold
+              object_cfg: '@mole_base'
+              joint_names:
+              - red
+              - orange
+              - yellow
+              - green
+              - blue
+              - purple
+              index_log_key: whack_target_peg_index
+              threshold: 0.6
+              openness_gt: true
+              consecutive_steps: 3
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: whack_a_mole_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: whack the raised target peg down
+    id: whack_peg
+    score: 5
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: whack_a_mole_place_hammer
+      roles:
+        mole_base: mole_base
+        hammer: hammer
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            failure_object_dropped:
+              _func: object_dropped
+              object_cfg: '@hammer'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@hammer'
+              z_range:
+              - -0.27
+              - -0.16
+              velocity_threshold: 0.15
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: whack_a_mole_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place @hammer.name back on the table
+    id: place_hammer
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: whack_a_mole_return
+      roles:
+        mole_base: mole_base
+        hammer: hammer
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            failure_object_dropped:
+              _func: object_dropped
+              object_cfg: '@hammer'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: whack_a_mole_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: grasp_hammer
+    dst: whack_peg
+  - src: whack_peg
+    dst: place_hammer
+  - src: place_hammer
+    dst: return

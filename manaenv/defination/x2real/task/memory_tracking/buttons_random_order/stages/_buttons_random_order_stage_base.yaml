@@ -1,0 +1,63 @@
+direct_task_generator:
+  definition:
+    gen_method: 0
+    episode_length_s: 180.0
+    num_episodes: 10
+    max_steps_per_episode: 5400
+  component_sections:
+    termination_component:
+      terms:
+        mdp.time_out:
+          time_out: true
+    metric_component:
+      terms:
+        success_rate: {}
+    viewer_component:
+      terms:
+        look_at_position:
+          lookat_position:
+          - 0.204651
+          - -0.268246
+          - -0.240423
+          offset:
+          - -1.0
+          - 0.0
+          - 1.5
+    scene_constraint_component:
+      constraints:
+      - mode: 0
+        tags: buttons_random_order_scene
+    sensor_component:
+      sensors:
+      - button_pink_contact_sensor:
+          type: contact
+          source: '@btn_pink'
+          against:
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+      - button_blue_contact_sensor:
+          type: contact
+          source: '@btn_blue'
+          against:
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+      - button_yellow_contact_sensor:
+          type: contact
+          source: '@btn_yellow'
+          against:
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+      - button_green_contact_sensor:
+          type: contact
+          source: '@btn_green'
+          against:
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'

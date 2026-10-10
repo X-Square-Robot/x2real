@@ -1,0 +1,35 @@
+include: x2real/task/fine_manipulation/flowers_in_vase/stages/_flowers_in_vase_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: flowers_in_vase_place_flower_1
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - flower_contact:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@vase_contact_sensor_1'
+              force_threshold: 0.01
+              consecutive_steps: 5
+          - flower_in_vase:
+              _func: object_position_in_zone
+              object_cfg: '@pickable_1'
+              reference_cfg: '@container'
+              reference_footprint_zone: true
+              xy_inset_ratio: 0.1
+              z_range: [-0.03, 0.35]
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+          - flower_upright:
+              _func: object_tilt_in_range
+              object_cfg: '@pickable_1'
+              axis: x
+              min_abs_dot: 0.6
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: insert @pickable_1.name into @container.name

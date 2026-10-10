@@ -1,0 +1,2 @@
+# Camera RenderProducts are incompatible with DLSS Frame Generation.
+antialiasing_mode: DLAA

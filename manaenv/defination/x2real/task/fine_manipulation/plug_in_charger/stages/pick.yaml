@@ -1,0 +1,30 @@
+include: x2real/task/fine_manipulation/plug_in_charger/stages/_plug_in_charger_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: plug_in_charger_pick
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_lifted
+          object_cfg: '@pickable'
+          min_lift: 0.03
+          settle_steps: 30
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: pick up the USB stick
+    planner_skills_component:
+      skills:
+      - type: pick
+        params:
+          grasp_label_asset: usb_a
+          object_name: usb
+          arm: auto
+          top_k: 16
+          filter_x_dir:
+          - downward
+          - 0.0
+          - 15.0

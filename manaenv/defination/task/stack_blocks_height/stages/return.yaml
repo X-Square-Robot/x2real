@@ -1,0 +1,20 @@
+# Stage: return — arm home after the target tower height is reached.
+# Keyboard-teleop / ID eval only (no planner_skills / offline datacollection).
+include: task/stack_blocks_height/stages/_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: stack_blocks_height_return
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: articulation_joints_near_default
+          asset_cfg: robot
+          atol: 0.4
+          consecutive_steps: 10
+          exclude_joint_name_substrings: [finger, gripper, knuckle]
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: 'return to home'

@@ -1,0 +1,37 @@
+include: x2real/task/memory_tracking/buttons_random_order/stages/_buttons_random_order_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: buttons_random_order_press_3
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: button_contact_in_order
+          position: 3
+          sensor_cfgs:
+          - '@button_pink_contact_sensor'
+          - '@button_blue_contact_sensor'
+          - '@button_yellow_contact_sensor'
+          - '@button_green_contact_sensor'
+          color_order:
+          - pink
+          - blue
+          - yellow
+          - green
+          force_threshold: 0.1
+          consecutive_steps: 5
+        failure_wrong_button:
+          _func: button_wrong_contact_in_order
+          position: 3
+          sensor_cfgs:
+          - '@button_pink_contact_sensor'
+          - '@button_blue_contact_sensor'
+          - '@button_yellow_contact_sensor'
+          - '@button_green_contact_sensor'
+          color_order: [pink, blue, yellow, green]
+          force_threshold: 0.1
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: press order button 3

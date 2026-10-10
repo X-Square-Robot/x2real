@@ -1,0 +1,212 @@
+################################################################################
+# put_bottle_on_woodshelf case bank (manual measurement inputs).
+#
+# Abstract mobile pick-place schema:
+#   roles / support_frames / object_anchors / robot_start_anchors /
+#   operation_zone_sets / case_axes / semantic_axes
+# Shelf placement success bounds live only in stages/place_bottle.yaml.
+################################################################################
+task: put_bottle_on_woodshelf
+instruction: "Place the bottle on the shelf"
+instruction_zh: "把桌面上的水瓶放到木质置物架上。"
+
+roles:
+  robot: robot
+  pickable: bottle_nongfuspring
+  support: table
+  place_target: shelf
+
+# Canonical table-local / world / user-facing axes. Do NOT derive left/right from
+# preview image orientation.
+semantic_axes:
+  pick_support:
+    center_world: [1.5, -0.95, 0.7067]
+    local_x:
+      world_direction: +Y
+      table_edge: long
+      # When the robot faces +X toward the table (yaw≈0):
+      user_facing: left_when_positive  # +local_x / +world_Y = user left
+    local_y:
+      world_direction: -X
+      table_edge: short
+      user_facing: bottom_when_positive  # +local_y / -world_X = user bottom
+    shelf_side:
+      world_direction: -Y
+      note: "Shelf sits at more-negative world Y than the table."
+    approach_regions:
+      # Selected by support-local x (world Y), NOT by object left/right (local y).
+      far_from_shelf: {aliases: [left, long_pos], world_y: more_positive}
+      middle: {aliases: [center, long_center], world_y: mid}
+      near_shelf: {aliases: [right, long_neg], world_y: more_negative}
+
+support_frames:
+  pick_support:
+    center: [1.5, -0.95, 0.7067]
+    x_axis: [0.0, 1.0, 0.0]
+    y_axis: [-1.0, 0.0, 0.0]
+    normal: [0.0, 0.0, 1.0]
+    # Keep the spawned bottle 4 cm above the measured root pose so it settles
+    # onto the tabletop before the scripted pick begins.
+    object_root_z: 0.84
+
+# Robot start anchors measured in env/world frame.
+robot_start_anchors:
+  "1":
+    position: [-0.31154, -0.30644, 0.0]
+    yaw_deg: 0.0
+    radius_m: 0.10
+    yaw_jitter_deg: 5.0
+  "2":
+    position: [-0.51572, -0.17531, 0.0]
+    yaw_deg: -35.0
+    radius_m: 0.10
+    yaw_jitter_deg: 5.0
+  "3":
+    position: [-0.53617, -1.4449, 0.0]
+    yaw_deg: 0.0
+    radius_m: 0.10
+    yaw_jitter_deg: 5.0
+  "4":
+    position: [1.27561, 0.27714, 0.0]
+    yaw_deg: -85.0
+    radius_m: 0.10
+    yaw_jitter_deg: 5.0
+
+# Object anchors in pick_support local xy.
+# User semantics:
+#   left/right: table long edge (support-local x / world Y), and these select
+#     the table-front approach/success strip.
+#   top/bottom: table short edge (support-local y / world X), and these do not
+#     select far/near approach strips by themselves.
+# object_region: placement semantics (may use short+long axes).
+# approach_region: navigation strip along table long edge (support-local x / world Y).
+object_anchors:
+  center:
+    local_xy: [0.00, 0.025]
+    yaw_deg: 0.0
+    radius_m: 0.03
+    object_region: middle
+    approach_region: middle
+  left:
+    local_xy: [0.45, 0.025]
+    yaw_deg: 0.0
+    radius_m: 0.03
+    object_region: far_from_shelf
+    approach_region: far_from_shelf
+  right:
+    local_xy: [-0.45, 0.025]
+    yaw_deg: 0.0
+    radius_m: 0.03
+    object_region: near_shelf
+    approach_region: near_shelf
+  bottom:
+    local_xy: [0.00, 0.17]
+    yaw_deg: 0.0
+    radius_m: 0.03
+    object_region: short_pos
+    approach_region: middle
+  top:
+    local_xy: [0.00, -0.12]
+    yaw_deg: 0.0
+    radius_m: 0.03
+    object_region: short_neg
+    approach_region: middle
+  bottom_left:
+    local_xy: [0.45, 0.17]
+    yaw_deg: 0.0
+    radius_m: 0.03
+    object_region: far_from_shelf_short_pos
+    approach_region: far_from_shelf
+  top_left:
+    local_xy: [0.45, -0.12]
+    yaw_deg: 0.0
+    radius_m: 0.03
+    object_region: far_from_shelf_short_neg
+    approach_region: far_from_shelf
+  bottom_right:
+    local_xy: [-0.45, 0.17]
+    yaw_deg: 0.0
+    radius_m: 0.03
+    object_region: near_shelf_short_pos
+    approach_region: near_shelf
+  top_right:
+    local_xy: [-0.45, -0.12]
+    yaw_deg: 0.0
+    radius_m: 0.03
+    object_region: near_shelf_short_neg
+    approach_region: near_shelf
+
+# Keys match stage success terms (zone_key).
+# Table approach strips are world-Y bands (support-local x / table long edge).
+# Canonical keys: far_from_shelf / middle / near_shelf. Legacy left/center/right
+# remain as aliases only via sampler region resolution.
+operation_zone_sets:
+  table_approach_zone:
+    # Planner target strips. Keep these distinct so each bottle long-edge
+    # region retains its converged docking target.
+    by_region:
+      far_from_shelf:
+        frame: world
+        x_range: [0.57849, 0.93246]
+        y_range: [-0.94866, -0.3884]
+        yaw_deg_range: [-30.0, 30.0]
+      middle:
+        frame: world
+        x_range: [0.57849, 0.93246]
+        y_range: [-1.24779, -0.66383]
+        yaw_deg_range: [-30.0, 30.0]
+      near_shelf:
+        frame: world
+        x_range: [0.57849, 0.93246]
+        y_range: [-1.41369, -0.94866]
+        yaw_deg_range: [-30.0, 30.0]
+      # Legacy aliases (same geometry) -- prefer canonical keys above.
+      left:
+        frame: world
+        x_range: [0.57849, 0.93246]
+        y_range: [-0.94866, -0.3884]
+        yaw_deg_range: [-30.0, 30.0]
+      center:
+        frame: world
+        x_range: [0.57849, 0.93246]
+        y_range: [-1.24779, -0.66383]
+        yaw_deg_range: [-30.0, 30.0]
+      right:
+        frame: world
+        x_range: [0.57849, 0.93246]
+        y_range: [-1.41369, -0.94866]
+        yaw_deg_range: [-30.0, 30.0]
+  # Formal table-navigation completion is intentionally shared by all strips.
+  # It is separate from the planner target constraint above.
+  table_approach_success_zone:
+    zone:
+      frame: world
+      x_range: [0.57849, 0.93246]
+      y_range: [-1.41369, -0.3884]
+      yaw_deg_range: [-30.0, 30.0]
+  shelf_operation_zone:
+    zone:
+      frame: world
+      x_range: [0.06413, 0.93246]
+      y_range: [-1.33039, -1.03297]
+      yaw_deg_range: [-120.0, -60.0]
+
+case_axes:
+  robot_start_ids: ["1", "2", "3", "4"]
+  object_position_ids:
+    - center
+    - top
+    - bottom
+    - left
+    - right
+    - top_left
+    - top_right
+    - bottom_left
+    - bottom_right
+  # hand is non-authoritative case metadata (kept for sampler / case_id stability).
+  # Operating arm is selected at pick time from live bottle + dual-EE state
+  # (see tasks/put_bottle_on_woodshelf/operation_arm_decision.py). Use MANAENV_MOBILE_MANIP_FORCE_HAND
+  # for an explicit left|right diagnostic override at sample time.
+  hands: [auto]
+  hand_scoring: false
+  split: id

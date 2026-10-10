@@ -1,0 +1,83 @@
+graph_task_generator:
+  definition:
+    task_type: classify_objects_color
+    component_sections:
+      event_component:
+        terms:
+          sample_color_classification:
+            mode: reset
+            colors:
+            - blue
+            - green
+            - red
+            - yellow
+            region:
+              x:
+              - -0.06
+              - 0.13
+              y:
+              - -0.5
+              - 0.0
+              z:
+              - -0.15
+              - -0.15
+            min_separation: 0.12
+            object_orientation:
+            - 0.7071068
+            - 0.0
+            - 0.0
+            - 0.7071068
+            object_log_key: classify_object_indices
+            color_log_key: classify_color_indices
+      log_component:
+        entries:
+          classify_plan:
+            trigger: enter
+            func: color_classification_active_label
+          active_color_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - classify_blue
+              - classify_green
+              - classify_red
+              - classify_yellow
+      instruction_component:
+        instruction: Identify each object's color, place all four objects on the matching
+          visible color regions, then return the arm home.
+        topic: color_classification
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: classify_plan
+          label: Targets
+          font_size: 22
+        - log_key: active_color_assets
+          label: Active assets
+          font_size: 22
+  nodes:
+  - id: place_object_1
+    include: x2real/task/visual_reasoning/classify_objects_color/stages/place_object_1.yaml
+    score: 2
+  - id: place_object_2
+    include: x2real/task/visual_reasoning/classify_objects_color/stages/place_object_2.yaml
+    score: 2
+  - id: place_object_3
+    include: x2real/task/visual_reasoning/classify_objects_color/stages/place_object_3.yaml
+    score: 2
+  - id: place_object_4
+    include: x2real/task/visual_reasoning/classify_objects_color/stages/place_object_4.yaml
+    score: 2
+  - id: return
+    include: x2real/task/visual_reasoning/classify_objects_color/stages/return.yaml
+    score: 2
+  edges:
+  - src: place_object_1
+    dst: return
+  - src: place_object_2
+    dst: return
+  - src: place_object_3
+    dst: return
+  - src: place_object_4
+    dst: return

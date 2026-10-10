@@ -1,0 +1,221 @@
+graph_task_generator:
+  definition:
+    task_type: plug_in_charger
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: usb
+            target:
+              type: node
+              id: usb
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_usb_insertion:
+            mode: reset
+            usb_name: usb
+            base_name: usb_base
+            port_labels:
+            - left
+            - middle
+            - right
+            face_labels:
+            - face up
+            - face down
+            port_log_key: target_port
+            face_log_key: usb_face
+            instruction_template: Identify the {port} USB port on the hub, pick up the USB stick, flip it if needed so the
+              face is correct, align and insert it fully into the {port} port, then return the arm home.
+      log_component:
+        entries:
+          plug_in_charger_plan:
+            trigger: enter
+            func: plug_in_charger_active_label
+      instruction_component:
+        topic: plug_in_charger
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: plug_in_charger_plan
+          label: Target
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: plug_in_charger_pick
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: object_lifted
+              object_cfg: '@pickable'
+              min_lift: 0.03
+              settle_steps: 30
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: plug_in_charger_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up the USB stick
+    id: pick
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: plug_in_charger_insert
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: usb_inserted_at_target_port
+              object_cfg: '@pickable'
+              base_cfg: '@destination'
+              port_names:
+              - port_left
+              - port_mid
+              - port_right
+              port_log_key: target_port
+              object_axis:
+              - -1.0
+              - 0.0
+              - 0.0
+              insertion_axis:
+              - 0.0
+              - 0.0
+              - 1.0
+              axial_threshold: 0.03
+              lateral_threshold: 0.01
+              orientation_dot_min: 0.85
+              face_dot_min: 0.85
+              base_max_displacement: 0.01
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: plug_in_charger_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: insert USB into the target port
+    id: insert
+    score: 5
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: plug_in_charger_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: plug_in_charger_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: pick
+    dst: insert
+  - src: insert
+    dst: return

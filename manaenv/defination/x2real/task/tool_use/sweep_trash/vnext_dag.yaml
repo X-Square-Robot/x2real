@@ -1,0 +1,69 @@
+graph_task_generator:
+  definition:
+    task_type: sweep_trash
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: trash_1_asset
+            target:
+              type: node
+              id: trash_1
+            selector:
+              type: uniform
+          placements:
+          - id: trash_start_region
+            target:
+              type: group
+              id: trash_start_region
+            sample:
+              type: inherit
+          - id: tools_slots
+            target:
+              type: group
+              id: tools_slots
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_trash_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - trash_1
+      instruction_component:
+        instructions:
+        - text: Hold the dustpan with one hand and the broom with the other (either
+            hand first; sides may swap). Sweep the trash into the dustpan, then return
+            the arms home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_trash_assets
+          label: Target trash (exactly 1)
+          font_size: 24
+  nodes:
+  - id: grasp_dustpan
+    include: x2real/task/tool_use/sweep_trash/stages/grasp_dustpan.yaml
+    score: 2
+  - id: grasp_broom
+    include: x2real/task/tool_use/sweep_trash/stages/grasp_broom.yaml
+    score: 2
+  - id: sweep_all
+    include: x2real/task/tool_use/sweep_trash/stages/sweep_all.yaml
+    score: 5
+  - id: return
+    include: x2real/task/tool_use/sweep_trash/stages/return.yaml
+    score: 1
+  edges:
+  - src: grasp_dustpan
+    dst: sweep_all
+  - src: grasp_broom
+    dst: sweep_all
+  - src: sweep_all
+    dst: return

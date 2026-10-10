@@ -1,0 +1,524 @@
+definition:
+  scene_type: stack_blocks_scene
+  metadata:
+    name: ex001_6r_stack_blocks_vnext
+    source: stack_blocks/vnext
+    semantic_goal: Stack scattered colored cube blocks into a single vertical tower
+      on the target paper
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: block_1_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - block
+  - block_slot_1
+  - block_blue
+- id: block_1_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - block
+  - block_slot_1
+  - block_green
+- id: block_1_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - block
+  - block_slot_1
+  - block_red
+- id: block_1_orange
+  asset:
+    type: asset_id
+    id: brick_orange_3cm
+  semantic_tags:
+  - block
+  - block_slot_1
+  - block_orange
+- id: block_2_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - block
+  - block_slot_2
+  - block_blue
+- id: block_2_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - block
+  - block_slot_2
+  - block_green
+- id: block_2_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - block
+  - block_slot_2
+  - block_red
+- id: block_2_orange
+  asset:
+    type: asset_id
+    id: brick_orange_3cm
+  semantic_tags:
+  - block
+  - block_slot_2
+  - block_orange
+- id: block_3_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - block
+  - block_slot_3
+  - block_blue
+- id: block_3_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - block
+  - block_slot_3
+  - block_green
+- id: block_3_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - block
+  - block_slot_3
+  - block_red
+- id: block_3_orange
+  asset:
+    type: asset_id
+    id: brick_orange_3cm
+  semantic_tags:
+  - block
+  - block_slot_3
+  - block_orange
+- id: block_4_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - block
+  - block_slot_4
+  - block_blue
+- id: block_4_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - block
+  - block_slot_4
+  - block_green
+- id: block_4_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - block
+  - block_slot_4
+  - block_red
+- id: block_4_orange
+  asset:
+    type: asset_id
+    id: brick_orange_3cm
+  semantic_tags:
+  - block
+  - block_slot_4
+  - block_orange
+- id: block_5_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - block
+  - block_slot_5
+  - block_blue
+- id: block_5_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - block
+  - block_slot_5
+  - block_green
+- id: block_5_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - block
+  - block_slot_5
+  - block_red
+- id: block_5_orange
+  asset:
+    type: asset_id
+    id: brick_orange_3cm
+  semantic_tags:
+  - block
+  - block_slot_5
+  - block_orange
+- id: stack_base
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - stack_base
+  scale:
+  - 0.2
+  - 0.35
+  - 1.0
+  kinematic: true
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    stack_base:
+      object: stack_base
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.204651
+          - -0.268246
+          - -0.235423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_1_blue:
+      object: block_1_blue
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.95
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_1_green:
+      object: block_1_green
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.85
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_1_red:
+      object: block_1_red
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.75
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_1_orange:
+      object: block_1_orange
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.65
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_2_blue:
+      object: block_2_blue
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.55
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_2_green:
+      object: block_2_green
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.45
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_2_red:
+      object: block_2_red
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.35
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_2_orange:
+      object: block_2_orange
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.25
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_3_blue:
+      object: block_3_blue
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.15
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_3_green:
+      object: block_3_green
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.05
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_3_red:
+      object: block_3_red
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.95
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_3_orange:
+      object: block_3_orange
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.85
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_4_blue:
+      object: block_4_blue
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.75
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_4_green:
+      object: block_4_green
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.65
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_4_red:
+      object: block_4_red
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.55
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_4_orange:
+      object: block_4_orange
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.45
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_5_blue:
+      object: block_5_blue
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.35
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_5_green:
+      object: block_5_green
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.25
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_5_red:
+      object: block_5_red
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.15
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_5_orange:
+      object: block_5_orange
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.05
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+  groups: {}
+variants:
+  materialization: []
+  assignments: []

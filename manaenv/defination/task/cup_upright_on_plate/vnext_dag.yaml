@@ -1,0 +1,296 @@
+graph_task_generator:
+  definition:
+    task_type: cup_upright_on_plate
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: cup_asset
+            target:
+              type: node
+              id: cup
+            selector:
+              type: uniform
+          - id: plate_asset
+            target:
+              type: node
+              id: plate
+            selector:
+              type: uniform
+          placements:
+          - id: cup
+            target:
+              type: node
+              id: cup
+            sample:
+              type: inherit
+          - id: plate
+            target:
+              type: node
+              id: plate
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_cup_plate_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - cup
+              - plate
+      instruction_component:
+        instruction: Flip the cup upright if necessary, move the plate to the center, and place the cup on the plate.
+        topic: cup_upright_on_plate
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_cup_plate_assets
+          label: Assets
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: cup_upright_on_plate_pick_and_flip
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - cup_upright:
+                  _func: object_tilt_in_range
+                  object_cfg: '@pickable'
+                  min_dot: 0.9
+                  max_dot: 1.0
+                  velocity_threshold: 0.5
+                  consecutive_steps: 5
+              - cup_on_table:
+                  _func: object_position_in_zone
+                  object_cfg: '@pickable'
+                  z_range:
+                  - -0.27
+                  - -0.1
+                  velocity_threshold: 0.5
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: cup_upright_on_plate_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: leave @pickable.name upright on the table
+    id: pick_and_flip
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: cup_upright_on_plate_push_plate_to_center
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@destination'
+              x_range:
+              - 0.05
+              - 0.35
+              y_range:
+              - -0.42
+              - -0.12
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: cup_upright_on_plate_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: push @destination.name to the center of the table
+    id: push_plate_to_center
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: cup_upright_on_plate_place_on_plate
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - cup_on_plate:
+                  _func: object_position_in_zone
+                  object_cfg: '@pickable'
+                  reference_cfg: '@destination'
+                  xy_distance_threshold: 0.08
+                  z_min_offset: -0.02
+                  z_max_offset: 0.14
+                  velocity_threshold: 0.5
+                  consecutive_steps: 5
+              - cup_upright:
+                  _func: object_tilt_in_range
+                  object_cfg: '@pickable'
+                  min_dot: 0.9
+                  max_dot: 1.0
+                  velocity_threshold: 0.5
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: cup_upright_on_plate_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place @pickable.name upright on @destination.name
+    id: place_on_plate
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: cup_upright_on_plate_return_home
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - arm_home:
+                  _func: articulation_joints_near_default
+                  asset_cfg: robot
+                  atol: 0.3
+                  consecutive_steps: 10
+              - cup_on_plate:
+                  _func: object_position_in_zone
+                  object_cfg: '@pickable'
+                  reference_cfg: '@destination'
+                  xy_distance_threshold: 0.08
+                  z_min_offset: -0.02
+                  z_max_offset: 0.14
+                  velocity_threshold: 0.5
+                  consecutive_steps: 5
+              - cup_upright:
+                  _func: object_tilt_in_range
+                  object_cfg: '@pickable'
+                  min_dot: 0.9
+                  max_dot: 1.0
+                  velocity_threshold: 0.5
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: cup_upright_on_plate_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return both arms home
+    id: return_home
+    score: 1
+  edges:
+  - src: pick_and_flip
+    dst: push_plate_to_center
+  - src: push_plate_to_center
+    dst: place_on_plate
+  - src: place_on_plate
+    dst: return_home

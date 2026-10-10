@@ -1,0 +1,179 @@
+graph_task_generator:
+  definition:
+    task_type: put_fruit_in_basket
+    runtime_instruction:
+      plan_id: runtime
+      tag_mode: kind
+      objects:
+        fruit: fruit
+      template: Pick up the {fruit} and put it into the basket, then return the arm home.
+      subtasks:
+      - Pick up the {fruit} and put it into the basket.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: fruit_asset
+            target:
+              type: node
+              id: fruit
+            selector:
+              type: uniform
+            cache_size: 30
+          - id: basket_asset
+            target:
+              type: node
+              id: basket
+            selector:
+              type: uniform
+            cache_size: 11
+          placements:
+          - id: fruit
+            target:
+              type: node
+              id: fruit
+            sample:
+              type: inherit
+          - id: basket
+            target:
+              type: node
+              id: basket
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the fruit and put it into the basket, then return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the fruit and put it into the basket.
+        - Return the arm home.
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: atom_fruit_in_basket_pick_place_fruit
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable'
+              reference_cfg: '@container'
+              reference_footprint_zone: true
+              xy_inset_ratio: 0.1
+              z_range:
+              - -0.03
+              - 0.22
+              velocity_threshold: 0.05
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_fruit_in_basket
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put {fruit} into basket
+            fruit_in_basket_zone:
+              trigger: enter
+              func: object_position_in_zone
+              params:
+                object_cfg: '@pickable'
+                reference_cfg: '@container'
+                reference_footprint_zone: true
+                xy_inset_ratio: 0.1
+                z_range:
+                - -0.03
+                - 0.22
+                velocity_threshold: 0.05
+                consecutive_steps: 1
+                log_prefix: fruit_in_basket
+                log_interval: 0
+              update_mode: max
+    id: pick_place_fruit
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: atom_fruit_in_basket_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+              exclude_joint_name_substrings:
+              - finger
+              - gripper
+              - knuckle
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@pickable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_fruit_in_basket
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: pick_place_fruit
+    dst: return

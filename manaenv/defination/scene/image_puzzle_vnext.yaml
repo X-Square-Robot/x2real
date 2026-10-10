@@ -1,0 +1,160 @@
+definition:
+  scene_type: image_puzzle_scene
+  metadata:
+    name: ex001_6r_image_puzzle_vnext
+    source: image_puzzle/vnext
+    semantic_goal: Assemble two split brick image pieces into one complete image
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: brick_split_a
+  asset:
+    type: asset_id
+    id: brick_split_a
+  semantic_tags:
+  - puzzle_piece
+  - puzzle_piece_a
+  scale:
+  - 1.0
+  - 1.0
+  - 1.0
+  material_variants:
+  - id: pic
+    path: Looks/pic
+    candidates:
+    - brick_split_a
+    - brick_split_b
+    - brick_split_c
+    - brick_split_d
+    - brick_split_e
+    - brick_split_g
+    - brick_split_h
+    - brick_split_i
+    - brick_split_ae
+    - brick_split_al
+    - brick_split_am
+- id: brick_split_b
+  asset:
+    type: asset_id
+    id: brick_split_b
+  semantic_tags:
+  - puzzle_piece
+  - puzzle_piece_b
+  scale:
+  - 1.0
+  - 1.0
+  - 1.0
+  material_variants:
+  - id: pic
+    path: Looks/pic
+    candidates:
+    - brick_split_a
+    - brick_split_b
+    - brick_split_c
+    - brick_split_d
+    - brick_split_e
+    - brick_split_g
+    - brick_split_h
+    - brick_split_i
+    - brick_split_ae
+    - brick_split_al
+    - brick_split_am
+- id: puzzle_target
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - puzzle_target
+  scale:
+  - 0.8
+  - 0.6
+  - 1.0
+  kinematic: true
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    brick_split_a:
+      object: brick_split_a
+    brick_split_b:
+      object: brick_split_b
+    puzzle_target:
+      object: puzzle_target
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.204651
+          - -0.268246
+          - -0.235423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.70711
+          - 0.70711
+  groups:
+    puzzle_start_slots:
+      type: slot
+      nodes:
+      - brick_split_a
+      - brick_split_b
+      slots:
+        slot_left:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.0
+            - 0.13
+            y:
+            - 0.14
+            - 0.42
+          yaws:
+          - 2.0
+          - 4.2
+        slot_right:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.0
+            - 0.13
+            y:
+            - -0.42
+            - -0.14
+          yaws:
+          - 2.0
+          - 4.2
+      assignments:
+        mode: permutation
+        nodes:
+        - brick_split_a
+        - brick_split_b
+        slots:
+        - slot_left
+        - slot_right
+      default_assignment: perm_0
+variants:
+  materialization: []
+  assignments: []

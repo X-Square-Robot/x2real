@@ -1,0 +1,249 @@
+definition:
+  scene_type: schema_vnext_nut_on_screw
+  metadata:
+    name: nut on screw
+    source: nut_on_screw
+    semantic_goal: Thread the nut onto the matching same-shape same-color screw
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: screw_a
+  asset:
+    type: asset_id
+    id: screw_a
+  scale:
+  - 1.0
+  - 1.0
+  - 1.0
+  kinematic: true
+  semantic_tags:
+  - fixed
+  - screw
+  - destination
+  - shape_a
+- id: screw_b
+  asset:
+    type: asset_id
+    id: screw_b
+  scale:
+  - 1.0
+  - 1.0
+  - 1.0
+  kinematic: true
+  semantic_tags:
+  - fixed
+  - screw
+  - destination
+  - shape_b
+- id: screw_c
+  asset:
+    type: asset_id
+    id: screw_c
+  scale:
+  - 1.0
+  - 1.0
+  - 1.0
+  kinematic: true
+  semantic_tags:
+  - fixed
+  - screw
+  - destination
+  - shape_c
+- id: screw_d
+  asset:
+    type: asset_id
+    id: screw_d
+  scale:
+  - 1.0
+  - 1.0
+  - 1.0
+  kinematic: true
+  semantic_tags:
+  - fixed
+  - screw
+  - destination
+  - shape_d
+- id: nut
+  asset:
+    type: pool
+    cache_size: 4
+    cache_slot_order: authored
+    # Keep nut_a in the authored cache (a→nut, b→slot_1, …) so screw_a still
+    # has a same-shape color partner. Eval does not sample it: gendata never
+    # collected nut_a, so pick_a is omitted and the task selector weights a=0.
+    candidates:
+    - id: a
+      assets:
+      - nut_a
+    - id: b
+      assets:
+      - nut_b
+    - id: c
+      assets:
+      - nut_c
+    - id: d
+      assets:
+      - nut_d
+  scale:
+  - 1.0
+  - 1.0
+  - 1.0
+  semantic_tags:
+  - pickable
+  - reference
+  - nut
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    screw_a:
+      object: screw_a
+    screw_b:
+      object: screw_b
+    screw_c:
+      object: screw_c
+    screw_d:
+      object: screw_d
+    nut:
+      object: nut
+  groups:
+    screws_mid:
+      type: slot
+      nodes:
+      - screw_a
+      - screw_b
+      - screw_c
+      - screw_d
+      slots:
+        slot_0:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.22
+            - 0.22
+            y:
+            - -0.1125
+            - -0.1125
+          yaws: 0.0
+        slot_1:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.22
+            - 0.22
+            y:
+            - -0.0375
+            - -0.0375
+          yaws: 0.0
+        slot_2:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.22
+            - 0.22
+            y:
+            - 0.0375
+            - 0.0375
+          yaws: 0.0
+        slot_3:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.22
+            - 0.22
+            y:
+            - 0.1125
+            - 0.1125
+          yaws: 0.0
+      assignments:
+        mode: permutation
+        nodes:
+        - screw_a
+        - screw_b
+        - screw_c
+        - screw_d
+        slots:
+        - slot_0
+        - slot_1
+        - slot_2
+        - slot_3
+      default_assignment: perm_0
+    nut_hand:
+      type: slot
+      nodes:
+      - nut
+      slots:
+        nut_left:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.115
+            - 0.255
+            y:
+            - -0.4
+            - -0.2
+          yaws: 0.0
+        nut_right:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.115
+            - 0.255
+            y:
+            - 0.2
+            - 0.4
+          yaws: 0.0
+      assignments:
+        mode: explicit
+        items:
+        - id: hand_left
+          bindings:
+            nut: nut_left
+        - id: hand_right
+          bindings:
+            nut: nut_right
+      default_assignment: hand_left
+variants:
+  materialization:
+  - id: nut_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick_b
+      candidate_refs:
+      - nut.b
+      weight: 1.0
+    - id: pick_c
+      candidate_refs:
+      - nut.c
+      weight: 1.0
+    - id: pick_d
+      candidate_refs:
+      - nut.d
+      weight: 1.0
+  assignments: []

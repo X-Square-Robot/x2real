@@ -1,0 +1,15 @@
+width: 320
+height: 240
+canvas_width: 1280
+canvas_height: 720
+position_x: 0
+position_y: 0
+row_vertical_align: center
+vertical_align: center
+score_window:
+  anchor: top_right
+  width: 400
+  position_y: 0
+fps_window:
+  position_x: 1050
+  position_y: 0

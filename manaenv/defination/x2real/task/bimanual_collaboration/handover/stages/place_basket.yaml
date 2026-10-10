@@ -1,0 +1,21 @@
+include: x2real/task/bimanual_collaboration/handover/stages/_handover_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: handover_place_basket
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_position_in_zone
+          object_cfg: '@pickable'
+          reference_cfg: '@container'
+          reference_footprint_zone: true
+          xy_inset_ratio: 0.1
+          z_range: [-0.03, 0.22]
+          velocity_threshold: 0.03
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: put @pickable.name into @container.name

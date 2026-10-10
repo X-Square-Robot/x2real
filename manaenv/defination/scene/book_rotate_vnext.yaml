@@ -1,0 +1,107 @@
+definition:
+  scene_type: book_rotate_scene
+  metadata:
+    name: ex001_6r_book_rotate_vnext
+    source: book_rotate/vnext
+    semantic_goal: Rotate the book flat on the table to yaw ≈ -90° about world Z
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: book
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: any_book
+      assets:
+      - book_b
+      - book_c
+      - book_d
+      - book_e
+      - book_f
+  spawn_mass:
+  - 0.08
+  - 0.2
+  semantic_tags:
+  - rotatable
+  - pickable
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    book:
+      object: book
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.05
+          - 0.05
+          y:
+          - -0.05
+          - 0.05
+        yaws:
+        - id: yaw_n180
+          value: -3.14159
+          weight: 1.0
+        - id: yaw_n150
+          value: -2.61799
+          weight: 1.0
+        - id: yaw_n135
+          value: -2.35619
+          weight: 1.0
+        - id: yaw_n45
+          value: -0.7854
+          weight: 1.0
+        - id: yaw_n30
+          value: -0.5236
+          weight: 1.0
+        - id: yaw_0
+          value: 0.0
+          weight: 1.0
+        - id: yaw_p30
+          value: 0.5236
+          weight: 1.0
+        - id: yaw_p60
+          value: 1.0472
+          weight: 1.0
+        - id: yaw_p90
+          value: 1.5708
+          weight: 1.0
+        - id: yaw_p120
+          value: 2.0944
+          weight: 1.0
+        - id: yaw_p150
+          value: 2.61799
+          weight: 1.0
+variants:
+  materialization:
+  - id: book_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - book.any_book
+      weight: 1.0
+  assignments: []

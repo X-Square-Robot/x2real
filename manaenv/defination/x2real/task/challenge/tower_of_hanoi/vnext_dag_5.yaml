@@ -1,0 +1,225 @@
+graph_task_generator:
+  definition:
+    task_type: tower_of_hanoi_5
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: pegs
+            target:
+              type: group
+              id: pegs
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_tower_of_hanoi:
+            mode: reset
+            seed: 9101
+            n: 5
+            ring_names:
+            - ring_a
+            - ring_b
+            - ring_c
+            - ring_d
+            - ring_e
+            left_peg_xy:
+            - 0.155
+            - -0.148
+            layer_z_center:
+            - -0.2029
+            - -0.1849
+            - -0.1669
+            - -0.1489
+            - -0.1309
+            layer_z_bottom:
+            - -0.2104
+            - -0.1924
+            - -0.1744
+            - -0.1564
+            - -0.1384
+            bottom_origin_rings:
+            - ring_a
+            away_z: -10.0
+            instruction_template: Move the 5 rings from the left peg to the right peg. Move one ring at a time, and never
+              place a larger ring on a smaller one.
+      instruction_component:
+        instructions:
+        - text: Move the 5 rings from the left peg to the right peg. Move one ring at a time, and never place a larger ring
+            on a smaller one.
+          log:
+            instruction_variant: direct
+        topic: tower_of_hanoi
+      log_component:
+        entries:
+          tower_of_hanoi_plan:
+            trigger: enter
+            func: tower_of_hanoi_plan_label
+  roles:
+    disk_1: disk_1
+    disk_2: disk_2
+    disk_3: disk_3
+    disk_4: disk_4
+    disk_5: disk_5
+  nodes:
+  - id: move_1
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_1.yaml
+  - id: move_2
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_2.yaml
+  - id: move_3
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_3.yaml
+  - id: move_4
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_4.yaml
+  - id: move_5
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_5.yaml
+  - id: move_6
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_6.yaml
+  - id: move_7
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_7.yaml
+  - id: move_8
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_8.yaml
+  - id: move_9
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_9.yaml
+  - id: move_10
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_10.yaml
+  - id: move_11
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_11.yaml
+  - id: move_12
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_12.yaml
+  - id: move_13
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_13.yaml
+  - id: move_14
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_14.yaml
+  - id: move_15
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_15.yaml
+  - id: move_16
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_16.yaml
+  - id: move_17
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_17.yaml
+  - id: move_18
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_18.yaml
+  - id: move_19
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_19.yaml
+  - id: move_20
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_20.yaml
+  - id: move_21
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_21.yaml
+  - id: move_22
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_22.yaml
+  - id: move_23
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_23.yaml
+  - id: move_24
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_24.yaml
+  - id: move_25
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_25.yaml
+  - id: move_26
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_26.yaml
+  - id: move_27
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_27.yaml
+  - id: move_28
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_28.yaml
+  - id: move_29
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_29.yaml
+  - id: move_30
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_30.yaml
+  - id: move_31
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_move_31.yaml
+  - id: return
+    score: 1
+    include: x2real/task/challenge/tower_of_hanoi/stages/n5_return.yaml
+  edges:
+  - src: move_1
+    dst: move_2
+  - src: move_2
+    dst: move_3
+  - src: move_3
+    dst: move_4
+  - src: move_4
+    dst: move_5
+  - src: move_5
+    dst: move_6
+  - src: move_6
+    dst: move_7
+  - src: move_7
+    dst: move_8
+  - src: move_8
+    dst: move_9
+  - src: move_9
+    dst: move_10
+  - src: move_10
+    dst: move_11
+  - src: move_11
+    dst: move_12
+  - src: move_12
+    dst: move_13
+  - src: move_13
+    dst: move_14
+  - src: move_14
+    dst: move_15
+  - src: move_15
+    dst: move_16
+  - src: move_16
+    dst: move_17
+  - src: move_17
+    dst: move_18
+  - src: move_18
+    dst: move_19
+  - src: move_19
+    dst: move_20
+  - src: move_20
+    dst: move_21
+  - src: move_21
+    dst: move_22
+  - src: move_22
+    dst: move_23
+  - src: move_23
+    dst: move_24
+  - src: move_24
+    dst: move_25
+  - src: move_25
+    dst: move_26
+  - src: move_26
+    dst: move_27
+  - src: move_27
+    dst: move_28
+  - src: move_28
+    dst: move_29
+  - src: move_29
+    dst: move_30
+  - src: move_30
+    dst: move_31
+  - src: move_31
+    dst: return

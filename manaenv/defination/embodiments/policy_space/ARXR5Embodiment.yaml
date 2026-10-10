@@ -1,0 +1,57 @@
+# PolicySpace adapter for the ARX-R5 dual-arm embodiment.
+# ARX-R5 exposes the same dual-arm action/observation term names as EX001-6R,
+# but keeps its own physical gripper limits in ARXR5Embodiment's action terms.
+
+action_mode: ik_eef_abs
+action_dim: 16
+
+action_field_map:
+    "follow1_pos[0:7]": arm_action
+    "follow1_pos[7:8]": gripper_action
+    "follow2_pos[0:7]": right_arm_action
+    "follow2_pos[7:8]": right_gripper_action
+
+slot_layout:
+    follow1_pos:
+        pos: [0, 3]
+        quat: [3, 7]
+        gripper: [7]
+    follow2_pos:
+        pos: [8, 11]
+        quat: [11, 15]
+        gripper: [15]
+
+obs_field_map:
+    follow1_pos: follow1_pos
+    follow2_pos: follow2_pos
+    camera_front: head_cam
+    camera_left: left_wrist_cam
+    camera_right: right_wrist_cam
+
+obs_dims:
+    follow1_pos: 7
+    follow2_pos: 7
+
+state_dtype: float32
+image_encode: raw
+instruction_key: instruction
+
+ee_frames:
+    left: left_ee_frame
+    right: right_ee_frame
+
+wire_pose_reference: init_ee_pose
+
+metadata:
+    gripper_wire_indices: [6, 13]
+    gripper_state_indices:
+        follow1_pos: 6
+        follow2_pos: 6
+    action_mode_layouts:
+        joint_position:
+            action_dim: 26
+            action_field_map:
+                "action[0:14]": joint_action
+            slot_layout:
+                action:
+                    joint_pos: [0, 14]

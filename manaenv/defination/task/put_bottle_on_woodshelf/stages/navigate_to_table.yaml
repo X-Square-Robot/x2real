@@ -1,0 +1,31 @@
+include: task/put_bottle_on_woodshelf/stages/_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: put_bottle_on_woodshelf_navigate_to_table
+    stage_timeout_steps: 900
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - table_region_operation_zone:
+              _func: base_in_operation_zone
+              robot_cfg: robot
+              zone_key: table_approach_success_zone
+              context_namespace: mobile_manip
+              context_plan_id: put_bottle_on_woodshelf
+              linear_speed_max: 0.05
+              angular_speed_max: 0.12
+              consecutive_steps: 3
+              _latch: true
+          - pickable_in_head_hfov:
+              _func: target_in_head_hfov
+              robot_cfg: robot
+              target_cfgs: "@pickable"
+              consecutive_steps: 3
+              _latch: true
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: navigate to the table-front zone for the bottle region

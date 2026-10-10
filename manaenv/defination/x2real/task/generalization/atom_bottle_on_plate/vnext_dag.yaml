@@ -1,0 +1,70 @@
+graph_task_generator:
+  definition:
+    task_type: put_bottle_on_plate
+    runtime_instruction:
+      plan_id: runtime
+      tag_mode: kind
+      objects:
+        bottle: bottle
+      template: Pick up the bottle and place it on the plate, then return the arm
+        home.
+      subtasks:
+      - Pick up the bottle and place it on the plate.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: bottle_asset
+            target:
+              type: node
+              id: bottle
+            selector:
+              type: uniform
+            cache_size: 5
+          - id: plate_asset
+            target:
+              type: node
+              id: plate
+            selector:
+              type: uniform
+            cache_size: 5
+          placements:
+          - id: bottle
+            target:
+              type: node
+              id: bottle
+            sample:
+              type: inherit
+          - id: plate
+            target:
+              type: node
+              id: plate
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the bottle and place it on the plate, then return the arm
+            home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the bottle and place it on the plate.
+        - Return the arm home.
+  nodes:
+  - id: pick_bottle
+    score: 4
+    include: x2real/task/generalization/atom_bottle_on_plate/stages/pick_bottle.yaml
+  - id: place_bottle
+    score: 5
+    include: x2real/task/generalization/atom_bottle_on_plate/stages/place_bottle.yaml
+  - id: return
+    score: 1
+    include: x2real/task/generalization/atom_bottle_on_plate/stages/return.yaml
+  edges:
+  - src: pick_bottle
+    dst: place_bottle
+  - src: place_bottle
+    dst: return

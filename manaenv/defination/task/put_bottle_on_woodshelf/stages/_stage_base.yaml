@@ -1,0 +1,27 @@
+# Shared stage base for put_bottle_on_woodshelf (P3 static). No MMP reset / posture joint map.
+# Lift/head initial posture is owned by EX001 whole-body USD defaults.
+direct_task_generator:
+  definition:
+    task_type: put_bottle_on_woodshelf_stage_base
+    episode_length_s: 3600.0
+    max_steps_per_episode: 100000
+    prompt: Navigate to the source table, grasp the bottle on the table, navigate to the wooden shelf, place the bottle on the shelf, and retract the arm safely.
+  roles: {pickable: bottle_nongfuspring, table: table, shelf: shelf}
+  component_sections:
+    instruction_component:
+      instruction: Navigate to the source table, grasp the bottle on the table, navigate to the wooden shelf, place the bottle on the shelf, and retract the arm safely.
+      topic: put_bottle_on_woodshelf
+    termination_component:
+      terms:
+        mdp.time_out:
+          time_out: true
+    event_component:
+      terms:
+        mdp.reset_scene_to_default:
+          mode: reset
+          reset_joint_targets: true
+    viewer_component:
+      terms:
+        look_at_object:
+          lookat_object: "@pickable"
+          offset: [-1.0, 0.0, 1.2]

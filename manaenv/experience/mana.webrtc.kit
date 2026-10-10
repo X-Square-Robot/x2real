@@ -1,0 +1,223 @@
+##
+# ManaEnv `--livestream 2` experience: Isaac Lab headless camera rendering +
+# WebRTC livestream on the MINIMAL kit stack (no GUI fullstack rendering.kit).
+# Derived from IsaacLab 3.0's isaaclab.python.headless.rendering.kit; deviations:
+#   * omni.kit.livestream.app + omni.kit.viewport.window dependencies
+#     (stream + viewport; no toolbar — this experience has no main window UI)
+#   * present.enabled=true (webrtc encodes the presented frame)
+#   * manaenv.stream.fps_overlay=true (evaluation loop gates the Sim FPS window on it)
+#   * no hardcoded app.profilerBackend (CLI --/app/profilerBackend must win)
+#   * IsaacLab is installed externally and resolved by AppLauncher.
+# Selected directly for --livestream 2. The legacy --livestream 3 alias is
+# rewritten to mode 2 before AppLauncher starts. The primary app framebuffer carries
+# the WebRTC composition; the evaluation loop hides the Perspective
+# Viewport and other non-stream windows while retaining camera sensors.
+##
+
+[package]
+title = "Mana Headless Camera + WebRTC"
+description = "Headless Mana camera rendering with WebRTC livestream (no GUI fullstack)"
+version = "0.9.0"
+
+# That makes it browsable in UI with "experience" filter
+keywords = ["experience", "app", "isaaclab", "python", "camera", "minimal", "livestream"]
+
+[dependencies]
+# Isaac Lab minimal app
+"isaaclab.python.headless" = {}
+"isaacsim.core.rendering_manager" = {}
+"omni.replicator.core" = {}
+
+# Rendering
+"omni.kit.material.library" = {}
+"omni.kit.viewport.rtx" = {}
+"omni.kit.hydra_texture" = {}  # required for headless rendering and rtx instantiation
+
+# WebRTC livestream stack (same extension --livestream 2 would --enable;
+# IsaacSim 6.0 name, replaces the old omni.services.livestream.nvcf).
+"omni.kit.livestream.app" = {}
+
+# Default "Viewport" window instance + camera binding — without it the present
+# buffer webrtc encodes is an empty texture (black stream, FPS 0).
+"omni.kit.viewport.window" = {}
+
+# NOTE: omni.kit.widget.toolbar is deliberately NOT a dependency. Without its
+# window host (omni.kit.window.toolbar) it only spams "No root frame specified"
+# and registers W/E/R hotkeys on a toolbar UI that never exists; AppLauncher's
+# sync_toolbar_playback_controls import of it is try/except-guarded (no-op).
+
+# ManagerBasedEnv builds its IsaacLab UI window whenever has_gui (livestream
+# implies it) and styles it via isaacsim.gui.components.ui_utils; the window is
+# hidden from the stream later by the evaluation loop.
+"isaacsim.gui.components" = {}
+
+[settings.isaaclab]
+# This is used to check that this experience file is loaded when using cameras
+cameras_enabled = true
+
+[settings]
+# Note: This path was adapted to be respective to the kit-exe file location
+app.versionFile = "${exe-path}/VERSION"
+app.folder = "${exe-path}/"
+app.name = "Mana"
+app.version = "0.9.0"
+
+### FSD
+app.useFabricSceneDelegate = true
+# Geometry streaming remains enabled; direct RenderDelegate reads are unsafe
+# with dynamic transforms in Kit 110.1.2.
+rtx.hydra.readTransformsFromFabricInRenderDelegate = false
+renderer.scenePartitioning.enabled = true # Enable before RTX initialization so env-root partitions are honored
+
+# Disable print outs on extension startup information
+# this only disables the app print_and_log function
+app.enableStdoutOutput = false
+
+# set the default ros bridge to disable on startup
+isaac.startup.ros_bridge_extension = ""
+
+# High-fidelity camera rendering defaults.
+rtx.translucency.enabled = true
+rtx.reflections.enabled = true
+rtx.indirectDiffuse.enabled = true
+rtx-transient.dlssg.enabled = false
+rtx.directLighting.sampledLighting.enabled = true
+rtx.directLighting.sampledLighting.samplesPerPixel = 1
+rtx.sceneDb.ambientLightIntensity = 1.0
+rtx.shadows.enabled = true
+
+rtx.rtpt.maxBounces = 3
+rtx.rtpt.cached.enabled = false
+rtx.rtpt.lightcache.cached.enabled = false
+rtx.rtpt.translucency.virtualMotion.enabled = false
+rtx.rtpt.splitRoughReflection = true
+rtx.rtpt.adaptiveSampling.disocclusion.enabled = true
+rtx.rtpt.adaptiveSampling.disocclusion.spp = 4
+
+# Avoids replicator warning
+rtx.pathtracing.maxSamplesPerLaunch = 1000000
+# Avoids silent trimming of tiles
+rtx.viewTile.limit = 1000000
+
+# NOTE: WebRTC needs a presented frame to encode; keep present thread ENABLED
+# (headless.rendering.kit disables it for pure offscreen perf, but that starves
+# the stream). This is a deliberate deviation from the base kit.
+exts."omni.renderer.core".present.enabled=true
+
+# Livestream renders the primary WebRTC viewport and multiple Replicator
+# camera products in one frame.  The headless base omits this window-backed
+# default; without it the first multi-product render never finishes and the
+# client connects to a stalled/blank stream.
+app.gatherRenderResults = true
+
+# Let the stream follow the client's requested resolution. Default (false) pins
+# the frame buffer at SimulationApp's 1440x900 window default while the client
+# negotiates e.g. 1920x1080, spamming "Cannot stream video frame ..." warnings.
+exts."omni.kit.livestream.app".primaryStream.allowDynamicResize = true
+
+rtx.raytracing.cached.enabled = true
+rtx.ambientOcclusion.enabled = true
+rtx.ambientOcclusion.denoiserMode = 0
+rtx.raytracing.subpixel.mode = 1
+
+# Set the DLSS model
+rtx.post.dlss.execMode = 2 # can be 0 (Performance), 1 (Balanced), 2 (Quality), or 3 (Auto)
+
+# Force synchronous rendering to improve training results
+omni.replicator.asyncRendering = false
+
+# Avoids frame offset issue
+app.updateOrder.checkForHydraRenderComplete = 1000
+app.renderer.waitIdle=true
+app.hydraEngine.waitIdle=true
+
+# NuRec
+omni.rtx.nre.compositing.rendererHints = 3
+
+# Forces serial processing for omni graph to avoid NCCL timeout hangs in distributed training
+app.execution.debug.forceSerial = true
+
+app.audio.enabled = false
+
+# Enable Vulkan - avoids torch+cu12 error on windows
+app.vulkan = true
+
+# No hardcoded profiler backend: follow the CLI (--/app/profilerBackend=tracy
+# for tracy captures; unset = Kit default). A baked-in value here leaves the
+# tracy zone stream half-initialized when overridden from CLI.
+
+# Disables rate limit in runloop
+app.runLoops.main.rateLimitEnabled=false
+
+# Sim FPS overlay window in the stream (the evaluation loop gates on this setting;
+# the windowed Mana Kit experience enables the same existing overlay).
+manaenv.stream.fps_overlay = true
+
+# Kit builtin hotkeys (toolbar W/E/R = move/rotate/scale) collide with the
+# keyboard shortcuts and fire on a toolbar UI that is never built here
+# ("'TransformButtonGroup' object has no attribute '_move_button'"). Teleop
+# owns input handling, so muting Kit hotkey triggering is safe.
+exts."omni.kit.hotkeys.core".hotkeys_enabled = false
+
+# disable replicator orchestrator for better runtime perf
+exts."omni.replicator.core".Orchestrator.enabled = false
+
+# disable the metrics assembler change listener, we don't want to do any runtime changes
+metricsAssembler.changeListenerEnabled = false
+
+# Keep the Kit Newton extension excluded: StablePD uses the pinned actuator
+# graph package from the environment, while the public physics backend is PhysX.
+# Also disable omni.kit.pip_archive to prevent conflicting dependencies.
+app.extensions.excluded = ["omni.kit.pip_archive", "omni.isaac.ml_archive", "isaacsim.pip.newton", "omni.warp.core"]
+
+[settings.app.python]
+# These disable the kit app from also printing out python output, which gets confusing
+interceptSysStdOutput = false
+logSysStdOutput = false
+
+[settings.app.renderer]
+skipWhileMinimized = false
+sleepMsOnFocus = 0
+sleepMsOutOfFocus = 0
+
+[settings.physics]
+updateToUsd = false
+updateParticlesToUsd = false
+updateVelocitiesToUsd = false
+updateForceSensorsToUsd = false
+outputVelocitiesLocalSpace = false
+useFastCache = false
+visualizationDisplayJoints = false
+fabricUpdateTransformations = false
+fabricUpdateVelocities = false
+fabricUpdateForceSensors = false
+fabricUpdateJointStates = false
+### When Direct GPU mode is enabled (suppressReadback=true) use direct interop between PhysX GPU and Fabric
+fabricUseGPUInterop = true
+
+# Register only Isaac Sim/Kit extension folders. This streamlined experience
+# depends on IsaacLab's external app package; use the stock experience if that
+# package cannot resolve the dependency in the selected installation layout.
+[settings.app.exts]
+folders = [
+    "${exe-path}/exts",
+    "${exe-path}/extscore",
+    "${exe-path}/../exts",
+    "${exe-path}/../extscache",
+    "${exe-path}/../extsPhysics",
+    "${exe-path}/../isaacsim/exts",
+    "${exe-path}/../isaacsim/extscache",
+    "${exe-path}/../isaacsim/extsPhysics",
+]
+
+[settings.persistent]
+UJITSO.geometry = true
+UJITSO.enabled = true
+
+# Asset path
+# set the S3 directory manually to the latest published S3
+# note: this is done to ensure prior versions of Isaac Sim still use the latest assets
+[settings]
+persistent.isaac.asset_root.default = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"
+persistent.isaac.asset_root.cloud = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"
+persistent.isaac.asset_root.nvidia = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"

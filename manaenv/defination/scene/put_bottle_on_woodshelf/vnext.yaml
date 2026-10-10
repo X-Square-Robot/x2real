@@ -1,0 +1,93 @@
+################################################################################
+# put_bottle_on_woodshelf schema-vNext scene (ID). Static migration from mobile_manip5.1.
+# Episode robot/bottle poses owned by task/case_bank.yaml (P4 native sampler).
+################################################################################
+definition:
+  scene_type: put_bottle_on_woodshelf_scene
+  seed: 42
+  nums: 1
+  sim_fps: 240
+  render_decremental: 8
+  simulation_decimation: 4
+  metadata:
+    name: put_bottle_on_woodshelf
+    split: id
+    source: put_bottle_on_woodshelf/static_p3
+    semantic_goal: EX001 picks a bottle from a table and places it on a wooden shelf.
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: put_bottle_on_woodshelf_green_booth
+  # Standard AssetBasedComponent preload (not SceneGeneratorCFG).
+  asset_module: manaenv.assets.objects.put_bottle_on_woodshelf
+  pose:
+    position: [0.0, 0.0, 0.0]
+    # schema-vNext / layout solver quaternions are XYZW (identity = [0,0,0,1]).
+    # 5.1 authored WXYZ identity [1,0,0,0]; converted for Isaac Sim 6.0.
+    orientation: [0.0, 0.0, 0.0, 1.0]
+  required_surfaces: [tabletop]
+  surface_overrides:
+    tabletop:
+      type: manual
+      shape: rectangle
+      frame: world
+      center: [1.5, -0.95, 0.7067]
+      x_axis: [0.0, 1.0, 0.0]
+      y_axis: [-1.0, 0.0, 0.0]
+      normal: [0.0, 0.0, 1.0]
+      bounds:
+        x: [-0.51514, 0.51269]
+        y: [-0.19576, 0.20072]
+objects:
+- id: table
+  asset: {type: asset_id, id: put_bottle_on_woodshelf_table}
+  semantic_tags: [table, navigation_target]
+- id: shelf
+  asset: {type: asset_id, id: put_bottle_on_woodshelf_shelf}
+  semantic_tags: [shelf, place_target, navigation_target]
+- id: bottle_nongfuspring
+  asset: {type: asset_id, id: put_bottle_on_woodshelf_bottle_s}
+  semantic_tags: [pickable, bottle]
+  scale: [1.0, 1.0, 1.0]
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    table:
+      object: table
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position: [1.5, -0.95, 0.0]
+          # XYZW yaw≈+90° (5.1 WXYZ [0.707107,0,0,0.707107]). Wrong convention tips
+          # the table about X and collides with shelf (P6D collision_unsatisfied).
+          orientation: [0.0, 0.0, 0.707107, 0.707107]
+    shelf:
+      object: shelf
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position: [0.63, -1.7907, 0.0]
+          # XYZW yaw=180° so the open side faces the operation side
+          # (5.1 WXYZ [0,0,0,1] → XYZW [0,0,1,0]).
+          orientation: [0.0, 0.0, 1.0, 0.0]
+    bottle_nongfuspring:
+      object: bottle_nongfuspring
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position: [1.505, -0.95, 0.905]
+          # XYZW near-identity upright (5.1 WXYZ [0.9998,-0.01837,0.007908,0.000433]).
+          orientation: [-0.01837, 0.007908, 0.000433, 0.9998]
+variants:
+  materialization: []
+  assignments: []

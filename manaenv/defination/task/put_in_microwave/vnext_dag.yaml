@@ -1,0 +1,401 @@
+graph_task_generator:
+  definition:
+    task_type: put_in_microwave
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: fruit_asset
+            target:
+              type: node
+              id: fruit
+            selector:
+              type: uniform
+          placements:
+          - id: fruit
+            target:
+              type: node
+              id: fruit
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_fruit_asset:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - fruit
+      instruction_component:
+        instructions:
+        - text: Open the microwave, put the fruit inside, close the door, then return the arm home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_fruit_asset
+          label: Fruit
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: put_in_microwave_open_door
+      roles:
+        openable: openable
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: joint_above_threshold
+              object_cfg: '@openable'
+              joint_names:
+              - RevoluteJoint_01
+              threshold: 0.5
+              openness_gt: true
+              joint_match: any
+              consecutive_steps: 2
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+            set_articulation_joint_openness_map:
+              mode: reset
+              asset_cfg: '@openable'
+              joint_openness:
+                RevoluteJoint_01: 0.0
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: put_in_microwave_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: open the microwave door
+    id: open_door
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: put_in_microwave_pick_fruit
+      roles:
+        openable: openable
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+            set_articulation_joint_openness_map:
+              mode: reset
+              asset_cfg: '@openable'
+              joint_openness:
+                RevoluteJoint_01: 0.0
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: put_in_microwave_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up the fruit
+    id: pick_fruit
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: put_in_microwave_place_in_microwave
+      roles:
+        openable: openable
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable'
+              reference_cfg: '@containable'
+              in_reference_frame: true
+              x_range:
+              - -0.08
+              - 0.04
+              y_range:
+              - -0.08
+              - 0.06
+              z_range:
+              - -0.07
+              - 0.03
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+            set_articulation_joint_openness_map:
+              mode: reset
+              asset_cfg: '@openable'
+              joint_openness:
+                RevoluteJoint_01: 0.0
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: put_in_microwave_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put the fruit inside the microwave
+    id: place_in_microwave
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: put_in_microwave_close_door
+      roles:
+        openable: openable
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: merged
+              mode: and
+              terms:
+              - door_closed:
+                  _func: joint_above_threshold
+                  object_cfg: '@openable'
+                  joint_names:
+                  - RevoluteJoint_01
+                  threshold: 0.15
+                  openness_gt: false
+                  joint_match: all
+                  consecutive_steps: 2
+              - fruit_inside:
+                  _func: object_position_in_zone
+                  _latch: true
+                  object_cfg: '@pickable'
+                  reference_cfg: '@containable'
+                  in_reference_frame: true
+                  x_range:
+                  - -0.08
+                  - 0.04
+                  y_range:
+                  - -0.08
+                  - 0.06
+                  z_range:
+                  - -0.07
+                  - 0.03
+                  velocity_threshold: 0.5
+                  consecutive_steps: 2
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+            set_articulation_joint_openness_map:
+              mode: reset
+              asset_cfg: '@openable'
+              joint_openness:
+                RevoluteJoint_01: 0.0
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: put_in_microwave_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: close the microwave door with the fruit inside
+    id: close_door
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: put_in_microwave_return
+      roles:
+        openable: openable
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+            set_articulation_joint_openness_map:
+              mode: reset
+              asset_cfg: '@openable'
+              joint_openness:
+                RevoluteJoint_01: 0.0
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: put_in_microwave_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 2
+  edges:
+  - src: open_door
+    dst: pick_fruit
+  - src: pick_fruit
+    dst: place_in_microwave
+  - src: place_in_microwave
+    dst: close_door
+  - src: close_door
+    dst: return

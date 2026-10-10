@@ -1,0 +1,183 @@
+definition:
+  scene_type: cup_upright_on_plate_scene
+  metadata:
+    name: ex001_6r_cup_upright_on_plate_vnext
+    source: cup_upright_on_plate/vnext
+    semantic_goal: Flip the cup upright if necessary, move the plate to the center, and place the cup on the plate
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: cup
+  asset:
+    type: pool
+    candidates:
+    - id: any_cup
+      assets:
+      - cup_a
+      - cup_b
+      - cup_f
+      - cup_m
+      - cup_h
+  semantic_tags:
+  - pickable
+- id: plate
+  asset:
+    type: pool
+    candidates:
+    - id: any_plate
+      assets:
+      - bowl_c
+      - bowl_d
+  semantic_tags:
+  - destination
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    cup:
+      object: cup
+      placement:
+        type: pose
+        poses:
+        - id: u00
+          position:
+          - 0.14
+          - -0.18
+          - -0.15
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+          weight: 1.0
+        - id: u01
+          position:
+          - 0.2
+          - -0.27
+          - -0.15
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+          weight: 1.0
+        - id: u02
+          position:
+          - 0.26
+          - -0.36
+          - -0.15
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+          weight: 1.0
+        - id: u03
+          position:
+          - 0.14
+          - -0.36
+          - -0.15
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+          weight: 1.0
+        - id: lx0
+          position:
+          - 0.2
+          - -0.18
+          - -0.15
+          orientation:
+          - 0.0
+          - 0.707
+          - 0.0
+          - 0.707
+          weight: 1.0
+        - id: lx1
+          position:
+          - 0.26
+          - -0.27
+          - -0.15
+          orientation:
+          - 0.0
+          - -0.707
+          - 0.0
+          - 0.707
+          weight: 1.0
+        - id: ly0
+          position:
+          - 0.14
+          - -0.27
+          - -0.15
+          orientation:
+          - 0.707
+          - 0.0
+          - 0.0
+          - 0.707
+          weight: 1.0
+        - id: ly1
+          position:
+          - 0.2
+          - -0.36
+          - -0.15
+          orientation:
+          - -0.707
+          - 0.0
+          - 0.0
+          - 0.707
+          weight: 1.0
+    plate:
+      object: plate
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - 0.2
+          - 0.3
+          y:
+          - -0.1
+          - 0.0
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.0
+        - 1.0
+variants:
+  materialization:
+  - id: cup_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - cup.any_cup
+      weight: 1.0
+  - id: plate_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - plate.any_plate
+      weight: 1.0
+  assignments: []

@@ -1,0 +1,70 @@
+graph_task_generator:
+  definition:
+    task_type: put_object_beside_block
+    beside_placement:
+      pickable: object
+      reference: block
+      gap: 0.1
+      zone_half_width: 0.08
+    runtime_instruction:
+      plan_id: runtime
+      tag_mode: kind
+      objects:
+        object: object
+      template: Pick up the green object and place it {direction} the block, then
+        return the arm home.
+      subtasks:
+      - Pick up the green object and place it {direction} the block.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: object_asset
+            target:
+              type: node
+              id: object
+            selector:
+              type: uniform
+          - id: block_asset
+            target:
+              type: node
+              id: block
+            selector:
+              type: uniform
+          placements:
+          - id: beside_pair
+            target:
+              type: group
+              id: beside_pair
+            sample:
+              type: inherit
+              selectors:
+                assignments:
+                  type: uniform
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the green object and place it beside the block, then return
+            the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the green object and place it beside the block.
+        - Return the arm home.
+  nodes:
+  - id: pick_object
+    score: 4
+    include: x2real/task/generalization/atom_objects_beside_block/stages/pick_object.yaml
+  - id: place_object
+    score: 5
+    include: x2real/task/generalization/atom_objects_beside_block/stages/place_object.yaml
+  - id: return
+    score: 1
+    include: x2real/task/generalization/atom_objects_beside_block/stages/return.yaml
+  edges:
+  - src: pick_object
+    dst: place_object
+  - src: place_object
+    dst: return

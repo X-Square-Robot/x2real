@@ -1,0 +1,102 @@
+# PolicyEmbodimentCFG: policy_space  ->  EX0016REmbodiment
+#
+# Path: embodiments/policy_space/EX0016REmbodiment.yaml
+# Resolved by RolloutFactory (bind_embodiment_to_policy_cfg) using
+#   (policy.implementation="policy_space", env.robot="EX0016REmbodiment")
+#
+# Wire format: policies emit 14-D dual-arm EE Euler trajectories.
+# PolicySpaceImpl EEAbsoluteIKTransform widens them to 16-D XYZW sim actions
+# (two 8-D position + quaternion + gripper slots).
+
+action_mode: ik_eef_abs
+action_dim: 16
+
+action_field_map:
+    "follow1_pos[0:7]": arm_action
+    "follow1_pos[7:8]": gripper_action
+    "follow2_pos[0:7]": right_arm_action
+    "follow2_pos[7:8]": right_gripper_action
+
+slot_layout:
+    follow1_pos:
+        pos: [0, 3]
+        quat: [3, 7]
+        gripper: [7]
+    follow2_pos:
+        pos: [8, 11]
+        quat: [11, 15]
+        gripper: [15]
+
+obs_field_map:
+    follow1_pos: follow1_pos
+    follow2_pos: follow2_pos
+    follow1_abs_pos: follow1_abs_pos
+    follow2_abs_pos: follow2_abs_pos
+    camera_front: head_cam
+    camera_left: left_wrist_cam
+    camera_right: right_wrist_cam
+
+# Wire width of each state field above, keyed by its policy-side name. Nothing in
+# the rollout path reads this — PolicySpaceImpl forwards whatever the sim emits —
+# but a preflight probe has no sim to ask, so this is the only declaration of the
+# observation contract a model server can be checked against (the same role
+# XPolicyLab's utils/robot/_robot_info.json plays for its adapters).
+#
+# ``follow1_abs_pos`` / ``follow2_abs_pos`` are deliberately absent: EX001-6R
+# publishes no such observation term, so PolicySpaceImpl drops them and a probe
+# that sent them would be testing a payload the scored run never produces.
+obs_dims:
+    follow1_pos: 7
+    follow2_pos: 7
+
+state_dtype: float32
+image_encode: raw
+instruction_key: instruction
+
+ee_frames:
+    left: left_ee_frame
+    right: right_ee_frame
+
+wire_pose_reference: init_ee_pose
+
+# PolicySpace serves both EE policies (WallX) and joint policies (DreamZero)
+# for the same simulator embodiment. The policy-level ``action_mode`` selects
+# this override before the environment is built. EX001-6R's JointActionsCfg is
+# 26-D: the first 14 slots drive both arms, while the last 12 are record-only
+# master-EE channels.
+metadata:
+    # Gripper columns of the 14-D wire, for policies that declare
+    # ``gripper_convention: normalized_01`` in their deploy.yaml metadata. Indices
+    # are into the wire the policy returns, NOT into the widened sim action: the
+    # conversion runs before EEAbsoluteIKTransform, which copies the wire gripper
+    # into slots 7/15 verbatim. The scale itself is never written here — it comes
+    # from the live embodiment's ``get_gripper_states()``, so the web UI's H/G
+    # selection (open=5.717175 vs 1.89) propagates automatically.
+    # See manaenv/policy/gripper_convention.py.
+    gripper_wire_indices: [6, 13]
+    # Gripper index within each state field sent back to the model. EE mode
+    # publishes 7-D follow*_pos (xyz + euler + gripper), so the gripper is at 6.
+    gripper_state_indices:
+        follow1_pos: 6
+        follow2_pos: 6
+    action_mode_layouts:
+        joint_position:
+            action_dim: 26
+            action_field_map:
+                "action[0:14]": joint_action
+            slot_layout:
+                action:
+                    joint_pos: [0, 14]
+            # DreamZero predicts relative joint deltas. Keep its stable wire
+            # names while sourcing them from the simulator's actual joint
+            # observations; the default follow1/follow2 terms above are WallX
+            # end-effector position + Euler observations and are not joints.
+            obs_field_map:
+                follow1_pos: follow_left_joint_pos
+                follow2_pos: follow_right_joint_pos
+                camera_front: head_cam
+                camera_left: left_wrist_cam
+                camera_right: right_wrist_cam
+            obs_dims:
+                follow1_pos: 7
+                follow2_pos: 7

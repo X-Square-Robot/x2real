@@ -1,0 +1,10 @@
+[submodule "3rd/isaaclabarena"]
+	path = 3rd/isaaclabarena
+	url = https://github.com/X-Square-Robot/IsaacLabArena.git
+	branch = x2real
+	ignore = all
+[submodule "3rd/policy_space"]
+	path = 3rd/policy_space
+	url = https://github.com/X-Square-Robot/policy-space.git
+	branch = main
+	ignore = all

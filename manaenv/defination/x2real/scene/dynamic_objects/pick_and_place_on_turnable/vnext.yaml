@@ -1,0 +1,189 @@
+definition:
+  scene_type: pick_and_place_on_turnable_scene
+  metadata:
+    name: ex001_6r_pick_and_place_on_turnable_vnext
+    source: pick_and_place_on_turnable/vnext
+    semantic_goal: Pick a target brick from a spinning turntable and place it on a
+      plate on another spinning turntable
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: green_booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: turntable_bricks
+  asset:
+    type: asset_id
+    id: turntable_a
+  semantic_tags:
+  - turntable
+  - turntable_bricks
+- id: turntable_plate
+  asset:
+    type: asset_id
+    id: turntable_a
+  semantic_tags:
+  - turntable
+  - turntable_plate
+- id: brick_red
+  asset:
+    type: asset_id
+    id: brick_red
+  semantic_tags:
+  - pickable
+  - brick
+  - brick_red
+  scale:
+  - 2.0
+  - 2.0
+  - 2.0
+- id: brick_green
+  asset:
+    type: asset_id
+    id: brick_green
+  semantic_tags:
+  - pickable
+  - brick
+  - brick_green
+  scale:
+  - 2.0
+  - 2.0
+  - 2.0
+- id: brick_yellow
+  asset:
+    type: asset_id
+    id: brick_yellow
+  semantic_tags:
+  - pickable
+  - brick
+  - brick_yellow
+  scale:
+  - 2.0
+  - 2.0
+  - 2.0
+- id: plate_d
+  asset:
+    type: asset_id
+    id: plate_d
+  semantic_tags:
+  - destination
+  - plate
+  scale:
+  - 0.7
+  - 0.7
+  - 0.7
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    turntable_bricks:
+      object: turntable_bricks
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.2
+          - -0.48
+          - -0.240423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    turntable_plate:
+      object: turntable_plate
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.2
+          - 0.0
+          - -0.240423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    brick_red:
+      object: brick_red
+      placement:
+        type: pose
+        poses:
+        - id: on_disk
+          position:
+          - 0.32
+          - -0.48
+          - -0.173423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    brick_green:
+      object: brick_green
+      placement:
+        type: pose
+        poses:
+        - id: on_disk
+          position:
+          - 0.14
+          - -0.37608
+          - -0.173423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    brick_yellow:
+      object: brick_yellow
+      placement:
+        type: pose
+        poses:
+        - id: on_disk
+          position:
+          - 0.14
+          - -0.58392
+          - -0.173423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    plate_d:
+      object: plate_d
+      placement:
+        type: pose
+        poses:
+        - id: on_disk
+          position:
+          - 0.32
+          - 0.0
+          - -0.173423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+  groups: {}
+variants:
+  materialization: []
+  assignments: []

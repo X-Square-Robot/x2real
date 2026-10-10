@@ -1,0 +1,404 @@
+graph_task_generator:
+  definition:
+    task_type: put_glasses_on_woodshelf
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: glasses
+            target:
+              type: node
+              id: glasses
+            sample:
+              type: inherit
+          - id: rack
+            target:
+              type: node
+              id: rack
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instruction: Pick up the glasses and hang them on the rack.
+        topic: glasses_on_rack
+      overlay_component:
+        evaluation: true
+        entries: []
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: glasses_on_rack_grab_glasses
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: object_lifted
+              object_cfg: '@pickable'
+              min_lift: 0.03
+              settle_steps: 30
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: glasses_on_rack_scene
+        sensor_component:
+          sensors:
+          - destination_contact_sensor:
+              type: contact
+              source: '@rackable'
+              against: '@pickable'
+          - left_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - right_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up @pickable.name
+    id: grab_glasses
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: glasses_on_rack_place_center
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable'
+              x_range:
+              - 0.0
+              - 0.25
+              y_range:
+              - -0.35
+              - -0.15
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: glasses_on_rack_scene
+        sensor_component:
+          sensors:
+          - destination_contact_sensor:
+              type: contact
+              source: '@rackable'
+              against: '@pickable'
+          - left_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - right_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move @pickable.name to the center of the table
+    id: place_center
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: glasses_on_rack_adjust_direction
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: object_yaw_in_range
+              object_cfg: '@pickable'
+              yaw_ranges:
+              - - 150.0
+                - 210.0
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: glasses_on_rack_scene
+        sensor_component:
+          sensors:
+          - destination_contact_sensor:
+              type: contact
+              source: '@rackable'
+              against: '@pickable'
+          - left_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - right_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: adjust the orientation of @pickable.name for the rack
+    id: adjust_direction
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: glasses_on_rack_hang_on_rack
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - left_gripper_contact_glasses:
+                  _func: contact_once
+                  contact_sensor_cfg: '@left_gripper_contact_sensor'
+                  force_threshold: 0.1
+              - right_gripper_contact_glasses:
+                  _func: contact_once
+                  contact_sensor_cfg: '@right_gripper_contact_sensor'
+                  force_threshold: 0.1
+              - glasses_on_rack_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@destination_contact_sensor'
+                  force_threshold: 0.01
+                  consecutive_steps: 5
+                  _latch: true
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: glasses_on_rack_scene
+        sensor_component:
+          sensors:
+          - destination_contact_sensor:
+              type: contact
+              source: '@rackable'
+              against: '@pickable'
+          - left_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - right_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: hang @pickable.name on @rackable.name
+    id: hang_on_rack
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: glasses_on_rack_retract_arm
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - arm_home:
+                  _func: articulation_joints_near_default
+                  asset_cfg: robot
+                  atol: 0.3
+                  consecutive_steps: 10
+              - glasses_on_rack_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@destination_contact_sensor'
+                  force_threshold: 0.01
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: glasses_on_rack_scene
+        sensor_component:
+          sensors:
+          - destination_contact_sensor:
+              type: contact
+              source: '@rackable'
+              against: '@pickable'
+          - left_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+          - right_gripper_contact_sensor:
+              type: contact
+              source: '@pickable'
+              against:
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return the arm to its home pose
+    id: retract_arm
+    score: 1
+  edges:
+  - src: grab_glasses
+    dst: place_center
+  - src: place_center
+    dst: adjust_direction
+  - src: adjust_direction
+    dst: hang_on_rack
+  - src: hang_on_rack
+    dst: retract_arm

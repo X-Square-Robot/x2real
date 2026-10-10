@@ -1,0 +1,94 @@
+graph_task_generator:
+  definition:
+    task_type: plug_in_charger
+    planner_skill_boundary:
+      prefix:
+      - type: stay
+    planner_skill_defaults:
+      pick:
+        arm: auto
+        top_k: 16
+        winner_plan_failure_cooldown: 8
+        filter_x_dir:
+        - downward
+        - 0.0
+        - 15.0
+      place:
+        arm: current
+        batch_size: 1
+        hesitate_steps: 10
+        object_pose_constraint:
+          enabled: true
+          root_position_source: align_local_point_to_target
+          rotation_mode: preserve_grasp_orientation
+          contact_point_local:
+          - -0.0336
+          - 0.0
+          - 0.0
+          yaw_samples: 1
+    layout:
+      runtime_sample:
+        include: x2real/task/fine_manipulation/plug_in_charger/_runtime_sample_hand_side.yaml
+    component_sections:
+      event_component:
+        terms:
+          sample_usb_dock_slot:
+            mode: reset
+            slot_prims:
+            - slot_a
+            - slot_b
+            - slot_c
+            slot_labels:
+            - left
+            - middle
+            - right
+            slot_log_key: target_dock_slot
+            instruction_template: Identify the {slot} USB port on the hub, pick up
+              the USB stick, align and insert it fully into the {slot} port, then
+              return the arm home.
+      log_component:
+        entries:
+          target_dock_slot_label:
+            trigger: enter
+            func: usb_dock_slot_label
+            params:
+              log_key: target_dock_slot
+              slot_labels:
+              - left
+              - middle
+              - right
+      instruction_component:
+        instructions:
+        - text: Identify the target USB port on the hub, pick up the USB stick, insert
+            it fully into that port, then return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the USB stick.
+        - Insert the USB stick into the instructed hub port.
+        - Return the arm home.
+        topic: plug_in_charger
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: target_dock_slot_label
+          label: Target port
+          font_size: 24
+  roles:
+    pickable: usb
+    destination: usb_base
+  nodes:
+  - id: pick
+    include: x2real/task/fine_manipulation/plug_in_charger/stages/pick.yaml
+    score: 3
+  - id: insert
+    include: x2real/task/fine_manipulation/plug_in_charger/stages/insert.yaml
+    score: 6
+  - id: return
+    include: x2real/task/fine_manipulation/plug_in_charger/stages/return.yaml
+    score: 1
+  edges:
+  - src: pick
+    dst: insert
+  - src: insert
+    dst: return

@@ -1,0 +1,62 @@
+definition:
+  scene_type: press_button_n_times_scene
+  metadata:
+    name: ex001_6r_press_button_n_times_vnext
+    source: press_button_n_times/vnext
+    semantic_goal: Hold the pump bottle and press the pump head a sampled number of
+      times
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: pump_bottle
+  asset:
+    type: asset_id
+    id: pump_bottle_a
+  semantic_tags:
+  - graspable
+  - pressable
+  - pump_bottle
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    pump_bottle:
+      object: pump_bottle
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.02
+          - 0.02
+          y:
+          - -0.02
+          - 0.02
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.0
+        - 1.0
+variants:
+  materialization: []
+  assignments: []

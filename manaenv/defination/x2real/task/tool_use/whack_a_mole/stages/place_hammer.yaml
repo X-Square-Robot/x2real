@@ -1,0 +1,20 @@
+include: x2real/task/tool_use/whack_a_mole/stages/_whack_a_mole_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: whack_a_mole_place_hammer
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_position_in_zone
+          object_cfg: '@hammer'
+          z_range:
+          - -0.27
+          - -0.16
+          velocity_threshold: 0.15
+          consecutive_steps: 10
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place @hammer.name back on the table

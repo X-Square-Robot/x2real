@@ -1,0 +1,93 @@
+definition:
+  scene_type: schema_vnext_atom_spoon
+  metadata:
+    source: atom_spoon
+    semantic_goal: Pick up the spoon and place it in the bowl
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: spoon
+  asset:
+    type: asset_id
+    id: spoon_c
+  semantic_tags:
+  - pickable
+  - spoon
+- id: bowl
+  asset:
+    type: pool
+    cache_size: 30
+    candidates:
+    - id: bowl_pool
+      from_file: assets/pools/atom_spoon/containers_bowl.json
+      item_range:
+      - 0
+      - 30
+      bbox_filter:
+        max_longest_edge: 0.28
+  spawn_mass: 0.3
+  semantic_tags:
+  - destination
+  - container
+  - bowl
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    spoon:
+      object: spoon
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - 0.09
+          - 0.25
+          y:
+          - -0.34
+          - 0.34
+        yaws:
+        - -0.5
+        - 0.5
+    bowl:
+      object: bowl
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - 0.06
+          - 0.18
+          y:
+          - -0.12
+          - 0.12
+variants:
+  materialization:
+  - id: bowl_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - bowl.bowl_pool
+      weight: 1.0
+  assignments: []

@@ -1,0 +1,3 @@
+sim_fps: 120
+render_decremental: 4
+simulation_decimation: 4

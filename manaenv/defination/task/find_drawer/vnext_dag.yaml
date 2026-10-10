@@ -1,0 +1,654 @@
+graph_task_generator:
+  definition:
+    task_type: find_drawer
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: brick_asset
+            target:
+              type: node
+              id: brick
+            selector:
+              type: uniform
+          placements:
+          - id: brick
+            target:
+              type: node
+              id: brick
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_find_drawer:
+            mode: reset
+            num_layers: 3
+            layer_labels:
+            - top
+            - middle
+            - bottom
+            layer_log_key: find_drawer_target_layer
+            instruction_template: Open the {layer} drawer, put the brick inside, close it, wait a few seconds, then reopen
+              the same drawer, take the brick out, close it, and return the arm home.
+      log_component:
+        entries:
+          find_drawer_plan:
+            trigger: enter
+            func: find_drawer_active_label
+      instruction_component:
+        topic: find_drawer
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: find_drawer_plan
+          label: Task
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: find_drawer_open_drawer
+      roles:
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: indexed_joint_above_threshold
+              object_cfg: '@containable'
+              joint_names:
+              - PrismaticJoint_01
+              - PrismaticJoint_02
+              - PrismaticJoint_03
+              index_log_key: find_drawer_target_layer
+              threshold: 0.25
+              openness_gt: true
+              consecutive_steps: 2
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: find_drawer_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: open the target drawer
+    id: open_drawer
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: find_drawer_pick_item
+      roles:
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: find_drawer_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up the brick
+    id: pick_item
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: find_drawer_place_in_drawer
+      roles:
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: any_object_in_indexed_zone
+              object_names:
+              - brick
+              index_log_key: find_drawer_target_layer
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+              zones:
+              - x_range:
+                - 0.06
+                - 0.42
+                y_range:
+                - -0.4
+                - -0.13
+                z_range:
+                - -0.106
+                - -0.015
+              - x_range:
+                - 0.06
+                - 0.42
+                y_range:
+                - -0.4
+                - -0.13
+                z_range:
+                - -0.166
+                - -0.106
+              - x_range:
+                - 0.06
+                - 0.42
+                y_range:
+                - -0.4
+                - -0.13
+                z_range:
+                - -0.23
+                - -0.166
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: find_drawer_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place the brick in the target drawer
+    id: place_in_drawer
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: find_drawer_close_drawer
+      roles:
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: indexed_joint_above_threshold
+              object_cfg: '@containable'
+              joint_names:
+              - PrismaticJoint_01
+              - PrismaticJoint_02
+              - PrismaticJoint_03
+              index_log_key: find_drawer_target_layer
+              threshold: 0.05
+              openness_gt: false
+              consecutive_steps: 2
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: find_drawer_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: close the target drawer
+    id: close_drawer
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: find_drawer_wait
+      roles:
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: any_object_in_indexed_zone_for_duration
+              object_names:
+              - brick
+              index_log_key: find_drawer_target_layer
+              hold_seconds: 4.0
+              zones:
+              - x_range:
+                - 0.06
+                - 0.42
+                y_range:
+                - -0.4
+                - -0.13
+                z_range:
+                - -0.106
+                - -0.015
+              - x_range:
+                - 0.06
+                - 0.42
+                y_range:
+                - -0.4
+                - -0.13
+                z_range:
+                - -0.166
+                - -0.106
+              - x_range:
+                - 0.06
+                - 0.42
+                y_range:
+                - -0.4
+                - -0.13
+                z_range:
+                - -0.23
+                - -0.166
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: find_drawer_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: keep the brick in the drawer for at least 4 seconds
+    id: wait
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: find_drawer_reopen_drawer
+      roles:
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: indexed_joint_above_threshold
+              object_cfg: '@containable'
+              joint_names:
+              - PrismaticJoint_01
+              - PrismaticJoint_02
+              - PrismaticJoint_03
+              index_log_key: find_drawer_target_layer
+              threshold: 0.25
+              openness_gt: true
+              consecutive_steps: 2
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: find_drawer_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: reopen the same drawer
+    id: reopen_drawer
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: find_drawer_take_out
+      roles:
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: null
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: find_drawer_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: take the brick out of the drawer
+    id: take_out
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: find_drawer_close_drawer_final
+      roles:
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: indexed_joint_above_threshold
+              object_cfg: '@containable'
+              joint_names:
+              - PrismaticJoint_01
+              - PrismaticJoint_02
+              - PrismaticJoint_03
+              index_log_key: find_drawer_target_layer
+              threshold: 0.05
+              openness_gt: false
+              consecutive_steps: 2
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: find_drawer_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: close the drawer after retrieval
+    id: close_drawer_final
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 240.0
+        num_episodes: 10
+        max_steps_per_episode: 1600
+        task_type: find_drawer_return
+      roles:
+        containable: containable
+        pickable: pickable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: find_drawer_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 2
+  edges:
+  - src: open_drawer
+    dst: pick_item
+  - src: pick_item
+    dst: place_in_drawer
+  - src: place_in_drawer
+    dst: close_drawer
+  - src: close_drawer
+    dst: wait
+  - src: wait
+    dst: reopen_drawer
+  - src: reopen_drawer
+    dst: take_out
+  - src: take_out
+    dst: close_drawer_final
+  - src: close_drawer_final
+    dst: return

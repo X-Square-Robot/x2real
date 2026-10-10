@@ -1,0 +1,47 @@
+include: x2real/task/memory_tracking/find_drawer/stages/_find_drawer_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: find_drawer_place_in_drawer
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: any_object_in_indexed_zone
+          object_names:
+          - brick
+          index_log_key: find_drawer_target_layer
+          velocity_threshold: 0.2
+          consecutive_steps: 5
+          zones:
+          - x_range:
+            - 0.06
+            - 0.42
+            y_range:
+            - -0.4
+            - -0.13
+            z_range:
+            - -0.106
+            - -0.015
+          - x_range:
+            - 0.06
+            - 0.42
+            y_range:
+            - -0.4
+            - -0.13
+            z_range:
+            - -0.166
+            - -0.106
+          - x_range:
+            - 0.06
+            - 0.42
+            y_range:
+            - -0.4
+            - -0.13
+            z_range:
+            - -0.23
+            - -0.166
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place the brick in the target drawer

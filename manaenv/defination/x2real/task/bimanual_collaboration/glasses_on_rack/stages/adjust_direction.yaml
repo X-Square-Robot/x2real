@@ -1,0 +1,20 @@
+include: x2real/task/bimanual_collaboration/glasses_on_rack/stages/_glasses_on_rack_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: glasses_on_rack_adjust_direction
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_yaw_in_range
+          object_cfg: '@pickable'
+          yaw_ranges:
+          - - 150.0
+            - 210.0
+          velocity_threshold: 0.5
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: adjust the orientation of @pickable.name for the rack

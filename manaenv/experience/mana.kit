@@ -1,0 +1,296 @@
+##
+# Mana trimmed experience for evaluation (--viz kit + cameras).
+# Self-contained merge of isaaclab.python.kit + isaaclab.python.rendering.kit
+# with editor-convenience extensions removed (not needed by the evaluation path).
+# Removed vs upstream: isaacsim.examples.browser, isaacsim.asset.importer.{mjcf,urdf},
+#   isaacsim.replicator.behavior, isaacsim.robot.policy.examples, isaacsim.robot.*wheeled*,
+#   isaacsim.util.debug_draw, omni.anim.curve.core, omni.graph.ui_nodes,
+#   omni.kit.menu.*, omni.kit.raycast.query,
+#   omni.kit.stage_template.core, omni.kit.telemetry, omni.kit.tool.{asset_importer,collect},
+#   omni.kit.window.script_editor, omni.uiaudio, isaaclab_rl
+# Kept despite prune candidacy: omni.kit.material.library (re-added under "# Rendering"
+#   in both upstream rendering variants -> likely render-relevant, A/B separately).
+##
+
+[package]
+title = "Mana"
+description = "Mana evaluation"
+version = "0.9.0"
+keywords = ["experience", "app", "isaaclab", "python", "camera", "minimal"]
+
+[dependencies]
+# Isaac Sim extensions
+"isaacsim.app.about" = {}
+"isaacsim.core.cloner" = {}
+"isaacsim.core.deprecation_manager" = { order = -100 }
+"isaacsim.core.experimental.materials" = {}
+"isaacsim.core.experimental.objects" = {}
+"isaacsim.core.experimental.prims" = {}
+"isaacsim.core.experimental.utils" = {}
+"isaacsim.core.nodes" = {}
+"isaacsim.core.rendering_manager" = {}
+"isaacsim.core.simulation_manager" = {}
+"isaacsim.core.throttling" = {}
+"isaacsim.core.version" = {}
+"isaacsim.gui.property" = {}
+"isaacsim.robot.schema" = {}
+"isaacsim.sensors.experimental.physics" = {}
+"isaacsim.simulation_app" = {}
+"isaacsim.storage.native" = {}
+
+# Isaac Sim Extra
+# omni.physx.bundle replaced by bare core: bundle drags editor-only subexts
+# (vehicle/demos/cct/camera/graph/supportui/asset_validator/*.ui); headless.kit
+# proves bare omni.physx suffices for simulation. ``--enable_colliders`` loads
+# omni.physx.ui explicitly when viewport collision overlays are requested.
+"omni.physx" = {}
+"omni.physx.tensors" = {}
+"omni.replicator.core" = {}
+"omni.replicator.replicator_yaml" = {}
+"omni.syntheticdata" = {}
+"semantics.schema.editor" = {}
+"semantics.schema.property" = {}
+
+# Kit based editor extensions
+"omni.graph.action" = {}
+"omni.graph.core" = {}
+"omni.graph.nodes" = {}
+"omni.graph.scriptnode" = {}
+"omni.hydra.engine.stats" = {}
+"omni.hydra.rtx" = {}
+"omni.kit.mainwindow" = {}
+"omni.kit.manipulator.camera" = {}
+"omni.kit.manipulator.prim" = {}
+"omni.kit.manipulator.selection" = {}
+"omni.kit.material.library" = {}
+"omni.kit.primitive.mesh" = {}
+"omni.kit.property.bundle" = {}
+"omni.kit.viewport.legacy_gizmos" = {}
+"omni.kit.viewport.menubar.camera" = {}
+"omni.kit.viewport.menubar.display" = {}
+"omni.kit.viewport.menubar.lighting" = {}
+"omni.kit.viewport.menubar.render" = {}
+"omni.kit.viewport.menubar.settings" = {}
+"omni.kit.viewport.scene_camera_model" = {}
+"omni.kit.viewport.window" = {}
+"omni.kit.window.console" = {}
+"omni.kit.window.property" = {}
+"omni.kit.window.stage" = {}
+"omni.kit.window.status_bar" = {}
+"omni.kit.window.toolbar" = {}
+"omni.physics.stageupdate" = {}
+"omni.rtx.settings.core" = {}
+"omni.usd.metrics.assembler.ui" = {}
+"omni.usd.schema.metrics.assembler" = {}
+
+# Isaac Lab packages are plain Python packages since IsaacLab pin 009adb1f9 (no Kit extensions)
+
+[settings.isaaclab]
+# This is used to check that this experience file is loaded when using cameras
+cameras_enabled = true
+
+[settings]
+exts."omni.kit.renderer.core".present.enabled = false # Fixes MGPU stability issue
+exts."omni.renderer.core".present.enabled = false # Disable present thread (rendering variant)
+exts."omni.kit.viewport.window".windowMenu.entryCount = 2
+exts."omni.kit.viewport.window".windowMenu.label = ""
+exts."omni.rtx.window.settings".window_menu = "Window"
+exts."omni.usd".locking.onClose = false
+renderer.asyncInit = true
+renderer.scenePartitioning.enabled = true
+renderer.gpuEnumeration.glInterop.enabled = false
+rendergraph.mgpu.backend = "copyQueue"
+# Camera RenderProducts use incompatible OmniGraph postprocessing.
+rtx-transient.dlssg.enabled = false
+rtx.hydra.mdlMaterialWarmup = true
+omni.replicator.asyncRendering = false
+foundation.verifyOsVersion.enabled = false
+log.level = "Warn"
+log.outputStreamLevel = "Warn"
+
+# Show the existing env-step FPS window in --viz kit sessions.
+manaenv.stream.fps_overlay = true
+# Collider UI is opt-in because its live-scene drawing cannot overlap PhysX.
+manaenv.physics.colliderVisualizationUiEnabled = false
+
+# disable the metrics assembler change listener, we don't want to do any runtime changes
+metricsAssembler.changeListenerEnabled = false
+
+# set the default ros bridge to disable on startup
+isaac.startup.ros_bridge_extension = ""
+
+# High-fidelity camera rendering defaults (from isaaclab.python.rendering.kit)
+rtx.translucency.enabled = true
+rtx.reflections.enabled = true
+rtx.indirectDiffuse.enabled = true
+rtx.directLighting.sampledLighting.enabled = true
+rtx.directLighting.sampledLighting.samplesPerPixel = 1
+rtx.sceneDb.ambientLightIntensity = 1.0
+rtx.shadows.enabled = true
+
+rtx.rtpt.maxBounces = 3
+rtx.rtpt.cached.enabled = false
+rtx.rtpt.lightcache.cached.enabled = false
+rtx.rtpt.translucency.virtualMotion.enabled = false
+rtx.rtpt.splitRoughReflection = true
+rtx.rtpt.adaptiveSampling.disocclusion.enabled = true
+rtx.rtpt.adaptiveSampling.disocclusion.spp = 4
+
+# Avoids replicator warning
+rtx.pathtracing.maxSamplesPerLaunch = 1000000
+# Avoids silent trimming of tiles
+rtx.viewTile.limit = 1000000
+
+rtx.raytracing.cached.enabled = true
+rtx.ambientOcclusion.enabled = true
+rtx.ambientOcclusion.denoiserMode = 0
+rtx.raytracing.subpixel.mode = 1
+
+# Set the DLSS model
+rtx.post.dlss.execMode = 2
+
+# Avoids frame offset issue
+app.updateOrder.checkForHydraRenderComplete = 1000
+app.renderer.waitIdle = true
+app.hydraEngine.waitIdle = true
+
+app.audio.enabled = false
+
+# disable replicator orchestrator for better runtime perf
+exts."omni.replicator.core".Orchestrator.enabled = false
+
+# NuRec
+omni.rtx.nre.compositing.rendererHints = 3
+
+### async rendering settings
+app.asyncRendering = false
+app.asyncRenderingLowLatency = false
+
+# Use one renderer GPU by default
+renderer.multiGpu.enabled = false
+renderer.multiGpu.autoEnable = false
+renderer.multiGpu.maxGpuCount = 1
+
+### FSD
+app.useFabricSceneDelegate = true
+# Geometry streaming remains enabled; direct RenderDelegate reads are unsafe
+# with dynamic transforms in Kit 110.1.2.
+rtx.hydra.readTransformsFromFabricInRenderDelegate = false
+
+# Keep the Kit Newton extension excluded: StablePD uses the pinned actuator
+# graph package from the environment, while the public physics backend is PhysX.
+# Also disable omni.kit.pip_archive to prevent conflicting dependencies.
+app.extensions.excluded = ["omni.kit.pip_archive", "omni.isaac.ml_archive", "isaacsim.pip.newton", "omni.warp.core"]
+
+[settings.app]
+name = "Mana"
+version = "0.9.0"
+versionFile = "${exe-path}/VERSION"
+content.emptyStageOnStart = true
+fastShutdown = true
+file.ignoreUnsavedOnExit = true
+font.file = "${fonts}/OpenSans-SemiBold.ttf"
+font.size = 16
+gatherRenderResults = true
+hangDetector.enabled = true
+hangDetector.timeout = 120
+player.useFixedTimeStepping = true
+settings.fabricDefaultStageFrameHistoryCount = 3 # needed for omni.syntheticdata
+settings.persistent = true
+vulkan = true
+
+[settings.app.window]
+iconPath = "${isaacsim.simulation_app}/data/omni.isaac.sim.png"
+title = "Mana"
+
+[settings.app.python]
+interceptSysStdOutput = false
+logSysStdOutput = false
+
+[settings.app.renderer]
+resolution.height = 720
+resolution.width = 1280
+skipWhileMinimized = false
+sleepMsOnFocus = 0
+sleepMsOutOfFocus = 0
+
+[settings.app.viewport]
+defaultCamPos.x = 5
+defaultCamPos.y = 5
+defaultCamPos.z = 5
+defaults.fillViewport = false
+grid.enabled = true
+outline.enabled = true
+boundingBoxes.enabled = false
+show.camera = false
+show.lights = false
+
+[settings.app.livestream]
+outDirectory = "${data}"
+
+[settings.app.extensions]
+skipPublishVerification = false
+registryEnabled = true
+
+# Register only Isaac Sim/Kit extension folders. AppLauncher resolves the
+# external IsaacLab installation and this file declares its own dependencies.
+[settings.app.exts]
+folders = [
+    "${exe-path}/exts",
+    "${exe-path}/extscore",
+    "${exe-path}/../exts",
+    "${exe-path}/../extscache",
+    "${exe-path}/../extsPhysics",
+    "${exe-path}/../isaacsim/exts",
+    "${exe-path}/../isaacsim/extscache",
+    "${exe-path}/../isaacsim/extsPhysics",
+]
+
+[settings.physics]
+autoPopupSimulationOutputWindow = false
+updateToUsd = false
+updateVelocitiesToUsd = false
+updateParticlesToUsd = false
+updateForceSensorsToUsd = false
+outputVelocitiesLocalSpace = false
+useFastCache = false
+visualizationDisplayJoints = false
+fabricUpdateTransformations = false
+fabricUpdateVelocities = false
+fabricUpdateForceSensors = false
+fabricUpdateJointStates = false
+fabricUseGPUInterop = true
+
+[settings.persistent]
+app.primCreation.DefaultXformOpOrder = "xformOp:translate, xformOp:orient, xformOp:scale"
+app.primCreation.DefaultXformOpType = "Scale, Orient, Translate"
+app.primCreation.typedDefaults.camera.clippingRange = [0.01, 10000000.0]
+app.primCreation.DefaultXformOpPrecision = "Double"
+app.primCreation.DefaultRotationOrder = "ZYX"
+app.primCreation.PrimCreationWithDefaultXformOps = true
+app.stage.timeCodeRange = [0, 1000000]
+app.stage.upAxis = "Z"
+app.viewport.camMoveVelocity = 0.05
+app.viewport.gizmo.scale = 0.01
+app.viewport.grid.scale = 1.0
+app.viewport.camShowSpeedOnStart = false
+app.omniverse.gamepadCameraControl = false
+physics.visualizationDisplayJoints = false
+physics.visualizationDisplayColliders = 0
+physics.visualizationSimulationOutput = false
+physics.resetOnStop = true
+renderer.startupMessageDisplayed = true
+resourcemonitor.timeBetweenQueries = 100
+simulation.defaultMetersPerUnit = 1.0
+omni.replicator.captureOnPlay = true
+UJITSO.geometry = true
+UJITSO.enabled = true
+
+[settings.persistent.app.viewport."Viewport/Viewport0".hud.renderFPS]
+visible = true
+
+# Asset path
+[settings]
+persistent.isaac.asset_root.default = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"
+persistent.isaac.asset_root.cloud = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"
+persistent.isaac.asset_root.nvidia = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"

@@ -1,0 +1,40 @@
+include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/_inverted_triangle_cups_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: inverted_triangle_cups_first_cup_placed
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - first_cup_settled:
+              _func: gripper_nth_object_settled
+              gripper_contact_sensor_cfgs:
+              - '@gripper_contact_sensor_1'
+              - '@gripper_contact_sensor_2'
+              - '@gripper_contact_sensor_3'
+              object_cfgs:
+              - '@pickable_1'
+              - '@pickable_2'
+              - '@pickable_3'
+              nth: 1
+              force_threshold: 0.01
+              max_lift: 0.02
+              release_force_threshold: 0.01
+              velocity_threshold: 0.15
+              consecutive_steps: 5
+          - cups_upside_down:
+              _func: object_tilt_in_range
+              object_cfg:
+              - '@pickable_1'
+              - '@pickable_2'
+              - '@pickable_3'
+              min_dot: -1.0
+              max_dot: -0.85
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place the first cup upside-down in center

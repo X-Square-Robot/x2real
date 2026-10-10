@@ -1,0 +1,436 @@
+graph_task_generator:
+  definition:
+    task_type: stack_blocks_4
+    component_sections:
+      event_component:
+        terms:
+          sample_stack_blocks:
+            mode: reset
+            num_slots: 5
+            colors:
+            - blue
+            - green
+            - red
+            - orange
+            num_blocks: 4
+            spawn_region:
+              x:
+              - -0.05
+              - 0.1
+              y:
+              - -0.6
+              - 0.06
+              z:
+              - -0.205
+              - -0.205
+            min_separation: 0.09
+            base_position:
+            - 0.205
+            - -0.268
+            count_log_key: stack_blocks_count
+            instruction_template: Place a block on the green paper, then stack the other blocks on top to build a tower of
+              {n}, and return the arm home.
+      log_component:
+        entries:
+          stack_blocks_plan:
+            trigger: enter
+            func: stack_blocks_active_label
+      instruction_component:
+        topic: stack_blocks
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: stack_blocks_plan
+          label: Task
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1500
+        task_type: stack_blocks_place_base
+      roles:
+        block: block
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@block'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: any_object_in_zone
+              object_names:
+              - block_1_blue
+              - block_1_green
+              - block_1_red
+              - block_1_orange
+              - block_2_blue
+              - block_2_green
+              - block_2_red
+              - block_2_orange
+              - block_3_blue
+              - block_3_green
+              - block_3_red
+              - block_3_orange
+              - block_4_blue
+              - block_4_green
+              - block_4_red
+              - block_4_orange
+              - block_5_blue
+              - block_5_green
+              - block_5_red
+              - block_5_orange
+              x_range:
+              - 0.145
+              - 0.265
+              y_range:
+              - -0.328
+              - -0.208
+              z_range:
+              - -0.245
+              - -0.205
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: stack_blocks_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place the first block on the target paper
+    id: place_base
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1500
+        task_type: stack_blocks_stack_2
+      roles:
+        block: block
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@block'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: any_object_in_zone
+              object_names:
+              - block_1_blue
+              - block_1_green
+              - block_1_red
+              - block_1_orange
+              - block_2_blue
+              - block_2_green
+              - block_2_red
+              - block_2_orange
+              - block_3_blue
+              - block_3_green
+              - block_3_red
+              - block_3_orange
+              - block_4_blue
+              - block_4_green
+              - block_4_red
+              - block_4_orange
+              - block_5_blue
+              - block_5_green
+              - block_5_red
+              - block_5_orange
+              x_range:
+              - 0.145
+              - 0.265
+              y_range:
+              - -0.328
+              - -0.208
+              z_range:
+              - -0.21
+              - -0.02
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: stack_blocks_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: stack the second block on top of the first
+    id: stack_2
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1500
+        task_type: stack_blocks_stack_3
+      roles:
+        block: block
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@block'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: any_object_in_zone
+              object_names:
+              - block_1_blue
+              - block_1_green
+              - block_1_red
+              - block_1_orange
+              - block_2_blue
+              - block_2_green
+              - block_2_red
+              - block_2_orange
+              - block_3_blue
+              - block_3_green
+              - block_3_red
+              - block_3_orange
+              - block_4_blue
+              - block_4_green
+              - block_4_red
+              - block_4_orange
+              - block_5_blue
+              - block_5_green
+              - block_5_red
+              - block_5_orange
+              x_range:
+              - 0.145
+              - 0.265
+              y_range:
+              - -0.328
+              - -0.208
+              z_range:
+              - -0.18
+              - -0.02
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: stack_blocks_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: stack the third block on top of the tower
+    id: stack_3
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1500
+        task_type: stack_blocks_stack_4
+      roles:
+        block: block
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@block'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: any_object_in_zone
+              object_names:
+              - block_1_blue
+              - block_1_green
+              - block_1_red
+              - block_1_orange
+              - block_2_blue
+              - block_2_green
+              - block_2_red
+              - block_2_orange
+              - block_3_blue
+              - block_3_green
+              - block_3_red
+              - block_3_orange
+              - block_4_blue
+              - block_4_green
+              - block_4_red
+              - block_4_orange
+              - block_5_blue
+              - block_5_green
+              - block_5_red
+              - block_5_orange
+              x_range:
+              - 0.145
+              - 0.265
+              y_range:
+              - -0.328
+              - -0.208
+              z_range:
+              - -0.15
+              - -0.02
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: stack_blocks_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: stack the fourth block on top of the tower
+    id: stack_4
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1500
+        task_type: stack_blocks_return
+      roles:
+        block: block
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@block'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: stack_blocks_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 2
+  edges:
+  - src: place_base
+    dst: stack_2
+  - src: stack_2
+    dst: stack_3
+  - src: stack_3
+    dst: stack_4
+  - src: stack_4
+    dst: return

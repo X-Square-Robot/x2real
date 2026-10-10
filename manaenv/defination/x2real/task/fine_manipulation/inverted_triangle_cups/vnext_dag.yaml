@@ -1,0 +1,72 @@
+graph_task_generator:
+  definition:
+    task_type: arrange_cup_inverted_triangle
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: cup_1
+            target:
+              type: node
+              id: cup_1
+            sample:
+              type: inherit
+          - id: cup_2
+            target:
+              type: node
+              id: cup_2
+            sample:
+              type: inherit
+          - id: cup_3
+            target:
+              type: node
+              id: cup_3
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Arrange the three cups into a triangle. Place the first cup in the
+            center, place the second cup next to it, then place the third cup on top.
+            Finally return the arm to the home position.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries: []
+  nodes:
+  - id: first_cup_picked
+    score: 1
+    include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/first_cup_picked.yaml
+  - id: first_cup_placed
+    score: 1
+    include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/first_cup_placed.yaml
+  - id: second_cup_picked
+    score: 1
+    include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/second_cup_picked.yaml
+  - id: second_cup_near_first
+    score: 2
+    include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/second_cup_near_first.yaml
+  - id: third_cup_picked
+    score: 1
+    include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/third_cup_picked.yaml
+  - id: third_cup_on_top
+    score: 3
+    include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/third_cup_on_top.yaml
+  - id: return
+    score: 1
+    include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/return.yaml
+  edges:
+  - src: first_cup_picked
+    dst: first_cup_placed
+  - src: first_cup_placed
+    dst: second_cup_picked
+  - src: second_cup_picked
+    dst: second_cup_near_first
+  - src: second_cup_near_first
+    dst: third_cup_picked
+  - src: third_cup_picked
+    dst: third_cup_on_top
+  - src: third_cup_on_top
+    dst: return

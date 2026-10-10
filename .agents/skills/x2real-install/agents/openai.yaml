@@ -1,0 +1,4 @@
+interface:
+  display_name: "Install ManaEnv Evaluator"
+  short_description: "Plan, install, repair, and verify ManaEnv"
+  default_prompt: "Use $x2real-install to plan and perform a verified installation from this repository."

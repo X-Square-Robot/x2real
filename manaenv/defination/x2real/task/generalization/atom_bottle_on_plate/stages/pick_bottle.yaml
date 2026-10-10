@@ -1,0 +1,34 @@
+include: x2real/task/generalization/atom_bottle_on_plate/stages/_atom_bottle_on_plate_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: atom_bottle_on_plate_pick_bottle
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          mode: or
+          terms:
+          - grasp_left:
+              _func: grasp_left_1
+              object_cfg: '@pickable'
+              force_threshold: 0.1
+              lifted_z_min: null
+              consecutive_steps: 5
+          - grasp_right:
+              _func: grasp_right_1
+              object_cfg: '@pickable'
+              force_threshold: 0.1
+              lifted_z_min: null
+              consecutive_steps: 5
+          - grasp_franka:
+              _func: gripper_grasps_object
+              contact_sensor_cfg: gripper_contact
+              object_cfg: '@pickable'
+              force_threshold: 0.1
+              lifted_z_min: null
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: grasp @pickable.name

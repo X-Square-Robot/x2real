@@ -1,0 +1,21 @@
+include: x2real/task/memory_tracking/track_object_under_cup/stages/_track_object_under_cup_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: track_object_under_cup_lift_covering_cup
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: cup_reveals_hidden_object
+          cup_cfg: '@cup_target'
+          hidden_cfg: '@hidden_object'
+          min_cup_height: -0.18
+          xy_distance_threshold: 0.045
+          z_min_offset: -0.12
+          z_max_offset: 0.08
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: lift covering @cup_target.name to reveal @hidden_object.name

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run X2Real ID Evaluation"
+  short_description: "Discover and launch an X2Real ID case"
+  default_prompt: "Use $x2real-id-eval to select and launch an X2Real ID evaluation from this repository."

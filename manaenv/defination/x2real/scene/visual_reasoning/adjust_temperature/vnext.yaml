@@ -1,0 +1,59 @@
+definition:
+  scene_type: adjust_temperature_scene
+  metadata:
+    name: ex001_6r_adjust_temperature
+    source: adjust_temperature/vnext
+    semantic_goal: Adjust the knob from the sampled initial temperature to the target
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: knob_a
+  asset:
+    type: asset_id
+    id: knob_a
+  orientation:
+  - 0.0
+  - 0.0
+  - 1.0
+  - 0.0
+  semantic_tags:
+  - turnable
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    knob_a:
+      object: knob_a
+      placement:
+        type: pose
+        poses:
+        - id: default
+          position:
+          - -0.07
+          - -0.45
+          - -0.18
+          orientation:
+          - 0.0
+          - 0.0
+          - 1.0
+          - 0.0

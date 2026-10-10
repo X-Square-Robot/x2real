@@ -1,0 +1,1624 @@
+graph_task_generator:
+  definition:
+    task_type: tower_of_hanoi_4
+    planner_skill_boundary:
+      prefix:
+      - type: home
+        params:
+          arm: both
+      - type: stay
+        params:
+          arm: both
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: pegs
+            target:
+              type: group
+              id: pegs
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_tower_of_hanoi:
+            mode: reset
+            seed: 9101
+            n: 4
+            ring_names:
+            - ring_a
+            - ring_b
+            - ring_c
+            - ring_d
+            - ring_e
+            left_peg_xy:
+            - 0.155
+            - -0.148
+            layer_z_center:
+            - -0.2029
+            - -0.1849
+            - -0.1669
+            - -0.1489
+            - -0.1309
+            layer_z_bottom:
+            - -0.2104
+            - -0.1924
+            - -0.1744
+            - -0.1564
+            - -0.1384
+            bottom_origin_rings:
+            - ring_a
+            away_z: -10.0
+            instruction_template: Move the 4 rings from the left peg to the right peg. Move one ring at a time, and never
+              place a larger ring on a smaller one.
+      instruction_component:
+        instructions:
+        - text: Move the 4 rings from the left peg to the right peg. Move one ring at a time, and never place a larger ring
+            on a smaller one.
+          log:
+            instruction_variant: direct
+        topic: tower_of_hanoi
+      log_component:
+        entries:
+          tower_of_hanoi_plan:
+            trigger: enter
+            func: tower_of_hanoi_plan_label
+  roles:
+    disk_1: disk_1
+    disk_2: disk_2
+    disk_3: disk_3
+    disk_4: disk_4
+    disk_5: disk_5
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_1
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 4
+                - 3
+                - 2
+                peg_mid:
+                - 1
+                peg_right: []
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the smallest ring from the left peg to the middle peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_1'
+              grasp_label_asset: '@disk_1'
+              arm: left
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_1'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_mid
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_1
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_2
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 4
+                - 3
+                peg_mid:
+                - 1
+                peg_right:
+                - 2
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the second-smallest ring from the left peg to the right peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_2'
+              grasp_label_asset: '@disk_2'
+              arm: left
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_2'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_right
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_2
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_3
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 4
+                - 3
+                peg_mid: []
+                peg_right:
+                - 2
+                - 1
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the smallest ring from the middle peg to the right peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_1'
+              grasp_label_asset: '@disk_1'
+              arm: right
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_1'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_right
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_3
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_4
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 4
+                peg_mid:
+                - 3
+                peg_right:
+                - 2
+                - 1
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the middle ring from the left peg to the middle peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_3'
+              grasp_label_asset: '@disk_3'
+              arm: left
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_3'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_mid
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_4
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_5
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 4
+                - 1
+                peg_mid:
+                - 3
+                peg_right:
+                - 2
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the smallest ring from the right peg to the left peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_1'
+              grasp_label_asset: '@disk_1'
+              arm: right
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_1'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_left
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_5
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_6
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 4
+                - 1
+                peg_mid:
+                - 3
+                - 2
+                peg_right: []
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the second-smallest ring from the right peg to the middle peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_2'
+              grasp_label_asset: '@disk_2'
+              arm: right
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_2'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_mid
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_6
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_7
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 4
+                peg_mid:
+                - 3
+                - 2
+                - 1
+                peg_right: []
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the smallest ring from the left peg to the middle peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_1'
+              grasp_label_asset: '@disk_1'
+              arm: left
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_1'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_mid
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_7
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_8
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left: []
+                peg_mid:
+                - 3
+                - 2
+                - 1
+                peg_right:
+                - 4
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the second-largest ring from the left peg to the right peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_4'
+              grasp_label_asset: '@disk_4'
+              arm: left
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_4'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_right
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_8
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_9
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left: []
+                peg_mid:
+                - 3
+                - 2
+                peg_right:
+                - 4
+                - 1
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the smallest ring from the middle peg to the right peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_1'
+              grasp_label_asset: '@disk_1'
+              arm: right
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_1'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_right
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_9
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_10
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 2
+                peg_mid:
+                - 3
+                peg_right:
+                - 4
+                - 1
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the second-smallest ring from the middle peg to the left peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_2'
+              grasp_label_asset: '@disk_2'
+              arm: left
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_2'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_left
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_10
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_11
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 2
+                - 1
+                peg_mid:
+                - 3
+                peg_right:
+                - 4
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the smallest ring from the right peg to the left peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_1'
+              grasp_label_asset: '@disk_1'
+              arm: right
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_1'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_left
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_11
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_12
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 2
+                - 1
+                peg_mid: []
+                peg_right:
+                - 4
+                - 3
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the middle ring from the middle peg to the right peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_3'
+              grasp_label_asset: '@disk_3'
+              arm: right
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_3'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_right
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_12
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_13
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left:
+                - 2
+                peg_mid:
+                - 1
+                peg_right:
+                - 4
+                - 3
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the smallest ring from the left peg to the middle peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_1'
+              grasp_label_asset: '@disk_1'
+              arm: left
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_1'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_mid
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_13
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_14
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left: []
+                peg_mid:
+                - 1
+                peg_right:
+                - 4
+                - 3
+                - 2
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the second-smallest ring from the left peg to the right peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_2'
+              grasp_label_asset: '@disk_2'
+              arm: left
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_2'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_right
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_14
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_move_15
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: hanoi_state_matches
+              ring_names:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              peg_names:
+              - peg_left
+              - peg_mid
+              - peg_right
+              expected:
+                peg_left: []
+                peg_mid: []
+                peg_right:
+                - 4
+                - 3
+                - 2
+                - 1
+              xy_tolerance: 0.03
+              min_z: -1.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the smallest ring from the middle peg to the right peg
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              object_name: '@disk_1'
+              grasp_label_asset: '@disk_1'
+              arm: right
+              top_k: 20
+          - type: place
+            params:
+              object_name: '@disk_1'
+              arm: current
+              target:
+                strategy: destination_center
+                object_name: peg_right
+                support_z_face: top
+          - type: stay
+            params:
+              arm: both
+    id: move_15
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 600.0
+        num_episodes: 10
+        max_steps_per_episode: 8000
+        task_type: tower_of_hanoi_4_return
+      roles:
+        disk_1: disk_1
+        disk_2: disk_2
+        disk_3: disk_3
+        disk_4: disk_4
+        disk_5: disk_5
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg:
+              - ring_a
+              - ring_b
+              - ring_c
+              - ring_d
+              - ring_e
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: peg_mid
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_tower_of_hanoi
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return the arm home
+        planner_skills_component:
+          skills:
+          - type: home
+            params:
+              arm: both
+    id: return
+    score: 1
+  edges:
+  - src: move_1
+    dst: move_2
+  - src: move_2
+    dst: move_3
+  - src: move_3
+    dst: move_4
+  - src: move_4
+    dst: move_5
+  - src: move_5
+    dst: move_6
+  - src: move_6
+    dst: move_7
+  - src: move_7
+    dst: move_8
+  - src: move_8
+    dst: move_9
+  - src: move_9
+    dst: move_10
+  - src: move_10
+    dst: move_11
+  - src: move_11
+    dst: move_12
+  - src: move_12
+    dst: move_13
+  - src: move_13
+    dst: move_14
+  - src: move_14
+    dst: move_15
+  - src: move_15
+    dst: return

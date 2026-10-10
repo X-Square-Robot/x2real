@@ -1,0 +1,39 @@
+# Stage: return - both arms home after the knob twist.
+# Task success: operated turnable joint at pinned absolute target AND robot homed.
+include: task/adjust_temperature/stages/_adjust_temperature_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: adjust_temperature_return
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: merged
+          mode: and
+          terms:
+          - knob_at_target:
+              _func: joint_reaches_sampled_openness
+              object_cfg: knob_a
+              joint_names:
+              - RevoluteJoint
+              tolerance: 0.052
+              consecutive_steps: 2
+          - robot_home:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.3
+              consecutive_steps: 10
+              # Arm-only: Robotiq finger/mimic knuckles must not block sink success.
+              exclude_joint_name_substrings: [finger, gripper, knuckle]
+    log_component:
+      entries:
+        twist_result:
+          trigger: success
+          func: twist_episode_result_label
+          update_mode: last
+        progress:
+          trigger: success
+          value: 'knob at temperature {target} and return home'
+    planner_skills_component:
+      skills:
+      - type: home

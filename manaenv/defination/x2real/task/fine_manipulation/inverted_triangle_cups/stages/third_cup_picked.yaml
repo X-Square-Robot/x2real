@@ -1,0 +1,26 @@
+include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/_inverted_triangle_cups_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: inverted_triangle_cups_third_cup_picked
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: gripper_nth_object_lifted
+          gripper_contact_sensor_cfgs:
+          - '@gripper_contact_sensor_1'
+          - '@gripper_contact_sensor_2'
+          - '@gripper_contact_sensor_3'
+          object_cfgs:
+          - '@pickable_1'
+          - '@pickable_2'
+          - '@pickable_3'
+          nth: 3
+          min_lift: 0.01
+          settle_steps: 30
+          force_threshold: 0.01
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: pick up the third cup

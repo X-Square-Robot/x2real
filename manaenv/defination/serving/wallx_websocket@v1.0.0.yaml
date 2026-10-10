@@ -1,0 +1,7 @@
+client_kind: wallx
+server_address: 127.0.0.1
+server_port: 44257
+debug: false
+log_io: true
+log_payload: false
+timeout_seconds: 300.0

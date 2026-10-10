@@ -1,0 +1,120 @@
+definition:
+  scene_type: handover_scene
+  metadata:
+    name: ex001_6r_handover_vnext
+    source: handover/vnext
+    semantic_goal: Left arm picks the object on the left, hands it to the right arm, right arm places it in the right-side
+      basket
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: handover_object
+  asset:
+    type: pool
+    cache_size: 9
+    candidates:
+    - id: any_item
+      assets:
+      - bluetooth_earphone_a
+      - bluetooth_earphone_b
+      - bluetooth_earphone_c
+      - bottle_alienergy_a
+      - bottle_if_a
+      - bottle_nongfushuye_a
+      - can_soda_a
+      - can_soda_b
+      - can_soda_c
+      scale_normalization:
+        min_shortest_edge: 0.03
+        max_shortest_edge: 0.06
+        max_longest_edge: 0.14
+  spawn_mass:
+  - 0.05
+  - 0.2
+  semantic_tags:
+  - pickable
+  - pickable_1
+- id: basket_b
+  asset:
+    type: asset_id
+    id: basket_b
+  semantic_tags:
+  - container
+  scale:
+  - 0.7
+  - 0.7
+  - 0.7
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    handover_object:
+      object: handover_object
+    basket_b:
+      object: basket_b
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.1
+          - 0.06
+          y:
+          - 0.16
+          - 0.38
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.7071
+        - 0.7071
+  groups:
+    object_start_region:
+      type: region
+      nodes:
+      - handover_object
+      surface: tabletop
+      ranges:
+        x:
+        - -0.06
+        - 0.16
+        y:
+        - -0.42
+        - -0.16
+      yaws:
+      - -0.3
+      - 0.3
+      sample_method: stratified
+      spacing_mode: footprint_gap
+      min_spacing: 0.05
+      jitter: 0.35
+      max_attempts: 2000
+variants:
+  materialization:
+  - id: handover_object_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - handover_object.any_item
+      weight: 1.0
+  assignments: []

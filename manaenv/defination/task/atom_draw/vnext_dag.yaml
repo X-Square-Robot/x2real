@@ -1,0 +1,377 @@
+graph_task_generator:
+  definition:
+    task_type: atom_draw
+    runtime_instruction:
+      plan_id: runtime
+      objects:
+        bottle: object
+      template: Open the drawer, put the pill {bottle} inside, close the drawer, then return the arm home.
+      subtasks:
+      - Open the drawer.
+      - Pick up the pill {bottle}.
+      - Put the pill {bottle} inside the drawer.
+      - Close the drawer.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: drawer_asset
+            target:
+              type: node
+              id: drawer
+            selector:
+              type: uniform
+            cache_size: 9
+          - id: object_asset
+            target:
+              type: node
+              id: object
+            selector:
+              type: uniform
+            cache_size: 17
+          placements:
+          - id: drawer_object
+            target:
+              type: group
+              id: drawer_object
+            sample:
+              type: inherit
+              selectors:
+                assignments:
+                  type: uniform
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Open the drawer, put the pill bottle inside, close the drawer, then return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Open the drawer.
+        - Pick up the pill bottle.
+        - Put the pill bottle inside the drawer.
+        - Close the drawer.
+        - Return the arm home.
+        topic: atom_draw
+  roles:
+    pickable: pickable
+    containable: containable
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: atom_draw_open_drawer
+      roles:
+        pickable: pickable
+        containable: containable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.28
+              ignore_below: -1.0
+            success:
+              _func: joint_above_threshold
+              object_cfg: '@containable'
+              joint_names:
+              - PrismaticJoint
+              threshold: 0.04
+              openness_gt: true
+              joint_match: any
+              consecutive_steps: 2
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@containable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.4
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_draw
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: open the drawer
+    id: open_drawer
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: atom_draw_pick_object
+      roles:
+        pickable: pickable
+        containable: containable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.28
+              ignore_below: -1.0
+            success:
+              mode: or
+              terms:
+              - grasp_left:
+                  _func: grasp_left_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: -0.2
+                  consecutive_steps: 5
+              - grasp_right:
+                  _func: grasp_right_1
+                  object_cfg: '@pickable'
+                  force_threshold: 0.1
+                  lifted_z_min: -0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@containable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.4
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_draw
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp @pickable.name
+    id: pick_object
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: atom_draw_place_object
+      roles:
+        pickable: pickable
+        containable: containable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.28
+              ignore_below: -1.0
+            success:
+              _func: object_in_opened_joint_region
+              object_cfg: '@pickable'
+              reference_cfg: '@containable'
+              sliding_body_name: drawer
+              joint_name: PrismaticJoint
+              joint_axis_local:
+              - 1.0
+              - 0.0
+              - 0.0
+              protruding_only: true
+              xy_inset_ratio: 0.05
+              z_range:
+              - 0.0
+              - 0.15
+              velocity_threshold: 0.08
+              consecutive_steps: 3
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@containable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.4
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_draw
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place @pickable.name into the drawer
+    id: place_object
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: atom_draw_close_drawer
+      roles:
+        pickable: pickable
+        containable: containable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.28
+              ignore_below: -1.0
+            success:
+              terms:
+              - drawer_closed:
+                  _func: joint_above_threshold
+                  object_cfg: '@containable'
+                  joint_names:
+                  - PrismaticJoint
+                  threshold: 0.05
+                  openness_gt: false
+                  joint_match: all
+                  consecutive_steps: 2
+              - object_still_inside:
+                  _func: object_in_opened_joint_region
+                  object_cfg: '@pickable'
+                  reference_cfg: '@containable'
+                  sliding_body_name: drawer
+                  joint_name: PrismaticJoint
+                  joint_axis_local:
+                  - 1.0
+                  - 0.0
+                  - 0.0
+                  protruding_only: false
+                  xy_inset_ratio: 0.05
+                  z_range:
+                  - 0.0
+                  - 0.15
+                  velocity_threshold: 0.15
+                  consecutive_steps: 2
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@containable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.4
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_draw
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: close the drawer with object inside
+    id: close_drawer
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: atom_draw_return
+      roles:
+        pickable: pickable
+        containable: containable
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.28
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+              exclude_joint_name_substrings:
+              - finger
+              - gripper
+              - knuckle
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@containable'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.4
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_atom_draw
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: open_drawer
+    dst: pick_object
+  - src: pick_object
+    dst: place_object
+  - src: place_object
+    dst: close_drawer
+  - src: close_drawer
+    dst: return

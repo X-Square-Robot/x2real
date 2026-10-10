@@ -1,0 +1,128 @@
+definition:
+  scene_type: schema_vnext_usb_plug
+  metadata:
+    source: usb_plug
+    semantic_goal: Pick up the USB stick and plug it into the USB dock
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: usb
+  asset:
+    type: asset_id
+    id: usb_a
+  orientation:
+  - 0.0
+  - -0.7071
+  - 0.0
+  - 0.7071
+  semantic_tags:
+  - pickable
+  - insertable
+- id: usb_base
+  asset:
+    type: asset_id
+    id: usb_a_base
+  orientation:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 1.0
+  semantic_tags:
+  - destination
+  - fixed
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    usb:
+      object: usb
+    usb_base:
+      object: usb_base
+  groups:
+    usb_hand_side:
+      type: slot
+      nodes:
+      - usb
+      - usb_base
+      slots:
+        usb_pos_y:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.115
+            - 0.255
+            y:
+            - 0.14
+            - 0.28
+          yaws: 0.0
+          fixed_world_z: -0.203
+        base_pos_y:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.115
+            - 0.255
+            y:
+            - 0.3
+            - 0.44
+          yaws: 0.0
+        usb_neg_y:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.115
+            - 0.255
+            y:
+            - -0.44
+            - -0.3
+          yaws: 0.0
+          fixed_world_z: -0.203
+        base_neg_y:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.115
+            - 0.255
+            y:
+            - -0.28
+            - -0.14
+          yaws: 0.0
+      assignments:
+        mode: explicit
+        items:
+        - id: hand_pos_y
+          bindings:
+            usb: usb_pos_y
+            usb_base: base_pos_y
+        - id: hand_neg_y
+          bindings:
+            usb: usb_neg_y
+            usb_base: base_neg_y
+      default_assignment: hand_pos_y
+variants:
+  materialization: []
+  assignments: []

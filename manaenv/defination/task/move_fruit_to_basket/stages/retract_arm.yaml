@@ -1,0 +1,51 @@
+include: task/move_fruit_to_basket/stages/_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: move_fruit_to_basket_retract_arm
+    stage_success_min_steps: 0
+    stage_timeout_steps: 900
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - arms_retracted:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              joint_names:
+              - left_arm_joint1
+              - left_arm_joint2
+              - left_arm_joint3
+              - left_arm_joint4
+              - left_arm_joint5
+              - left_arm_joint6
+              - right_arm_joint1
+              - right_arm_joint2
+              - right_arm_joint3
+              - right_arm_joint4
+              - right_arm_joint5
+              - right_arm_joint6
+              atol: 0.3
+              consecutive_steps: 10
+          - fruit_still_in_basket:
+              _func: object_position_in_zone
+              object_cfg: "@pickable"
+              reference_cfg: "@basket"
+              reference_footprint_zone: true
+              xy_inset_ratio: 0.1
+              z_range: [-0.03, 0.22]
+              velocity_threshold: 0.03
+              consecutive_steps: 1
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return both arms to a safe home pose after place
+    planner_stage_component:
+      type: skill_trajectory
+      params:
+        include_prefix: false
+        include_tail: false
+    planner_skills_component:
+      skills:
+      - type: home

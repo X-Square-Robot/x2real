@@ -1,0 +1,113 @@
+graph_task_generator:
+  definition:
+    task_type: whack_a_mole
+    component_sections:
+      event_component:
+        terms:
+          sample_whack_a_mole:
+            mode: reset
+            mole_base_name: mole_base
+            hammer_name: hammer
+            mole_base_poses:
+            - - 0.34
+              - -0.1
+              - -0.1907
+            - - 0.34
+              - -0.27
+              - -0.1907
+            - - 0.34
+              - -0.44
+              - -0.1907
+            mole_base_orientation:
+            - 0.0
+            - 0.0
+            - 0.7071
+            - 0.7071
+            hammer_poses:
+            - - 0.2
+              - -0.08
+              - -0.2254
+            - - 0.2
+              - -0.27
+              - -0.2254
+            - - 0.2
+              - -0.46
+              - -0.2254
+            - - 0.13
+              - -0.08
+              - -0.2254
+            - - 0.13
+              - -0.27
+              - -0.2254
+            - - 0.13
+              - -0.46
+              - -0.2254
+            - - 0.06
+              - -0.08
+              - -0.2254
+            - - 0.06
+              - -0.27
+              - -0.2254
+            - - 0.06
+              - -0.46
+              - -0.2254
+            hammer_orientation:
+            - 0.0
+            - 0.0
+            - 1.0
+            - 0.0
+            peg_colors:
+            - red
+            - orange
+            - yellow
+            - green
+            - blue
+            - purple
+            peg_joint_names:
+            - red
+            - orange
+            - yellow
+            - green
+            - blue
+            - purple
+            raised_openness: 0.0
+            down_openness: 1.0
+            peg_index_log_key: whack_target_peg_index
+            hammer_slot_log_key: hammer_slot
+            mole_base_slot_log_key: mole_base_slot
+            instruction_template: Pick up the wooden hammer, whack the raised {color}
+              peg so it drops below the panel, put the hammer back on the table, then
+              return the arm home.
+      log_component:
+        entries:
+          whack_a_mole_plan:
+            trigger: enter
+            func: whack_a_mole_active_label
+      instruction_component:
+        topic: whack_a_mole
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: whack_a_mole_plan
+          label: Task
+          font_size: 24
+  nodes:
+  - id: grasp_hammer
+    include: x2real/task/tool_use/whack_a_mole/stages/grasp_hammer.yaml
+    score: 2
+  - id: whack_peg
+    include: x2real/task/tool_use/whack_a_mole/stages/whack_peg.yaml
+    score: 5
+  - id: place_hammer
+    include: x2real/task/tool_use/whack_a_mole/stages/place_hammer.yaml
+    score: 2
+  - id: return
+    include: x2real/task/tool_use/whack_a_mole/stages/return.yaml
+    score: 1
+  edges:
+  - src: grasp_hammer
+    dst: whack_peg
+  - src: whack_peg
+    dst: place_hammer
+  - src: place_hammer
+    dst: return

@@ -1,0 +1,142 @@
+graph_task_generator:
+  definition:
+    task_type: classify_object_shape
+    planner_skill_boundary:
+      prefix:
+      - type: home
+      - type: stay
+    planner_skill_defaults:
+      pick:
+        grasp_label_manifest: manaenv/defination/grasp_labels/manifest.yaml
+        arm: auto
+        approach_distance: 0.08
+        lift_height: 0.18
+        top_k: 20
+      place:
+        arm: current
+        pre_place_z_offset: 0.16
+        place_z_offset: 0.015
+        post_place_z_offset: 0.12
+        hesitate_steps: 10
+        pitch_samples: 8
+        target:
+          strategy: bbox_ratio
+          x_ratio_range:
+          - 0.15
+          - 0.85
+          y_ratio_range:
+          - 0.15
+          - 0.85
+      home:
+        arm: both
+        gripper: closed
+        steps: 20
+      stay:
+        arm: both
+        gripper: open
+        steps: 20
+        left_stay_joints:
+        - -0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - 0.26
+        right_stay_joints:
+        - 0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - -0.26
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: shape_cube_asset
+            target:
+              type: node
+              id: shape_cube
+            selector:
+              type: uniform
+          - id: shape_cylinder_asset
+            target:
+              type: node
+              id: shape_cylinder
+            selector:
+              type: uniform
+          - id: shape_sphere_asset
+            target:
+              type: node
+              id: shape_sphere
+            selector:
+              type: uniform
+          placements:
+          - id: sortable_start_region
+            target:
+              type: group
+              id: sortable_start_region
+            sample:
+              type: inherit
+          - id: basket_c
+            target:
+              type: node
+              id: basket_c
+            sample:
+              type: inherit
+          - id: basket_d
+            target:
+              type: node
+              id: basket_d
+            sample:
+              type: inherit
+          - id: basket_e
+            target:
+              type: node
+              id: basket_e
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_shape_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - shape_cube
+              - shape_cylinder
+              - shape_sphere
+      instruction_component:
+        instructions:
+        - text: Sort each object into the basket that matches its shape, then return
+            the arm home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_shape_assets
+          label: Active shapes (cube / cylinder / sphere)
+          font_size: 24
+  nodes:
+  - id: place_cube
+    score: 3
+    include: x2real/task/visual_reasoning/classify_object_shape/stages/place_cube.yaml
+  - id: place_cylinder
+    score: 3
+    include: x2real/task/visual_reasoning/classify_object_shape/stages/place_cylinder.yaml
+  - id: place_sphere
+    score: 3
+    include: x2real/task/visual_reasoning/classify_object_shape/stages/place_sphere.yaml
+  - id: return
+    score: 1
+    include: x2real/task/visual_reasoning/classify_object_shape/stages/return.yaml
+  edges:
+  - src: place_cube
+    dst: return
+  - src: place_cylinder
+    dst: return
+  - src: place_sphere
+    dst: return

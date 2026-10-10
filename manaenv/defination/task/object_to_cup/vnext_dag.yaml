@@ -1,0 +1,409 @@
+graph_task_generator:
+  definition:
+    task_type: object_to_cup
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: obj_1_asset
+            target:
+              type: node
+              id: obj_1
+            selector:
+              type: uniform
+          - id: obj_2_asset
+            target:
+              type: node
+              id: obj_2
+            selector:
+              type: uniform
+          - id: cup_asset
+            target:
+              type: node
+              id: cup
+            selector:
+              type: uniform
+          placements:
+          - id: object_start_region
+            target:
+              type: group
+              id: object_start_region
+            sample:
+              type: inherit
+          - id: cup
+            target:
+              type: node
+              id: cup
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_object_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - obj_1
+              - obj_2
+              - cup
+      instruction_component:
+        instructions:
+        - text: With the right hand, pick up and hold the cup. With the left hand, pick up the scattered objects one by one
+            and put them into the cup. Finally, set the cup back on the table with the right hand, then return both arms home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_object_assets
+          label: Active objects / cup
+          font_size: 22
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: object_to_cup_grasp_cup
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: grasp_right_1
+              object_cfg: '@container'
+              force_threshold: 1.0
+              lifted_z_min: null
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: object_to_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: grasp @container.name with the right hand
+    id: grasp_cup
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: object_to_cup_pick_obj_1
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: grasp_left_1
+              object_cfg: '@pickable_1'
+              force_threshold: 1.0
+              lifted_z_min: -0.145
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: object_to_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up @pickable_1.name with the left hand
+    id: pick_obj_1
+    score: 1
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: object_to_cup_place_obj_1
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable_1'
+              reference_cfg: '@container'
+              in_reference_frame: true
+              x_range:
+              - -0.03
+              - 0.03
+              y_range:
+              - -0.03
+              - 0.03
+              z_range:
+              - -0.02
+              - 0.08
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: object_to_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @pickable_1.name into @container.name with the left hand
+    id: place_obj_1
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: object_to_cup_pick_obj_2
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: grasp_left_1
+              object_cfg: '@pickable_2'
+              force_threshold: 1.0
+              lifted_z_min: -0.145
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: object_to_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up @pickable_2.name with the left hand
+    id: pick_obj_2
+    score: 1
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: object_to_cup_place_obj_2
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@pickable_2'
+              reference_cfg: '@container'
+              in_reference_frame: true
+              x_range:
+              - -0.03
+              - 0.03
+              y_range:
+              - -0.03
+              - 0.03
+              z_range:
+              - -0.02
+              - 0.08
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: object_to_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @pickable_2.name into @container.name with the left hand
+    id: place_obj_2
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: object_to_cup_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - cup_on_table:
+                  _func: object_position_in_zone
+                  object_cfg: '@container'
+                  z_range:
+                  - -0.27
+                  - -0.16
+                  velocity_threshold: 0.1
+                  consecutive_steps: 10
+              - arm_home:
+                  _func: articulation_joints_near_default
+                  asset_cfg: robot
+                  atol: 0.4
+                  consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: object_to_cup_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place @container.name back on the table and return both arms home
+    id: return
+    score: 1
+  edges:
+  - src: grasp_cup
+    dst: pick_obj_1
+  - src: pick_obj_1
+    dst: place_obj_1
+  - src: place_obj_1
+    dst: pick_obj_2
+  - src: pick_obj_2
+    dst: place_obj_2
+  - src: place_obj_2
+    dst: return

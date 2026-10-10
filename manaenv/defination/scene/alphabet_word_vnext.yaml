@@ -1,0 +1,901 @@
+definition:
+  scene_type: alphabet_word_scene
+  metadata:
+    name: ex001_6r_alphabet_word_vnext
+    source: alphabet_word/vnext
+    semantic_goal: Select alphabet blocks and place them in order to spell a word
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: block_alphabet_a
+  asset:
+    type: asset_id
+    id: block_alphabet_a
+  semantic_tags:
+  - alphabet_block
+  - letter_a
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_b
+  asset:
+    type: asset_id
+    id: block_alphabet_b
+  semantic_tags:
+  - alphabet_block
+  - letter_b
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_c
+  asset:
+    type: asset_id
+    id: block_alphabet_c
+  semantic_tags:
+  - alphabet_block
+  - letter_c
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_d
+  asset:
+    type: asset_id
+    id: block_alphabet_d
+  semantic_tags:
+  - alphabet_block
+  - letter_d
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_e
+  asset:
+    type: asset_id
+    id: block_alphabet_e
+  semantic_tags:
+  - alphabet_block
+  - letter_e
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_f
+  asset:
+    type: asset_id
+    id: block_alphabet_f
+  semantic_tags:
+  - alphabet_block
+  - letter_f
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_g
+  asset:
+    type: asset_id
+    id: block_alphabet_g
+  semantic_tags:
+  - alphabet_block
+  - letter_g
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_h
+  asset:
+    type: asset_id
+    id: block_alphabet_h
+  semantic_tags:
+  - alphabet_block
+  - letter_h
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_i
+  asset:
+    type: asset_id
+    id: block_alphabet_i
+  semantic_tags:
+  - alphabet_block
+  - letter_i
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_j
+  asset:
+    type: asset_id
+    id: block_alphabet_j
+  semantic_tags:
+  - alphabet_block
+  - letter_j
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_k
+  asset:
+    type: asset_id
+    id: block_alphabet_k
+  semantic_tags:
+  - alphabet_block
+  - letter_k
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_l
+  asset:
+    type: asset_id
+    id: block_alphabet_l
+  semantic_tags:
+  - alphabet_block
+  - letter_l
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_m
+  asset:
+    type: asset_id
+    id: block_alphabet_m
+  semantic_tags:
+  - alphabet_block
+  - letter_m
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_n
+  asset:
+    type: asset_id
+    id: block_alphabet_n
+  semantic_tags:
+  - alphabet_block
+  - letter_n
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_o
+  asset:
+    type: asset_id
+    id: block_alphabet_o
+  semantic_tags:
+  - alphabet_block
+  - letter_o
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_p
+  asset:
+    type: asset_id
+    id: block_alphabet_p
+  semantic_tags:
+  - alphabet_block
+  - letter_p
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_q
+  asset:
+    type: asset_id
+    id: block_alphabet_q
+  semantic_tags:
+  - alphabet_block
+  - letter_q
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_r
+  asset:
+    type: asset_id
+    id: block_alphabet_r
+  semantic_tags:
+  - alphabet_block
+  - letter_r
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_s
+  asset:
+    type: asset_id
+    id: block_alphabet_s
+  semantic_tags:
+  - alphabet_block
+  - letter_s
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_t
+  asset:
+    type: asset_id
+    id: block_alphabet_t
+  semantic_tags:
+  - alphabet_block
+  - letter_t
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_u
+  asset:
+    type: asset_id
+    id: block_alphabet_u
+  semantic_tags:
+  - alphabet_block
+  - letter_u
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_v
+  asset:
+    type: asset_id
+    id: block_alphabet_v
+  semantic_tags:
+  - alphabet_block
+  - letter_v
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_w
+  asset:
+    type: asset_id
+    id: block_alphabet_w
+  semantic_tags:
+  - alphabet_block
+  - letter_w
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_x
+  asset:
+    type: asset_id
+    id: block_alphabet_x
+  semantic_tags:
+  - alphabet_block
+  - letter_x
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_y
+  asset:
+    type: asset_id
+    id: block_alphabet_y
+  semantic_tags:
+  - alphabet_block
+  - letter_y
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_z
+  asset:
+    type: asset_id
+    id: block_alphabet_z
+  semantic_tags:
+  - alphabet_block
+  - letter_z
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: block_alphabet_2
+  asset:
+    type: asset_id
+    id: block_alphabet_2
+  semantic_tags:
+  - alphabet_block
+  - letter_2
+  scale:
+  - 1.5
+  - 1.5
+  - 1.5
+- id: alphabet_word_slot_1
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - word_slot
+  - word_slot_1
+  scale:
+  - 0.4
+  - 0.6
+  - 1.0
+  kinematic: true
+- id: alphabet_word_slot_2
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - word_slot
+  - word_slot_2
+  scale:
+  - 0.4
+  - 0.6
+  - 1.0
+  kinematic: true
+- id: alphabet_word_slot_3
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - word_slot
+  - word_slot_3
+  scale:
+  - 0.4
+  - 0.6
+  - 1.0
+  kinematic: true
+- id: alphabet_word_slot_4
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - word_slot
+  - word_slot_4
+  scale:
+  - 0.4
+  - 0.6
+  - 1.0
+  kinematic: true
+- id: alphabet_word_slot_5
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - word_slot
+  - word_slot_5
+  scale:
+  - 0.4
+  - 0.6
+  - 1.0
+  kinematic: true
+- id: alphabet_word_slot_6
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - word_slot
+  - word_slot_6
+  scale:
+  - 0.4
+  - 0.6
+  - 1.0
+  kinematic: true
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    block_alphabet_a:
+      object: block_alphabet_a
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.25
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_b:
+      object: block_alphabet_b
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.15
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_c:
+      object: block_alphabet_c
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.05
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_d:
+      object: block_alphabet_d
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.95
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_e:
+      object: block_alphabet_e
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.85
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_f:
+      object: block_alphabet_f
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.75
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_g:
+      object: block_alphabet_g
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.65
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_h:
+      object: block_alphabet_h
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.55
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_i:
+      object: block_alphabet_i
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.45
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_j:
+      object: block_alphabet_j
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.35
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_k:
+      object: block_alphabet_k
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.25
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_l:
+      object: block_alphabet_l
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.15
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_m:
+      object: block_alphabet_m
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.05
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_n:
+      object: block_alphabet_n
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.05
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_o:
+      object: block_alphabet_o
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.15
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_p:
+      object: block_alphabet_p
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.25
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_q:
+      object: block_alphabet_q
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.35
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_r:
+      object: block_alphabet_r
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.45
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_s:
+      object: block_alphabet_s
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.55
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_t:
+      object: block_alphabet_t
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.65
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_u:
+      object: block_alphabet_u
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.75
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_v:
+      object: block_alphabet_v
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.85
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_w:
+      object: block_alphabet_w
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.95
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_x:
+      object: block_alphabet_x
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 1.05
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_y:
+      object: block_alphabet_y
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 1.15
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_z:
+      object: block_alphabet_z
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 1.25
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    block_alphabet_2:
+      object: block_alphabet_2
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 1.35
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    alphabet_word_slot_1:
+      object: alphabet_word_slot_1
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.02
+          - 0.082
+          - -0.235423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.70711
+          - 0.70711
+    alphabet_word_slot_2:
+      object: alphabet_word_slot_2
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.02
+          - -0.058
+          - -0.235423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.70711
+          - 0.70711
+    alphabet_word_slot_3:
+      object: alphabet_word_slot_3
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.02
+          - -0.198
+          - -0.235423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.70711
+          - 0.70711
+    alphabet_word_slot_4:
+      object: alphabet_word_slot_4
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.02
+          - -0.338
+          - -0.235423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.70711
+          - 0.70711
+    alphabet_word_slot_5:
+      object: alphabet_word_slot_5
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.02
+          - -0.478
+          - -0.235423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.70711
+          - 0.70711
+    alphabet_word_slot_6:
+      object: alphabet_word_slot_6
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.02
+          - -0.618
+          - -0.235423
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.70711
+          - 0.70711
+  groups: {}
+variants:
+  materialization: []
+  assignments: []

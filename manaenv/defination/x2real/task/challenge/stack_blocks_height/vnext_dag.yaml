@@ -1,0 +1,125 @@
+graph_task_generator:
+  definition:
+    task_type: stack_blocks_height
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: block_start_region_neg
+            target:
+              type: group
+              id: block_start_region_neg
+            sample:
+              type: inherit
+          - id: block_start_region_pos
+            target:
+              type: group
+              id: block_start_region_pos
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_stack_blocks_height:
+            mode: reset
+            block_names:
+            - block_1_blue
+            - block_2_green
+            - block_3_red
+            - block_4_orange
+            - block_5_blue
+            - block_6_green
+            - block_7_red
+            - block_8_orange
+            - block_9_blue
+            - block_10_green
+            - block_11_red
+            - block_12_orange
+            - block_13_blue
+            - block_14_green
+            - block_15_red
+            target_height_range:
+            - 12
+            - 12
+            target_height_log_key: stack_tower_height
+            instruction_template: Place a block on the green paper, then stack other blocks on top to build a tower of {n},
+              and return the arm home.
+      log_component:
+        entries:
+          stack_blocks_height_plan:
+            trigger: enter
+            func: stack_blocks_height_label
+      instruction_component:
+        topic: stack_blocks_height
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: stack_blocks_height_plan
+          label: Task
+          font_size: 24
+  nodes:
+  - id: layer_1
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_1.yaml
+    score: 3
+  - id: layer_2
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_2.yaml
+    score: 3
+  - id: layer_3
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_3.yaml
+    score: 3
+  - id: layer_4
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_4.yaml
+    score: 3
+  - id: layer_5
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_5.yaml
+    score: 3
+  - id: layer_6
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_6.yaml
+    score: 3
+  - id: layer_7
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_7.yaml
+    score: 3
+  - id: layer_8
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_8.yaml
+    score: 3
+  - id: layer_9
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_9.yaml
+    score: 3
+  - id: layer_10
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_10.yaml
+    score: 3
+  - id: layer_11
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_11.yaml
+    score: 3
+  - id: layer_12
+    include: x2real/task/challenge/stack_blocks_height/stages/layer_12.yaml
+    score: 3
+  - id: return
+    include: x2real/task/challenge/stack_blocks_height/stages/return.yaml
+    score: 2
+  edges:
+  - src: layer_1
+    dst: layer_2
+  - src: layer_2
+    dst: layer_3
+  - src: layer_3
+    dst: layer_4
+  - src: layer_4
+    dst: layer_5
+  - src: layer_5
+    dst: layer_6
+  - src: layer_6
+    dst: layer_7
+  - src: layer_7
+    dst: layer_8
+  - src: layer_8
+    dst: layer_9
+  - src: layer_9
+    dst: layer_10
+  - src: layer_10
+    dst: layer_11
+  - src: layer_11
+    dst: layer_12
+  - src: layer_12
+    dst: return

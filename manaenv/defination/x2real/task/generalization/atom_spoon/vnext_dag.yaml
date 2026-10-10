@@ -1,0 +1,63 @@
+graph_task_generator:
+  definition:
+    task_type: put_spoon_in_bowl
+    runtime_instruction:
+      plan_id: runtime
+      tag_mode: kind
+      objects:
+        spoon: spoon
+      template: Pick up the spoon and put it into the bowl, then return the arm home.
+      subtasks:
+      - Pick up the spoon.
+      - Put the spoon into the bowl.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: bowl_asset
+            target:
+              type: node
+              id: bowl
+            selector:
+              type: uniform
+            cache_size: 30
+          placements:
+          - id: spoon
+            target:
+              type: node
+              id: spoon
+            sample:
+              type: inherit
+          - id: bowl
+            target:
+              type: node
+              id: bowl
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the spoon and put it into the bowl, then return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the spoon.
+        - Put the spoon into the bowl.
+        - Return the arm home.
+  nodes:
+  - id: pick_spoon
+    score: 4
+    include: x2real/task/generalization/atom_spoon/stages/pick_spoon.yaml
+  - id: place_spoon
+    score: 5
+    include: x2real/task/generalization/atom_spoon/stages/place_spoon.yaml
+  - id: return
+    score: 1
+    include: x2real/task/generalization/atom_spoon/stages/return.yaml
+  edges:
+  - src: pick_spoon
+    dst: place_spoon
+  - src: place_spoon
+    dst: return

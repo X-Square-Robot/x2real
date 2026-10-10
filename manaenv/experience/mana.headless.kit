@@ -1,0 +1,174 @@
+##
+# ManaEnv headless camera experience on the minimal Isaac Lab Kit stack.
+# Derived from IsaacLab 3.0's isaaclab.python.headless.rendering.kit with
+# ManaEnv's camera-safe render settings and external-package layout.
+#
+# This experience renders camera products without an OS window or livestream.
+# mana.webrtc.kit is the corresponding presented-frame/WebRTC variant.
+##
+
+[package]
+title = "Mana Headless Camera"
+description = "Headless ManaEnv camera rendering without livestream"
+version = "0.9.0"
+keywords = ["experience", "app", "isaaclab", "manaenv", "python", "camera", "headless", "minimal"]
+
+[dependencies]
+# Inline Isaac Lab's minimal headless base dependencies.  This experience is
+# distributed outside IsaacLab's ``apps`` directory, so the sibling
+# ``isaaclab.python.headless.kit`` app is not discoverable as a Kit package.
+"omni.physics" = {}
+"omni.physics.physx" = {}
+"omni.physics.stageupdate" = {}
+"omni.physx" = {}
+"omni.physx.tensors" = {}
+"omni.physx.fabric" = {}
+"usdrt.scenegraph" = {}
+"omni.kit.telemetry" = {}
+"omni.kit.loop" = {}
+"isaacsim.storage.native" = {}
+"omni.kit.usd.mdl" = {}
+"omni.usd.metrics.assembler.ui" = {}
+"isaacsim.core.version" = {}
+"omni.usd.schema.mujoco" = {}
+
+# Mana camera/rendering additions.
+"isaacsim.core.rendering_manager" = {}
+"omni.replicator.core" = {}
+
+# Camera rendering
+"omni.kit.material.library" = {}
+"omni.kit.viewport.rtx" = {}
+"omni.kit.viewport.utility" = {}
+"omni.kit.hydra_texture" = {}
+# Creates the implicit viewport RenderProduct and global /Render settings used
+# by camera helpers, while AppLauncher keeps the host window disabled.
+"omni.kit.viewport.window" = {}
+
+[settings.isaaclab]
+# AppLauncher validates this marker when camera rendering is enabled.
+cameras_enabled = true
+
+[settings]
+app.versionFile = "${exe-path}/VERSION"
+app.folder = "${exe-path}/"
+app.name = "Mana"
+app.version = "0.9.0"
+
+### FSD
+app.useFabricSceneDelegate = true
+# Direct RenderDelegate reads are unsafe with dynamic transforms in Kit 110.1.2.
+rtx.hydra.readTransformsFromFabricInRenderDelegate = false
+renderer.scenePartitioning.enabled = true
+
+# Disable extension startup chatter.
+app.enableStdoutOutput = false
+
+# Disable the default ROS bridge.
+isaac.startup.ros_bridge_extension = ""
+
+# High-fidelity camera rendering defaults.
+rtx.translucency.enabled = true
+rtx.reflections.enabled = true
+rtx.indirectDiffuse.enabled = true
+rtx-transient.dlssg.enabled = false
+rtx.directLighting.sampledLighting.enabled = true
+rtx.directLighting.sampledLighting.samplesPerPixel = 1
+rtx.sceneDb.ambientLightIntensity = 1.0
+rtx.shadows.enabled = true
+
+rtx.rtpt.maxBounces = 3
+rtx.rtpt.cached.enabled = false
+rtx.rtpt.lightcache.cached.enabled = false
+rtx.rtpt.translucency.virtualMotion.enabled = false
+rtx.rtpt.splitRoughReflection = true
+rtx.rtpt.adaptiveSampling.disocclusion.enabled = true
+rtx.rtpt.adaptiveSampling.disocclusion.spp = 4
+
+# Avoid Replicator warnings and silent tile trimming.
+rtx.pathtracing.maxSamplesPerLaunch = 1000000
+rtx.viewTile.limit = 1000000
+
+# Pure offscreen camera rendering does not need a presented frame.
+exts."omni.renderer.core".present.enabled = false
+
+rtx.raytracing.cached.enabled = true
+rtx.ambientOcclusion.enabled = true
+rtx.ambientOcclusion.denoiserMode = 0
+rtx.raytracing.subpixel.mode = 1
+rtx.post.dlss.execMode = 2
+
+# Keep camera output deterministic with the synchronous default scheduler.
+omni.replicator.asyncRendering = false
+app.updateOrder.checkForHydraRenderComplete = 1000
+app.renderer.waitIdle = true
+app.hydraEngine.waitIdle = true
+
+omni.rtx.nre.compositing.rendererHints = 3
+app.execution.debug.forceSerial = true
+app.audio.enabled = false
+app.vulkan = true
+
+# Follow an explicit CLI profiler backend instead of baking in NVTX.
+app.runLoops.main.rateLimitEnabled = false
+
+# Collider UI is opt-in because its live-scene drawing cannot overlap PhysX.
+manaenv.physics.colliderVisualizationUiEnabled = false
+
+exts."omni.replicator.core".Orchestrator.enabled = false
+metricsAssembler.changeListenerEnabled = false
+
+# Keep the Kit Newton extension excluded: StablePD uses the pinned actuator
+# graph package from the environment, while the public physics backend is PhysX.
+app.extensions.excluded = ["omni.kit.pip_archive", "omni.isaac.ml_archive", "isaacsim.pip.newton", "omni.warp.core"]
+
+[settings.app.python]
+interceptSysStdOutput = false
+logSysStdOutput = false
+
+[settings.app.settings]
+# Required by omni.syntheticdata when Fabric scene history is enabled.
+fabricDefaultStageFrameHistoryCount = 3
+
+[settings.app.renderer]
+skipWhileMinimized = false
+sleepMsOnFocus = 0
+sleepMsOutOfFocus = 0
+
+[settings.physics]
+updateToUsd = false
+updateParticlesToUsd = false
+updateVelocitiesToUsd = false
+updateForceSensorsToUsd = false
+outputVelocitiesLocalSpace = false
+useFastCache = false
+visualizationDisplayJoints = false
+fabricUpdateTransformations = false
+fabricUpdateVelocities = false
+fabricUpdateForceSensors = false
+fabricUpdateJointStates = false
+fabricUseGPUInterop = true
+
+# Register only Isaac Sim/Kit extension folders. IsaacLab 3.0 packages are
+# installed externally and are not scanned as Kit extensions.
+[settings.app.exts]
+folders = [
+    "${exe-path}/exts",
+    "${exe-path}/extscore",
+    "${exe-path}/../exts",
+    "${exe-path}/../extscache",
+    "${exe-path}/../extsPhysics",
+    "${exe-path}/../isaacsim/exts",
+    "${exe-path}/../isaacsim/extscache",
+    "${exe-path}/../isaacsim/extsPhysics",
+]
+
+[settings.persistent]
+UJITSO.geometry = true
+UJITSO.enabled = true
+
+# Asset path
+[settings]
+persistent.isaac.asset_root.default = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"
+persistent.isaac.asset_root.cloud = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"
+persistent.isaac.asset_root.nvidia = "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0"

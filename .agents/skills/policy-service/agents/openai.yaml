@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Policy Space v2 Services"
+  short_description: "Prepare, launch, verify, and stop v2 policy services"
+  default_prompt: "Use $policy-service to prepare and run a verified Policy Space v2 deployment."

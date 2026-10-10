@@ -1,0 +1,93 @@
+graph_task_generator:
+  definition:
+    task_type: find_drawer
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: brick_asset
+            target:
+              type: node
+              id: brick
+            selector:
+              type: uniform
+          placements:
+          - id: brick
+            target:
+              type: node
+              id: brick
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_find_drawer:
+            mode: reset
+            num_layers: 3
+            layer_labels:
+            - top
+            - middle
+            - bottom
+            layer_log_key: find_drawer_target_layer
+            instruction_template: Open the {layer} drawer, put the brick inside, close
+              it, wait a few seconds, then reopen the same drawer, take the brick
+              out, close it, and return the arm home.
+      log_component:
+        entries:
+          find_drawer_plan:
+            trigger: enter
+            func: find_drawer_active_label
+      instruction_component:
+        topic: find_drawer
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: find_drawer_plan
+          label: Task
+          font_size: 24
+  nodes:
+  - id: open_drawer
+    include: x2real/task/memory_tracking/find_drawer/stages/open_drawer.yaml
+    score: 1
+  - id: pick_item
+    include: x2real/task/memory_tracking/find_drawer/stages/pick_item.yaml
+    score: 1
+  - id: place_in_drawer
+    include: x2real/task/memory_tracking/find_drawer/stages/place_in_drawer.yaml
+    score: 2
+  - id: close_drawer
+    include: x2real/task/memory_tracking/find_drawer/stages/close_drawer.yaml
+    score: 1
+  - id: wait
+    include: x2real/task/memory_tracking/find_drawer/stages/wait.yaml
+    score: 1
+  - id: reopen_drawer
+    include: x2real/task/memory_tracking/find_drawer/stages/reopen_drawer.yaml
+    score: 1
+  - id: take_out
+    include: x2real/task/memory_tracking/find_drawer/stages/take_out.yaml
+    score: 1
+  - id: close_drawer_final
+    include: x2real/task/memory_tracking/find_drawer/stages/close_drawer_final.yaml
+    score: 1
+  - id: return
+    include: x2real/task/memory_tracking/find_drawer/stages/return.yaml
+    score: 1
+  edges:
+  - src: open_drawer
+    dst: pick_item
+  - src: pick_item
+    dst: place_in_drawer
+  - src: place_in_drawer
+    dst: close_drawer
+  - src: close_drawer
+    dst: wait
+  - src: wait
+    dst: reopen_drawer
+  - src: reopen_drawer
+    dst: take_out
+  - src: take_out
+    dst: close_drawer_final
+  - src: close_drawer_final
+    dst: return

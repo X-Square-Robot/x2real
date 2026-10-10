@@ -1,0 +1,157 @@
+definition:
+  scene_type: schema_vnext_atom_draw
+  metadata:
+    source: atom_draw
+    semantic_goal: Open the drawer, put the medicine inside, then close the drawer
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: drawer
+  asset:
+    type: pool
+    cache_size: 9
+    candidates:
+    - id: drawer_pool
+      from_file: assets/pools/atom_draw/drawers.json
+  orientation:
+  - 0.0
+  - 0.0
+  - 1.0
+  - 0.0
+  semantic_tags:
+  - containable
+  - openable
+- id: object
+  asset:
+    type: pool
+    cache_size: 17
+    candidates:
+    - id: pickable_pool
+      from_file: assets/pools/atom_draw/pickables.json
+      item_range:
+      - 0
+      - 17
+      bbox_filter:
+        max_longest_edge: 0.06
+  scale:
+  - 2.0
+  - 2.0
+  - 2.0
+  orientation:
+  - 0.70710678
+  - 0.0
+  - 0.0
+  - 0.70710678
+  spawn_mass:
+  - 0.05
+  - 0.1
+  semantic_tags:
+  - pickable
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    drawer:
+      object: drawer
+    object:
+      object: object
+  groups:
+    drawer_object:
+      type: slot
+      nodes:
+      - drawer
+      - object
+      slots:
+        drawer_left:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.16
+            - -0.16
+            y:
+            - -0.15
+            - -0.02
+          yaws: 0.0
+        drawer_right:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - -0.16
+            - -0.16
+            y:
+            - 0.02
+            - 0.15
+          yaws: 0.0
+        object_left:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.12
+            - 0.22
+            y:
+            - -0.3
+            - -0.15
+          yaws: 0.0
+        object_right:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.12
+            - 0.22
+            y:
+            - 0.15
+            - 0.3
+          yaws: 0.0
+      assignments:
+        mode: explicit
+        items:
+        - id: drawer_left_object_right
+          bindings:
+            drawer: drawer_left
+            object: object_right
+        - id: drawer_right_object_left
+          bindings:
+            drawer: drawer_right
+            object: object_left
+      default_assignment: drawer_left_object_right
+variants:
+  materialization:
+  - id: drawer_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - drawer.drawer_pool
+      weight: 1.0
+  - id: object_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - object.pickable_pool
+      weight: 1.0
+  assignments: []

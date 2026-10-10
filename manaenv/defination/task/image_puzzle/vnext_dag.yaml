@@ -1,0 +1,314 @@
+graph_task_generator:
+  definition:
+    task_type: image_puzzle
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: puzzle_start_slots
+            target:
+              type: group
+              id: puzzle_start_slots
+            sample:
+              type: inherit
+          materials:
+          - id: brick_split_a_pic
+            target:
+              type: object_material
+              object: brick_split_a
+              material: pic
+            selector:
+              type: uniform
+              shared_id: puzzle_pic
+          - id: brick_split_b_pic
+            target:
+              type: object_material
+              object: brick_split_b
+              material: pic
+            selector:
+              type: uniform
+              shared_id: puzzle_pic
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Place the two brick puzzle pieces on the green paper in either order, adjust them so they form one complete
+            image, then return the arm home.
+          log:
+            instruction_variant: direct
+        - text: Move brick split A and brick split B onto the paper (either piece first), fit them together into the complete
+            picture, then return the arm home.
+          log:
+            instruction_variant: descriptive
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: image_puzzle_place_piece_a
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@puzzle_piece'
+              minimum_height: -0.25
+            success:
+              terms:
+              - a_on_paper:
+                  _func: object_position_in_zone
+                  object_cfg: '@puzzle_piece_a'
+                  x_range:
+                  - 0.15
+                  - 0.26
+                  y_range:
+                  - -0.36
+                  - -0.18
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+              - a_yaw_180:
+                  _func: object_yaw_in_range
+                  object_cfg: '@puzzle_piece_a'
+                  min_yaw_deg: 150.0
+                  max_yaw_deg: 180.0
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@puzzle_piece'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: image_puzzle_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place @puzzle_piece_a.name on the green paper target
+    id: place_piece_a
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: image_puzzle_place_piece_b
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@puzzle_piece'
+              minimum_height: -0.25
+            success:
+              terms:
+              - b_on_paper:
+                  _func: object_position_in_zone
+                  object_cfg: '@puzzle_piece_b'
+                  x_range:
+                  - 0.15
+                  - 0.26
+                  y_range:
+                  - -0.36
+                  - -0.18
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+              - b_yaw_180:
+                  _func: object_yaw_in_range
+                  object_cfg: '@puzzle_piece_b'
+                  min_yaw_deg: 150.0
+                  max_yaw_deg: 180.0
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@puzzle_piece'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: image_puzzle_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place @puzzle_piece_b.name on the green paper target
+    id: place_piece_b
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: image_puzzle_assemble
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@puzzle_piece'
+              minimum_height: -0.25
+            success:
+              terms:
+              - a_on_paper:
+                  _func: object_position_in_zone
+                  object_cfg: '@puzzle_piece_a'
+                  x_range:
+                  - 0.15
+                  - 0.26
+                  y_range:
+                  - -0.36
+                  - -0.18
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+              - b_on_paper:
+                  _func: object_position_in_zone
+                  object_cfg: '@puzzle_piece_b'
+                  x_range:
+                  - 0.15
+                  - 0.26
+                  y_range:
+                  - -0.36
+                  - -0.18
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+              - a_yaw_180:
+                  _func: object_yaw_in_range
+                  object_cfg: '@puzzle_piece_a'
+                  min_yaw_deg: 150.0
+                  max_yaw_deg: 180.0
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+              - b_yaw_180:
+                  _func: object_yaw_in_range
+                  object_cfg: '@puzzle_piece_b'
+                  min_yaw_deg: 150.0
+                  max_yaw_deg: 180.0
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+              - a_left_of_b_close:
+                  _func: object_position_in_zone
+                  object_cfg: '@puzzle_piece_b'
+                  reference_cfg: '@puzzle_piece_a'
+                  x_range:
+                  - -0.05
+                  - 0.05
+                  y_range:
+                  - -0.14
+                  - -0.04
+                  xy_distance_threshold: 0.08
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@puzzle_piece'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: image_puzzle_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: adjust @puzzle_piece_a.name and @puzzle_piece_b.name to form one complete image
+    id: assemble
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: image_puzzle_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@puzzle_piece'
+              minimum_height: -0.25
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: '@puzzle_piece'
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: image_puzzle_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 2
+  edges:
+  - src: place_piece_a
+    dst: assemble
+  - src: place_piece_b
+    dst: assemble
+  - src: assemble
+    dst: return

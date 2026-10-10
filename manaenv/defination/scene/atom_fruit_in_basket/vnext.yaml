@@ -1,0 +1,102 @@
+definition:
+  scene_type: schema_vnext_atom_fruit_in_basket
+  metadata:
+    source: atom_fruit_in_basket
+    semantic_goal: Put a fruit into a basket
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: fruit
+  asset:
+    type: pool
+    cache_size: 30
+    candidates:
+    - id: fruit_pool
+      from_file: assets/pools/atom_fruit_in_basket/pickables_fruit.json
+      item_range:
+      - 0
+      - 30
+      bbox_filter:
+        max_longest_edge: 0.1
+  spawn_mass:
+  - 0.05
+  - 0.1
+  semantic_tags:
+  - pickable
+- id: basket
+  asset:
+    type: pool
+    cache_size: 11
+    candidates:
+    - id: basket_pool
+      from_file: assets/pools/atom_fruit_in_basket/containers_basket.json
+  spawn_mass:
+  - 0.05
+  - 0.1
+  semantic_tags:
+  - container
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    fruit:
+      object: fruit
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - 0.1
+          - 0.26
+          y:
+          - -0.15
+          - 0.15
+    basket:
+      object: basket
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.06
+          - 0.03
+          y:
+          - -0.08
+          - 0.08
+variants:
+  materialization:
+  - id: fruit_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - fruit.fruit_pool
+      weight: 1.0
+  - id: basket_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - basket.basket_pool
+      weight: 1.0
+  assignments: []

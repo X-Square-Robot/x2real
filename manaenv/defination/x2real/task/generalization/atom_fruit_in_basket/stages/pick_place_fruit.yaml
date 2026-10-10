@@ -1,0 +1,39 @@
+include: x2real/task/generalization/atom_fruit_in_basket/stages/_atom_fruit_in_basket_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: atom_fruit_in_basket_pick_place_fruit
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_position_in_zone
+          object_cfg: '@pickable'
+          reference_cfg: '@container'
+          reference_footprint_zone: true
+          xy_inset_ratio: 0.1
+          z_range:
+          - -0.03
+          - 0.22
+          velocity_threshold: 0.05
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: put {fruit} into basket
+        fruit_in_basket_zone:
+          trigger: enter
+          func: object_position_in_zone
+          params:
+            object_cfg: '@pickable'
+            reference_cfg: '@container'
+            reference_footprint_zone: true
+            xy_inset_ratio: 0.1
+            z_range:
+            - -0.03
+            - 0.22
+            velocity_threshold: 0.05
+            consecutive_steps: 1
+            log_prefix: fruit_in_basket
+            log_interval: 0
+          update_mode: max

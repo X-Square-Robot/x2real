@@ -1,0 +1,286 @@
+graph_task_generator:
+  definition:
+    task_type: handover
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: handover_object_asset
+            target:
+              type: node
+              id: handover_object
+            selector:
+              type: uniform
+          placements:
+          - id: object_start_region
+            target:
+              type: group
+              id: object_start_region
+            sample:
+              type: inherit
+          - id: basket_b
+            target:
+              type: node
+              id: basket_b
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_handover_asset:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - handover_object
+      instruction_component:
+        instructions:
+        - text: With the left hand pick up the object on the left, hand it to the right hand, put it into the basket on the
+            right with the right hand, then return the arms home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_handover_asset
+          label: Target object
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: handover_pick_left
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: grasp_left_1
+              object_cfg: '@pickable'
+              force_threshold: 1.0
+              lifted_z_min: -0.145
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: handover_scene
+        sensor_component:
+          sensors:
+          - basket_contact_sensor:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up @pickable.name with the left hand
+    id: pick_left
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: handover_pick_right
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: grasp_right_1
+              object_cfg: '@pickable'
+              force_threshold: 1.0
+              lifted_z_min: -0.145
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: handover_scene
+        sensor_component:
+          sensors:
+          - basket_contact_sensor:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: take @pickable.name with the right hand
+    id: pick_right
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: handover_place_basket
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@basket_contact_sensor'
+              force_threshold: 0.1
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: handover_scene
+        sensor_component:
+          sensors:
+          - basket_contact_sensor:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put @pickable.name into @container.name
+    id: place_basket
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: handover_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: handover_scene
+        sensor_component:
+          sensors:
+          - basket_contact_sensor:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: pick_left
+    dst: pick_right
+  - src: pick_right
+    dst: place_basket
+  - src: place_basket
+    dst: return

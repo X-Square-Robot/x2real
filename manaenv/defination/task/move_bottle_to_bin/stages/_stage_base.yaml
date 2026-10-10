@@ -1,0 +1,27 @@
+# Shared stage base for move_bottle_to_bin (P3 static). No MMP reset / posture joint map.
+# Lift/head initial posture is owned by EX001 whole-body USD defaults.
+direct_task_generator:
+  definition:
+    task_type: move_bottle_to_bin_stage_base
+    episode_length_s: 3600.0
+    max_steps_per_episode: 100000
+    prompt: Navigate to the source table, grasp the correct bottle on the table, navigate to the destination bin, place the bottle in the bin, and retract the arm safely.
+  roles: {pickable: bottle, table: table, bin: bin}
+  component_sections:
+    instruction_component:
+      instruction: Navigate to the source table, grasp the correct bottle on the table, navigate to the destination bin, place the bottle in the bin, and retract the arm safely.
+      topic: move_bottle_to_bin
+    termination_component:
+      terms:
+        mdp.time_out:
+          time_out: true
+    event_component:
+      terms:
+        mdp.reset_scene_to_default:
+          mode: reset
+          reset_joint_targets: true
+    viewer_component:
+      terms:
+        look_at_object:
+          lookat_object: "@pickable"
+          offset: [-1.0, 0.0, 1.2]

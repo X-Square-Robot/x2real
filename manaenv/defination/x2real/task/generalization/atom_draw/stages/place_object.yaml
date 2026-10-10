@@ -1,0 +1,29 @@
+include: x2real/task/generalization/atom_draw/stages/_atom_draw_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: atom_draw_place_object
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_in_opened_joint_region
+          object_cfg: '@pickable'
+          reference_cfg: '@containable'
+          sliding_body_name: drawer
+          joint_name: PrismaticJoint
+          joint_axis_local:
+          - 1.0
+          - 0.0
+          - 0.0
+          protruding_only: true
+          xy_inset_ratio: 0.05
+          z_range:
+          - 0.0
+          - 0.15
+          velocity_threshold: 0.08
+          consecutive_steps: 3
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place @pickable.name into the drawer

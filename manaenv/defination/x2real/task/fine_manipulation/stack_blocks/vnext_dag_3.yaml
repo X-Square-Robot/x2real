@@ -1,0 +1,65 @@
+graph_task_generator:
+  definition:
+    task_type: stack_blocks_3
+    component_sections:
+      event_component:
+        terms:
+          sample_stack_blocks:
+            mode: reset
+            num_slots: 5
+            colors:
+            - blue
+            - green
+            - red
+            - orange
+            num_blocks: 3
+            spawn_region:
+              x:
+              - -0.05
+              - 0.1
+              y:
+              - -0.6
+              - 0.06
+              z:
+              - -0.205
+              - -0.205
+            min_separation: 0.09
+            base_position:
+            - 0.205
+            - -0.268
+            count_log_key: stack_blocks_count
+            instruction_template: Place a block on the green paper, then stack the
+              other blocks on top to build a tower of {n}, and return the arm home.
+      log_component:
+        entries:
+          stack_blocks_plan:
+            trigger: enter
+            func: stack_blocks_active_label
+      instruction_component:
+        topic: stack_blocks
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: stack_blocks_plan
+          label: Task
+          font_size: 24
+  nodes:
+  - id: place_base
+    include: x2real/task/fine_manipulation/stack_blocks/stages/place_base.yaml
+    score: 2
+  - id: stack_2
+    include: x2real/task/fine_manipulation/stack_blocks/stages/stack_2.yaml
+    score: 3
+  - id: stack_3
+    include: x2real/task/fine_manipulation/stack_blocks/stages/stack_3.yaml
+    score: 4
+  - id: return
+    include: x2real/task/fine_manipulation/stack_blocks/stages/return.yaml
+    score: 1
+  edges:
+  - src: place_base
+    dst: stack_2
+  - src: stack_2
+    dst: stack_3
+  - src: stack_3
+    dst: return

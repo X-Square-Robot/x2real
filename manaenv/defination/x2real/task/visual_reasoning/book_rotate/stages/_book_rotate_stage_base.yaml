@@ -1,0 +1,51 @@
+direct_task_generator:
+  definition:
+    gen_method: 0
+    episode_length_s: 180.0
+    num_episodes: 10
+    max_steps_per_episode: 1000
+  component_sections:
+    termination_component:
+      terms:
+        mdp.time_out:
+          time_out: true
+        object_dropped:
+          object_cfg: '@rotatable'
+          minimum_height: -0.25
+          ignore_below: -1.0
+    event_component:
+      terms:
+        mdp.reset_scene_to_default:
+          mode: reset
+          reset_joint_targets: true
+    metric_component:
+      terms:
+        success_rate: {}
+        object_moved_rate:
+          object_cfg: '@rotatable'
+    viewer_component:
+      terms:
+        look_at_object:
+          lookat_object: '@rotatable'
+          offset:
+          - -1.0
+          - 0.0
+          - 1.5
+    scene_constraint_component:
+      constraints:
+      - mode: 0
+        tags: book_rotate_scene
+    sensor_component:
+      sensors:
+      - left_gripper_contact_sensor:
+          type: contact
+          source: '@rotatable'
+          against:
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+      - right_gripper_contact_sensor:
+          type: contact
+          source: '@rotatable'
+          against:
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+          - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'

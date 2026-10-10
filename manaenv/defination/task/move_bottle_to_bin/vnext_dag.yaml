@@ -1,0 +1,63 @@
+################################################################################
+# move_bottle_to_bin graph task (5 scored milestones / 10-point rubric, ID).
+# Static P3 migration: no MMP events, no reset_posture joint map.
+################################################################################
+graph_task_generator:
+  definition:
+    task_type: move_bottle_to_bin
+    episode_length_s: 3600.0
+    max_steps_per_episode: 100000
+    prompt: Navigate to the source table, grasp the correct bottle on the table, navigate to the destination bin, place the bottle in the bin, and retract the arm safely.
+    layout:
+      runtime_sample:
+        id: runtime
+        seed: 42
+        targets:
+          assets:
+          - {id: bottle_asset, target: {type: node, id: bottle}, selector: {type: uniform}, cache_size: 4}
+          placements:
+          - {id: table, target: {type: node, id: table}, sample: {type: inherit}}
+          - {id: bin, target: {type: node, id: bin}, sample: {type: inherit}}
+          - {id: bottle, target: {type: node, id: bottle}, sample: {type: inherit}}
+    component_sections:
+      instruction_component:
+        instruction: Navigate to the source table, grasp the correct bottle on the table, navigate to the destination bin, place the bottle in the bin, and retract the arm safely.
+        topic: move_bottle_to_bin
+      log_component:
+        entries:
+          instruction_text:
+            trigger: enter
+            value: Navigate to the source table, grasp the correct bottle on the table, navigate to the destination bin, place the bottle in the bin, and retract the arm safely.
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: instruction_text
+          label: Instruction
+          font_size: 22
+      event_component:
+        terms:
+          apply_case_bank_layout:
+            mode: reset
+            _func: apply_case_bank_layout
+            bank_path: task/move_bottle_to_bin/operation_zones.yaml
+            robot_asset: robot
+            object_asset: "@pickable"
+            context_namespace: mobile_manip
+            context_plan_id: move_bottle_to_bin
+            required_zone_keys: [bottle_operation_zone, bin_operation_zone]
+            seed: 42
+  roles:
+    pickable: bottle
+    table: table
+    bin: bin
+  nodes:
+  - {id: navigate_to_bottle, include: task/move_bottle_to_bin/stages/navigate_to_bottle.yaml, score: 2}
+  - {id: pick_bottle, include: task/move_bottle_to_bin/stages/pick_bottle.yaml, score: 2}
+  - {id: navigate_to_bin, include: task/move_bottle_to_bin/stages/navigate_to_bin.yaml, score: 2}
+  - {id: place_bottle, include: task/move_bottle_to_bin/stages/place_bottle.yaml, score: 2}
+  - {id: retract_arm, include: task/move_bottle_to_bin/stages/retract_arm.yaml, score: 2}
+  edges:
+  - {src: navigate_to_bottle, dst: pick_bottle}
+  - {src: pick_bottle, dst: navigate_to_bin}
+  - {src: navigate_to_bin, dst: place_bottle}
+  - {src: place_bottle, dst: retract_arm}

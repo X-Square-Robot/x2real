@@ -1,0 +1,85 @@
+################################################################################
+# buttons_press_sequence schema-vNext scene (x2real challenge).
+#
+# Four articulated color buttons on the tabletop (always all present):
+#   button_aa=blue, button_ab=yellow, button_ac=red, button_ad=green.
+# Reset event sample_button_press_sequence scatters them and samples a
+# with-replacement press sequence of length L (task-owned).
+# Orientations are xyzw (6.0). atom_task authored wxyz.
+################################################################################
+
+definition:
+  scene_type: buttons_press_sequence_scene
+  metadata:
+    name: ex001_6r_buttons_press_sequence_vnext
+    source: x2real/challenge/buttons_press_sequence/vnext
+    semantic_goal: Press the colored buttons in the randomly instructed order
+
+render_settings:
+  gen_method: 0
+  tags: green_booth
+
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position: [-0.452, -0.271, -0.985]
+    orientation: [0.0, 0.0, -0.704, 0.709]
+  required_surfaces:
+    - tabletop
+
+objects:
+  - id: button_blue
+    asset: {type: asset_id, id: button_aa}
+    semantic_tags: [touchable, btn_blue]
+  - id: button_yellow
+    asset: {type: asset_id, id: button_ab}
+    semantic_tags: [touchable, btn_yellow]
+  - id: button_red
+    asset: {type: asset_id, id: button_ac}
+    semantic_tags: [touchable, btn_red]
+  - id: button_green
+    asset: {type: asset_id, id: button_ad}
+    semantic_tags: [touchable, btn_green]
+
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    button_blue:
+      object: button_blue
+      placement:
+        type: surface
+        surface: tabletop
+        ranges: {x: [0.05, 0.20], y: [-0.45, 0.45]}
+        orientation: [0.0, 0.0, 0.0, 1.0]
+    button_yellow:
+      object: button_yellow
+      placement:
+        type: surface
+        surface: tabletop
+        ranges: {x: [0.05, 0.20], y: [-0.45, 0.45]}
+        orientation: [0.0, 0.0, 0.0, 1.0]
+    button_red:
+      object: button_red
+      placement:
+        type: surface
+        surface: tabletop
+        ranges: {x: [0.05, 0.20], y: [-0.45, 0.45]}
+        orientation: [0.0, 0.0, 0.0, 1.0]
+    button_green:
+      object: button_green
+      placement:
+        type: surface
+        surface: tabletop
+        ranges: {x: [0.05, 0.20], y: [-0.45, 0.45]}
+        orientation: [0.0, 0.0, 0.0, 1.0]
+  groups: {}
+
+variants:
+  materialization: []
+  assignments: []

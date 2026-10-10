@@ -1,0 +1,272 @@
+graph_task_generator:
+  definition:
+    task_type: usb_plug
+    planner_skill_boundary:
+      prefix:
+      - type: stay
+    planner_skill_defaults:
+      pick:
+        arm: auto
+        top_k: 16
+        winner_plan_failure_cooldown: 8
+        filter_x_dir:
+        - downward
+        - 0.0
+        - 15.0
+      place:
+        arm: current
+        batch_size: 1
+        hesitate_steps: 10
+        object_pose_constraint:
+          enabled: true
+          root_position_source: align_local_point_to_target
+          rotation_mode: preserve_grasp_orientation
+          contact_point_local:
+          - -0.0336
+          - 0.0
+          - 0.0
+          yaw_samples: 1
+    layout:
+      runtime_sample:
+        id: runtime
+        seed: 42
+        targets:
+          placements:
+          - id: usb_hand_side
+            target:
+              type: group
+              id: usb_hand_side
+            sample:
+              type: inherit
+              selectors:
+                assignments:
+                  type: uniform
+    component_sections:
+      event_component:
+        terms:
+          sample_usb_dock_slot:
+            mode: reset
+            slot_prims:
+            - slot_a
+            - slot_b
+            - slot_c
+            slot_labels:
+            - A
+            - B
+            - C
+            slot_log_key: target_dock_slot
+            instruction_template: Pick up the USB stick and insert it into dock slot {slot} ({slot_prim}), then return the
+              arm home.
+      log_component:
+        entries:
+          target_dock_slot_label:
+            trigger: enter
+            func: usb_dock_slot_label
+            params:
+              log_key: target_dock_slot
+              slot_labels:
+              - A
+              - B
+              - C
+      instruction_component:
+        instructions:
+        - text: Pick up the USB stick and insert it into the target dock slot, then return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the USB stick and insert it into the target dock slot.
+        - Return the arm home.
+        topic: usb_plug
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: target_dock_slot_label
+          label: Target slot
+          font_size: 24
+  roles:
+    pickable: usb
+    destination: usb_base
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: usb_plug_pick_place_usb
+      roles:
+        pickable: usb
+        destination: usb_base
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: usb
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              terms:
+              - usb_xy:
+                  _func: object_near_nearest_reference_child_xy
+                  object_cfg: usb
+                  reference_cfg: usb_base
+                  reference_child_prims:
+                  - slot_a
+                  - slot_b
+                  - slot_c
+                  target_child_log_key: target_dock_slot
+                  xy_distance_threshold: 0.005
+                  velocity_threshold: 0.05
+                  consecutive_steps: 8
+              - usb_spawn_orientation:
+                  _func: object_orientation_near_default
+                  object_cfg: usb
+                  min_quat_dot: 0.95
+                  velocity_threshold: 0.05
+                  consecutive_steps: 8
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: usb_base
+              offset:
+              - -1.0
+              - 0.0
+              - 1.2
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_usb_plug
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              func: inserted_reference_child_progress
+              params:
+                object_cfg: usb
+                reference_cfg: usb_base
+                reference_child_prims:
+                - slot_a
+                - slot_b
+                - slot_c
+                target_child_log_key: target_dock_slot
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              grasp_label_asset: usb_a
+              object_name: usb
+              arm: auto
+              top_k: 16
+              filter_x_dir:
+              - downward
+              - 0.0
+              - 15.0
+          - type: place
+            params:
+              object_name: usb
+              arm: current
+              batch_size: 1
+              hesitate_steps: 12
+              object_pose_constraint:
+                enabled: true
+                root_position_source: align_local_point_to_target
+                rotation_mode: preserve_grasp_orientation
+                contact_point_local:
+                - -0.0335
+                - 0.0
+                - 0.0
+                yaw_samples: 1
+          - type: stay
+    id: pick_place_usb
+    score: 5
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: usb_plug_return
+      roles:
+        pickable: usb
+        destination: usb_base
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: usb
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              terms:
+              - arm_home:
+                  _func: articulation_joints_near_default
+                  asset_cfg: robot
+                  atol: 0.4
+                  consecutive_steps: 10
+                  exclude_joint_name_substrings:
+                  - finger
+                  - gripper
+                  - knuckle
+              - usb_still_xy:
+                  _func: object_near_nearest_reference_child_xy
+                  object_cfg: usb
+                  reference_cfg: usb_base
+                  reference_child_prims:
+                  - slot_a
+                  - slot_b
+                  - slot_c
+                  target_child_log_key: target_dock_slot
+                  xy_distance_threshold: 0.005
+                  velocity_threshold: 0.05
+                  consecutive_steps: 8
+              - usb_still_orient:
+                  _func: object_orientation_near_default
+                  object_cfg: usb
+                  min_quat_dot: 0.95
+                  velocity_threshold: 0.05
+                  consecutive_steps: 8
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_object:
+              lookat_object: usb_base
+              offset:
+              - -1.0
+              - 0.0
+              - 1.2
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: schema_vnext_usb_plug
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+        planner_skills_component:
+          skills:
+          - type: home
+    id: return
+    score: 1
+  edges:
+  - src: pick_place_usb
+    dst: return

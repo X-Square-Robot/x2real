@@ -1,0 +1,389 @@
+graph_task_generator:
+  definition:
+    task_type: brick_round_trip
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: central_plate_asset
+            target:
+              type: node
+              id: central_plate
+            selector:
+              type: uniform
+          - id: front_plate_1_asset
+            target:
+              type: node
+              id: front_plate_1
+            selector:
+              type: uniform
+              shared_id: front_plate
+          - id: front_plate_2_asset
+            target:
+              type: node
+              id: front_plate_2
+            selector:
+              type: uniform
+              shared_id: front_plate
+          - id: front_plate_3_asset
+            target:
+              type: node
+              id: front_plate_3
+            selector:
+              type: uniform
+              shared_id: front_plate
+          placements:
+          - id: central_plate
+            target:
+              type: node
+              id: central_plate
+            sample:
+              type: inherit
+          - id: front_plate_1
+            target:
+              type: node
+              id: front_plate_1
+            sample:
+              type: inherit
+          - id: front_plate_2
+            target:
+              type: node
+              id: front_plate_2
+            sample:
+              type: inherit
+          - id: front_plate_3
+            target:
+              type: node
+              id: front_plate_3
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_brick_round_trip:
+            mode: reset
+            brick_names:
+            - brick_blue
+            - brick_green
+            - brick_red
+            - brick_orange
+            brick_colors:
+            - blue
+            - green
+            - red
+            - orange
+            front_slot_positions:
+            - - 0.1
+              - -0.068
+              - -0.19
+            - - 0.06
+              - -0.268
+              - -0.19
+            - - 0.1
+              - -0.468
+              - -0.19
+            source_log_key: brick_round_trip_source_slot
+            brick_log_key: brick_round_trip_brick
+            instruction_template: Move the {color} brick from its plate to the central plate, keep it there for a few seconds,
+              then put it back on the same plate and return the arm home.
+      log_component:
+        entries:
+          brick_round_trip_plan:
+            trigger: enter
+            func: brick_round_trip_active_label
+      instruction_component:
+        topic: brick_round_trip
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: brick_round_trip_plan
+          label: Task
+          font_size: 24
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: brick_round_trip_to_center
+      roles:
+        brick: brick
+        central_plate: central_plate
+        front_plate: front_plate
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@brick'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: any_object_in_zone
+              object_names:
+              - brick_blue
+              - brick_green
+              - brick_red
+              - brick_orange
+              x_range:
+              - 0.22
+              - 0.42
+              y_range:
+              - -0.368
+              - -0.168
+              z_range:
+              - -0.24
+              - -0.14
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: brick_round_trip_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: move the brick onto the central plate
+    id: to_center
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: brick_round_trip_hold
+      roles:
+        brick: brick
+        central_plate: central_plate
+        front_plate: front_plate
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@brick'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: any_object_in_zone_for_duration
+              object_names:
+              - brick_blue
+              - brick_green
+              - brick_red
+              - brick_orange
+              x_range:
+              - 0.22
+              - 0.42
+              y_range:
+              - -0.368
+              - -0.168
+              z_range:
+              - -0.24
+              - -0.14
+              velocity_threshold: 0.2
+              hold_seconds: 4.0
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: brick_round_trip_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: keep the brick on the central plate for at least 4 seconds
+    id: hold
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: brick_round_trip_back_to_source
+      roles:
+        brick: brick
+        central_plate: central_plate
+        front_plate: front_plate
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@brick'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: any_object_in_indexed_zone
+              object_names:
+              - brick_blue
+              - brick_green
+              - brick_red
+              - brick_orange
+              index_log_key: brick_round_trip_source_slot
+              zones:
+              - x_range:
+                - 0.0
+                - 0.2
+                y_range:
+                - -0.168
+                - 0.032
+                z_range:
+                - -0.24
+                - -0.14
+              - x_range:
+                - -0.04
+                - 0.16
+                y_range:
+                - -0.368
+                - -0.168
+                z_range:
+                - -0.24
+                - -0.14
+              - x_range:
+                - 0.0
+                - 0.2
+                y_range:
+                - -0.568
+                - -0.368
+                z_range:
+                - -0.24
+                - -0.14
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: brick_round_trip_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return the brick to its original front plate
+    id: back_to_source
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1200
+        task_type: brick_round_trip_return
+      roles:
+        brick: brick
+        central_plate: central_plate
+        front_plate: front_plate
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@brick'
+              minimum_height: -0.35
+              ignore_below: -5.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: brick_round_trip_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 2
+  edges:
+  - src: to_center
+    dst: hold
+  - src: hold
+    dst: back_to_source
+  - src: back_to_source
+    dst: return

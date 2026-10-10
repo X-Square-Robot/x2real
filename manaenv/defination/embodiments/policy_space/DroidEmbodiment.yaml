@@ -1,0 +1,23 @@
+# PolicySpace input/output adapter for the RoboLab DROID embodiment.
+# Cosmos3 receives 7 Panda joints, one normalized Robotiq gripper state,
+# and the three cameras used by the DROID policy.
+
+action_mode: joint_position
+action_dim: 8
+
+obs_field_map:
+  joint_position: arm_joint_pos
+  gripper_position: gripper_pos
+  wrist: wrist_cam_rgb
+  exterior_1: exterior_1_cam_rgb
+  exterior_2: exterior_2_cam_rgb
+
+# Wire width of each state field, for the preflight probe only (see the same
+# block in EX0016REmbodiment.yaml). 7 Panda joints + 1 normalized gripper.
+obs_dims:
+  joint_position: 7
+  gripper_position: 1
+
+state_dtype: float32
+image_encode: raw
+instruction_key: instruction

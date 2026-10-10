@@ -1,0 +1,65 @@
+graph_task_generator:
+  definition:
+    task_type: put_fruit_in_basket
+    runtime_instruction:
+      plan_id: runtime
+      tag_mode: kind
+      objects:
+        fruit: fruit
+      template: Pick up the {fruit} and put it into the basket, then return the arm
+        home.
+      subtasks:
+      - Pick up the {fruit} and put it into the basket.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: fruit_asset
+            target:
+              type: node
+              id: fruit
+            selector:
+              type: uniform
+            cache_size: 30
+          - id: basket_asset
+            target:
+              type: node
+              id: basket
+            selector:
+              type: uniform
+            cache_size: 11
+          placements:
+          - id: fruit
+            target:
+              type: node
+              id: fruit
+            sample:
+              type: inherit
+          - id: basket
+            target:
+              type: node
+              id: basket
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the fruit and put it into the basket, then return the arm
+            home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Pick up the fruit and put it into the basket.
+        - Return the arm home.
+  nodes:
+  - id: pick_place_fruit
+    score: 8
+    include: x2real/task/generalization/atom_fruit_in_basket/stages/pick_place_fruit.yaml
+  - id: return
+    score: 2
+    include: x2real/task/generalization/atom_fruit_in_basket/stages/return.yaml
+  edges:
+  - src: pick_place_fruit
+    dst: return

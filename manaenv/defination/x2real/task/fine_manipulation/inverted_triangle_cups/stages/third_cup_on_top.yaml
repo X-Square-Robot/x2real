@@ -1,0 +1,58 @@
+include: x2real/task/fine_manipulation/inverted_triangle_cups/stages/_inverted_triangle_cups_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: inverted_triangle_cups_third_cup_on_top
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - third_cup_contact_others:
+              _func: nth_object_contact_others
+              gripper_contact_sensor_cfgs:
+              - '@gripper_contact_sensor_1'
+              - '@gripper_contact_sensor_2'
+              - '@gripper_contact_sensor_3'
+              inter_object_contact_sensor_cfgs:
+              - '@contact_sensor_1'
+              - '@contact_sensor_2'
+              - '@contact_sensor_3'
+              nth: 3
+              force_threshold_gripper: 0.01
+              force_threshold_contact: 0.001
+              consecutive_steps: 5
+          - cup_1_contact:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@contact_sensor_1'
+              force_threshold: 0.001
+              consecutive_steps: 5
+          - cup_2_contact:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@contact_sensor_2'
+              force_threshold: 0.001
+              consecutive_steps: 5
+          - cup_3_contact:
+              _func: object_contact_destination
+              contact_sensor_cfgs: '@contact_sensor_3'
+              force_threshold: 0.001
+              consecutive_steps: 5
+          - any_cup_above_height:
+              _func: object_above_height
+              _combine: or
+              object_cfg: '@pickable'
+              min_height: -0.13
+          - cups_upside_down:
+              _func: object_tilt_in_range
+              object_cfg:
+              - '@pickable_1'
+              - '@pickable_2'
+              - '@pickable_3'
+              min_dot: -1.0
+              max_dot: -0.85
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place the third cup on top of the other two

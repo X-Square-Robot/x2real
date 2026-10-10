@@ -1,0 +1,25 @@
+include: x2real/task/visual_reasoning/classify_objects_color/stages/_classify_objects_color_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: classify_objects_color_place_object_2
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: classified_object_on_color_target
+          position: 2
+          colors:
+          - blue
+          - green
+          - red
+          - yellow
+          xy_distance_threshold: 0.09
+          z_min_offset: -0.02
+          z_max_offset: 0.2
+          velocity_threshold: 0.2
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: classify object 2

@@ -1,0 +1,86 @@
+graph_task_generator:
+  definition:
+    task_type: atom_draw
+    runtime_instruction:
+      plan_id: runtime
+      objects:
+        bottle: object
+      template: Open the drawer, put the pill {bottle} inside, close the drawer, then
+        return the arm home.
+      subtasks:
+      - Open the drawer.
+      - Pick up the pill {bottle}.
+      - Put the pill {bottle} inside the drawer.
+      - Close the drawer.
+      - Return the arm home.
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: drawer_asset
+            target:
+              type: node
+              id: drawer
+            selector:
+              type: uniform
+            cache_size: 9
+          - id: object_asset
+            target:
+              type: node
+              id: object
+            selector:
+              type: uniform
+            cache_size: 17
+          placements:
+          - id: drawer_object
+            target:
+              type: group
+              id: drawer_object
+            sample:
+              type: inherit
+              selectors:
+                assignments:
+                  type: uniform
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Open the drawer, put the pill bottle inside, close the drawer, then
+            return the arm home.
+          log:
+            instruction_variant: direct
+        subtasks:
+        - Open the drawer.
+        - Pick up the pill bottle.
+        - Put the pill bottle inside the drawer.
+        - Close the drawer.
+        - Return the arm home.
+        topic: atom_draw
+  roles:
+    pickable: pickable
+    containable: containable
+  nodes:
+  - id: open_drawer
+    score: 2
+    include: x2real/task/generalization/atom_draw/stages/open_drawer.yaml
+  - id: pick_object
+    score: 2
+    include: x2real/task/generalization/atom_draw/stages/pick_object.yaml
+  - id: place_object
+    score: 3
+    include: x2real/task/generalization/atom_draw/stages/place_object.yaml
+  - id: close_drawer
+    score: 2
+    include: x2real/task/generalization/atom_draw/stages/close_drawer.yaml
+  - id: return
+    score: 1
+    include: x2real/task/generalization/atom_draw/stages/return.yaml
+  edges:
+  - src: open_drawer
+    dst: pick_object
+  - src: pick_object
+    dst: place_object
+  - src: place_object
+    dst: close_drawer
+  - src: close_drawer
+    dst: return

@@ -1,0 +1,20 @@
+include: x2real/task/memory_tracking/track_object_under_cup/stages/_track_object_under_cup_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: track_object_under_cup_swap_cups
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: cups_swapped_n_times
+          cup_a_cfg: '@cup_target'
+          cup_b_cfg: '@cup_distractor'
+          count_log_key: target_swap_count
+          xy_tolerance: 0.12
+          velocity_threshold: 0.15
+          min_pair_separation: 0.03
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: swap the two opaque cups once

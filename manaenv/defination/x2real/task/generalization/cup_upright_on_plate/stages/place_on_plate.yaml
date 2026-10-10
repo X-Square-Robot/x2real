@@ -1,0 +1,30 @@
+include: x2real/task/generalization/cup_upright_on_plate/stages/_cup_upright_on_plate_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: cup_upright_on_plate_place_on_plate
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - cup_on_plate:
+              _func: object_position_in_zone
+              object_cfg: '@pickable'
+              reference_cfg: '@destination'
+              xy_distance_threshold: 0.08
+              z_min_offset: -0.02
+              z_max_offset: 0.14
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+          - cup_upright:
+              _func: object_tilt_in_range
+              object_cfg: '@pickable'
+              min_dot: 0.9
+              max_dot: 1.0
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place @pickable.name upright on @destination.name

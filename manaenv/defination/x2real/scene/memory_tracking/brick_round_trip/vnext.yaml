@@ -1,0 +1,263 @@
+definition:
+  scene_type: brick_round_trip_scene
+  metadata:
+    name: ex001_6r_brick_round_trip_vnext
+    source: brick_round_trip/vnext
+    semantic_goal: Move a brick to the central plate, wait, then return it to its
+      original plate
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: central_plate
+  asset:
+    type: pool
+    cache_size: 3
+    candidates:
+    - id: any_central_plate
+      assets:
+      - plate_d
+      - plate_e
+      - plate_h
+  semantic_tags:
+  - plate
+  - central_plate
+- id: front_plate_1
+  asset:
+    type: pool
+    cache_size: 1
+    candidates:
+    - id: any_front_plate
+      assets:
+      - plate_a
+  semantic_tags:
+  - plate
+  - front_plate
+  - front_plate_1
+- id: front_plate_2
+  asset:
+    type: pool
+    cache_size: 1
+    candidates:
+    - id: any_front_plate
+      assets:
+      - plate_a
+  semantic_tags:
+  - plate
+  - front_plate
+  - front_plate_2
+- id: front_plate_3
+  asset:
+    type: pool
+    cache_size: 1
+    candidates:
+    - id: any_front_plate
+      assets:
+      - plate_a
+  semantic_tags:
+  - plate
+  - front_plate
+  - front_plate_3
+- id: brick_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - brick
+  - brick_blue
+- id: brick_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - brick
+  - brick_green
+- id: brick_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - brick
+  - brick_red
+- id: brick_orange
+  asset:
+    type: asset_id
+    id: brick_orange_3cm
+  semantic_tags:
+  - brick
+  - brick_orange
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    central_plate:
+      object: central_plate
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.32
+          - -0.268
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    front_plate_1:
+      object: front_plate_1
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.1
+          - -0.068
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    front_plate_2:
+      object: front_plate_2
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.06
+          - -0.268
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    front_plate_3:
+      object: front_plate_3
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.1
+          - -0.468
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    brick_blue:
+      object: brick_blue
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.2
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    brick_green:
+      object: brick_green
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.1
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    brick_red:
+      object: brick_red
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.0
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    brick_orange:
+      object: brick_orange
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.9
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+  groups: {}
+variants:
+  materialization:
+  - id: central_plate_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - central_plate.any_central_plate
+      weight: 1.0
+  - id: front_plate_1_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - front_plate_1.any_front_plate
+      weight: 1.0
+  - id: front_plate_2_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - front_plate_2.any_front_plate
+      weight: 1.0
+  - id: front_plate_3_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - front_plate_3.any_front_plate
+      weight: 1.0
+  assignments: []

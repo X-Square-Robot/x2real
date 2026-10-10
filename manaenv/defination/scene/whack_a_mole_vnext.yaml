@@ -1,0 +1,82 @@
+definition:
+  scene_type: whack_a_mole_scene
+  metadata:
+    name: ex001_6r_whack_a_mole_vnext
+    source: whack_a_mole/vnext
+    semantic_goal: Pick up the wooden hammer, whack the raised colored peg down, put the hammer back, then return home
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: mole_base
+  asset:
+    type: asset_id
+    id: toy_moel_base
+  semantic_tags:
+  - hittable
+  - fixed
+  - mole_base
+- id: hammer
+  asset:
+    type: asset_id
+    id: toy_mole_hammer
+  semantic_tags:
+  - graspable
+  - swingable
+  - hammer
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    mole_base:
+      object: mole_base
+      placement:
+        type: pose
+        poses:
+        - id: center_mid
+          position:
+          - 0.34
+          - -0.27
+          - -0.1907
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.7071
+          - 0.7071
+    hammer:
+      object: hammer
+      placement:
+        type: pose
+        poses:
+        - id: mid_mid
+          position:
+          - 0.13
+          - -0.27
+          - -0.2254
+          orientation:
+          - 0.0
+          - 0.0
+          - 1.0
+          - 0.0
+variants:
+  materialization: []
+  assignments: []

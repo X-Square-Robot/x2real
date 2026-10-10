@@ -1,0 +1,100 @@
+definition:
+  scene_type: find_drawer_scene
+  metadata:
+    name: ex001_6r_find_drawer_vnext
+    source: find_drawer/vnext
+    semantic_goal: Store a brick in a sampled drawer layer, wait, then retrieve it from the same drawer
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: drawer_ba
+  asset:
+    type: asset_id
+    id: drawer_ba
+  semantic_tags:
+  - containable
+  - openable
+  - drawer
+- id: brick
+  asset:
+    type: pool
+    cache_size: 4
+    candidates:
+    - id: brick_3cm
+      assets:
+      - brick_green_3cm
+      - brick_orange_3cm
+      - brick_purple_3cm
+      - brick_red_3cm
+  semantic_tags:
+  - pickable
+  - brick
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    drawer_ba:
+      object: drawer_ba
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.3
+          - -0.268
+          - -0.226
+          orientation:
+          - 0.0
+          - 0.0
+          - 1.0
+          - 0.0
+    brick:
+      object: brick
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - 0.02
+          - 0.14
+          y:
+          - -0.32
+          - -0.16
+        yaws:
+        - -0.5
+        - 0.5
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.0
+        - 1.0
+variants:
+  materialization:
+  - id: brick_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - brick.brick_3cm
+      weight: 1.0
+  assignments: []

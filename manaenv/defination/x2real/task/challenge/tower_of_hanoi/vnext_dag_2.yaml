@@ -1,0 +1,93 @@
+graph_task_generator:
+  definition:
+    task_type: tower_of_hanoi_2
+    planner_skill_boundary:
+      prefix:
+      - type: home
+        params:
+          arm: both
+      - type: stay
+        params:
+          arm: both
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: pegs
+            target:
+              type: group
+              id: pegs
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_tower_of_hanoi:
+            mode: reset
+            seed: 9101
+            n: 2
+            ring_names:
+            - ring_a
+            - ring_b
+            - ring_c
+            - ring_d
+            - ring_e
+            left_peg_xy:
+            - 0.155
+            - -0.148
+            layer_z_center:
+            - -0.2029
+            - -0.1849
+            - -0.1669
+            - -0.1489
+            - -0.1309
+            layer_z_bottom:
+            - -0.2104
+            - -0.1924
+            - -0.1744
+            - -0.1564
+            - -0.1384
+            bottom_origin_rings:
+            - ring_a
+            away_z: -10.0
+            instruction_template: Move the 2 rings from the left peg to the right peg. Move one ring at a time, and never
+              place a larger ring on a smaller one.
+      instruction_component:
+        instructions:
+        - text: Move the 2 rings from the left peg to the right peg. Move one ring at a time, and never place a larger ring
+            on a smaller one.
+          log:
+            instruction_variant: direct
+        topic: tower_of_hanoi
+      log_component:
+        entries:
+          tower_of_hanoi_plan:
+            trigger: enter
+            func: tower_of_hanoi_plan_label
+  roles:
+    disk_1: disk_1
+    disk_2: disk_2
+    disk_3: disk_3
+    disk_4: disk_4
+    disk_5: disk_5
+  nodes:
+  - id: move_1
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n2_move_1.yaml
+  - id: move_2
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n2_move_2.yaml
+  - id: move_3
+    score: 3
+    include: x2real/task/challenge/tower_of_hanoi/stages/n2_move_3.yaml
+  - id: return
+    score: 1
+    include: x2real/task/challenge/tower_of_hanoi/stages/n2_return.yaml
+  edges:
+  - src: move_1
+    dst: move_2
+  - src: move_2
+    dst: move_3
+  - src: move_3
+    dst: return

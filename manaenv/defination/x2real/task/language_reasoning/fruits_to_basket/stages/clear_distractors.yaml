@@ -1,0 +1,39 @@
+include: x2real/task/language_reasoning/fruits_to_basket/stages/_fruits_to_basket_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: fruits_to_basket_clear_distractors
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: consecutive_merged
+          consecutive_steps: 10
+          state_key: fruits_to_basket_final_home_clear
+          terms:
+          - distractors_clear:
+              _func: objects_outside_zone
+              object_cfgs: '@distractor'
+              reference_cfg: '@container'
+              in_reference_frame: true
+              x_range:
+              - -0.1138
+              - 0.1133
+              y_range:
+              - -0.0845
+              - 0.0845
+              z_range:
+              - -0.12
+              - 0.1769
+              consecutive_steps: 1
+          - arm_home:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 1
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return home with non-fruit items out of @container.name
+    planner_skills_component:
+      skills: []

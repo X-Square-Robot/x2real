@@ -1,0 +1,94 @@
+graph_task_generator:
+  definition:
+    task_type: object_to_cup
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: obj_1_asset
+            target:
+              type: node
+              id: obj_1
+            selector:
+              type: uniform
+          - id: obj_2_asset
+            target:
+              type: node
+              id: obj_2
+            selector:
+              type: uniform
+          - id: cup_asset
+            target:
+              type: node
+              id: cup
+            selector:
+              type: uniform
+          placements:
+          - id: object_start_region
+            target:
+              type: group
+              id: object_start_region
+            sample:
+              type: inherit
+          - id: cup
+            target:
+              type: node
+              id: cup
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_object_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - obj_1
+              - obj_2
+              - cup
+      instruction_component:
+        instructions:
+        - text: With the right hand, pick up and hold the cup. With the left hand,
+            pick up the scattered objects one by one and put them into the cup. Finally,
+            set the cup back on the table with the right hand, then return both arms
+            home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_object_assets
+          label: Active objects / cup
+          font_size: 22
+  nodes:
+  - id: grasp_cup
+    include: x2real/task/bimanual_collaboration/object_to_cup/stages/grasp_cup.yaml
+    score: 1
+  - id: pick_obj_1
+    include: x2real/task/bimanual_collaboration/object_to_cup/stages/pick_obj_1.yaml
+    score: 1
+  - id: place_obj_1
+    include: x2real/task/bimanual_collaboration/object_to_cup/stages/place_obj_1.yaml
+    score: 3
+  - id: pick_obj_2
+    include: x2real/task/bimanual_collaboration/object_to_cup/stages/pick_obj_2.yaml
+    score: 1
+  - id: place_obj_2
+    include: x2real/task/bimanual_collaboration/object_to_cup/stages/place_obj_2.yaml
+    score: 3
+  - id: return
+    include: x2real/task/bimanual_collaboration/object_to_cup/stages/return.yaml
+    score: 1
+  edges:
+  - src: grasp_cup
+    dst: pick_obj_1
+  - src: pick_obj_1
+    dst: place_obj_1
+  - src: place_obj_1
+    dst: pick_obj_2
+  - src: pick_obj_2
+    dst: place_obj_2
+  - src: place_obj_2
+    dst: return

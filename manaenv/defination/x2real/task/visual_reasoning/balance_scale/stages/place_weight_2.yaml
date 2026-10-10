@@ -1,0 +1,45 @@
+include: x2real/task/visual_reasoning/balance_scale/stages/_balance_scale_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: balance_scale_place_weight_2
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: weight_in_target_pan
+          step_index: 1
+          denoms:
+          - 50
+          - 100
+          - 200
+          weight_prefix: weight_
+          count_per_denom: 2
+          left_zone:
+            x_range:
+            - 0.13
+            - 0.27
+            y_range:
+            - -0.245
+            - -0.11
+            z_range:
+            - -0.2
+            - 0.05
+          right_zone:
+            x_range:
+            - 0.13
+            - 0.27
+            y_range:
+            - -0.43
+            - -0.295
+            z_range:
+            - -0.2
+            - 0.05
+          denom_log_key: balance_add_denom
+          pan_log_key: balance_add_pan
+          velocity_threshold: 0.2
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place the 2nd required weight on its target pan

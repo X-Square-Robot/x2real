@@ -1,0 +1,21 @@
+include: x2real/task/memory_tracking/press_button_n_times/stages/_press_button_n_times_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: press_button_n_times_press_loop
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: pump_pressed_n_times
+          object_cfg: '@pump_bottle'
+          joint_names:
+          - PrismaticJoint
+          press_threshold: 0.6
+          release_threshold: 0.25
+          openness_gt: true
+          count_log_key: target_press_count
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: pressed pump head to target count

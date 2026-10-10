@@ -1,0 +1,100 @@
+graph_task_generator:
+  definition:
+    task_type: pick_and_place_on_turnable
+    component_sections:
+      event_component:
+        terms:
+          sample_pick_item_from_turntable:
+            mode: reset
+            object_names:
+            - brick_red
+            - brick_green
+            - brick_yellow
+            object_colors:
+            - red
+            - green
+            - yellow
+            turntable_name: turntable_bricks
+            joint_name: RevoluteJoint
+            index_log_key: turntable_target_index
+            instruction_template: Pick the {color} brick from the turntable and place
+              it on the plate, then return the arm home.
+          sample_bricks_turntable_angular_velocity:
+            _func: sample_turntable_angular_velocity
+            mode: reset
+            angular_velocity_ranges:
+            - - 0.3
+              - 0.5
+            state_attr: _mana_bricks_turntable_omega
+            randomize_sign: true
+          sample_plate_turntable_angular_velocity:
+            _func: sample_turntable_angular_velocity
+            mode: reset
+            angular_velocity_ranges:
+            - - 0.3
+              - 0.5
+            state_attr: _mana_plate_turntable_omega
+            turntable_name: turntable_plate
+            joint_name: RevoluteJoint
+            randomize_sign: true
+          drive_turntable_bricks:
+            _func: drive_turntable
+            mode: interval
+            interval_range_s:
+            - 0.02
+            - 0.02
+            is_global_time: true
+            object_name: turntable_bricks
+            joint_name: RevoluteJoint
+            angular_velocity_attr: _mana_bricks_turntable_omega
+            carry_object_names:
+            - brick_red
+            - brick_green
+            - brick_yellow
+            carry_release_height: 0.15
+            carry_radius: 0.22
+          drive_turntable_plate:
+            _func: drive_turntable
+            mode: interval
+            interval_range_s:
+            - 0.02
+            - 0.02
+            is_global_time: true
+            object_name: turntable_plate
+            joint_name: RevoluteJoint
+            angular_velocity_attr: _mana_plate_turntable_omega
+            carry_object_names:
+            - plate_d
+            - brick_red
+            - brick_green
+            - brick_yellow
+            carry_release_height: 0.15
+            carry_radius: 0.22
+      log_component:
+        entries:
+          turntable_plan:
+            trigger: enter
+            func: turntable_pick_active_label
+      instruction_component:
+        topic: pick_and_place_on_turnable
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: turntable_plan
+          label: Target
+          font_size: 24
+  nodes:
+  - id: pick
+    include: x2real/task/dynamic_objects/pick_and_place_on_turnable/stages/pick.yaml
+    score: 4
+  - id: place
+    include: x2real/task/dynamic_objects/pick_and_place_on_turnable/stages/place.yaml
+    score: 5
+  - id: return
+    include: x2real/task/dynamic_objects/pick_and_place_on_turnable/stages/return.yaml
+    score: 1
+  edges:
+  - src: pick
+    dst: place
+  - src: place
+    dst: return

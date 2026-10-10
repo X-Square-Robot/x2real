@@ -1,0 +1,67 @@
+# PolicySpace adapter for the EX001 whole-body G mobile-manipulation benchmark.
+#
+# The external server may be Pi0.5 or any other model, but it must return the
+# model-neutral mobile_semantic_20d_v1 wire.  PolicySpace converts normalized
+# grippers while they are still semantic columns, then performs the only
+# semantic20 -> EX001 21-D conversion.
+
+action_mode: ik_eef_abs_wholebody
+action_dim: 21
+
+action_field_map:
+    "follow1_pos[0:7]": arm_action
+    "follow1_pos[7:8]": gripper_action
+    "follow2_pos[0:7]": right_arm_action
+    "follow2_pos[7:8]": right_gripper_action
+    "velocity_decomposed_odom[0:2]": base_action
+    "lift[0:1]": lift_action
+    "head_pos[0:2]": head_action
+
+slot_layout:
+    follow1_pos:
+        pos: [0, 3]
+        quat: [3, 7]
+        gripper: [7]
+    follow2_pos:
+        pos: [8, 11]
+        quat: [11, 15]
+        gripper: [15]
+    velocity_decomposed_odom:
+        slots: [16, 18]
+    lift:
+        slots: [18, 19]
+    head_pos:
+        slots: [19, 21]
+
+obs_field_map:
+    follow1_pos: follow1_pos
+    follow2_pos: follow2_pos
+    velocity_decomposed_odom: velocity_decomposed_odom
+    lift: lift
+    head_pos: head_pos
+    face_view: head_cam
+    left_wrist_view: left_wrist_cam
+    right_wrist_view: right_wrist_cam
+
+obs_dims:
+    follow1_pos: 7
+    follow2_pos: 7
+    velocity_decomposed_odom: 3
+    lift: 1
+    head_pos: 2
+
+state_dtype: float32
+image_encode: raw
+instruction_key: instruction
+ee_frames:
+    left: left_ee_frame
+    right: right_ee_frame
+wire_pose_reference: init_ee_pose
+
+metadata:
+    action_wire_schema: manaenv_ex001_wholebody_policy_wire_20d_v1
+    mobile_semantic_action_wire_schema: mobile_semantic_20d_v1
+    gripper_wire_indices: [6, 13]
+    gripper_state_indices:
+        follow1_pos: 6
+        follow2_pos: 6

@@ -1,0 +1,23 @@
+# Pi0.5 EX001 whole-body policy through the model-neutral gateway wire.
+# Runtime --server-address/--server-port select the local PolicySpace gateway.
+name: pi05_ex001_wholebody@v1.0.0
+action_mode: ik_eef_abs_wholebody
+
+implementation:
+  policy_space:
+    policy_name: pi05_ex001_wholebody
+    endpoint: "ws://127.0.0.1:31002"
+    timeout_ms: 300000
+    action_type: ex001_wholebody_policy_wire
+    ingest_observation_each_step: false
+    stateless_per_request: true
+    action_horizon: 32
+    # Task get_prompt() / active-instruction store owns the wording. A hardcoded
+    # default here would pin mixed-task eval to one language condition.
+    instruction: ""
+
+client:
+  chunk_executor:
+    per_env_independent:
+      execute_horizon: 32
+      refill_threshold: 1

@@ -1,0 +1,338 @@
+graph_task_generator:
+  definition:
+    task_type: classify_objects_color
+    component_sections:
+      event_component:
+        terms:
+          sample_color_classification:
+            mode: reset
+            colors:
+            - blue
+            - green
+            - red
+            - yellow
+            region:
+              x:
+              - -0.06
+              - 0.13
+              y:
+              - -0.5
+              - 0.0
+              z:
+              - -0.15
+              - -0.15
+            min_separation: 0.12
+            object_orientation:
+            - 0.7071068
+            - 0.0
+            - 0.0
+            - 0.7071068
+            object_log_key: classify_object_indices
+            color_log_key: classify_color_indices
+      log_component:
+        entries:
+          classify_plan:
+            trigger: enter
+            func: color_classification_active_label
+          active_color_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - classify_blue
+              - classify_green
+              - classify_red
+              - classify_yellow
+      instruction_component:
+        instruction: Identify each object's color, place all four objects on the matching visible color regions, then return
+          the arm home.
+        topic: color_classification
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: classify_plan
+          label: Targets
+          font_size: 22
+        - log_key: active_color_assets
+          label: Active assets
+          font_size: 22
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: classify_objects_color_place_object_1
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: classified_object_on_color_target
+              position: 1
+              colors:
+              - blue
+              - green
+              - red
+              - yellow
+              xy_distance_threshold: 0.09
+              z_min_offset: -0.02
+              z_max_offset: 0.2
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: classify_objects_color_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: classify object 1
+    id: place_object_1
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: classify_objects_color_place_object_2
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: classified_object_on_color_target
+              position: 2
+              colors:
+              - blue
+              - green
+              - red
+              - yellow
+              xy_distance_threshold: 0.09
+              z_min_offset: -0.02
+              z_max_offset: 0.2
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: classify_objects_color_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: classify object 2
+    id: place_object_2
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: classify_objects_color_place_object_3
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: classified_object_on_color_target
+              position: 3
+              colors:
+              - blue
+              - green
+              - red
+              - yellow
+              xy_distance_threshold: 0.09
+              z_min_offset: -0.02
+              z_max_offset: 0.2
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: classify_objects_color_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: classify object 3
+    id: place_object_3
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: classify_objects_color_place_object_4
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: classified_object_on_color_target
+              position: 4
+              colors:
+              - blue
+              - green
+              - red
+              - yellow
+              xy_distance_threshold: 0.09
+              z_min_offset: -0.02
+              z_max_offset: 0.2
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: classify_objects_color_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: classify object 4
+    id: place_object_4
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: classify_objects_color_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: classify_objects_color_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+        planner_skills_component:
+          skills:
+          - type: home
+    id: return
+    score: 1
+  edges:
+  - src: place_object_1
+    dst: return
+  - src: place_object_2
+    dst: return
+  - src: place_object_3
+    dst: return
+  - src: place_object_4
+    dst: return

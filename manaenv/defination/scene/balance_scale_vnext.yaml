@@ -1,0 +1,190 @@
+definition:
+  scene_type: balance_scale_scene
+  metadata:
+    name: ex001_6r_balance_scale_vnext
+    source: balance_scale/vnext
+    semantic_goal: Add weights to a two-pan balance until both sides are level
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: balance
+  asset:
+    type: asset_id
+    id: balance_a
+  semantic_tags:
+  - balance
+- id: weight_50g_1
+  asset:
+    type: asset_id
+    id: weight_50g_a
+  semantic_tags:
+  - weight
+  - weight_50g
+- id: weight_50g_2
+  asset:
+    type: asset_id
+    id: weight_50g_a
+  semantic_tags:
+  - weight
+  - weight_50g
+- id: weight_100g_1
+  asset:
+    type: asset_id
+    id: weight_100g_a
+  semantic_tags:
+  - weight
+  - weight_100g
+- id: weight_100g_2
+  asset:
+    type: asset_id
+    id: weight_100g_a
+  semantic_tags:
+  - weight
+  - weight_100g
+- id: weight_200g_1
+  asset:
+    type: asset_id
+    id: weight_200g_a
+  semantic_tags:
+  - weight
+  - weight_200g
+- id: weight_200g_2
+  asset:
+    type: asset_id
+    id: weight_200g_a
+  semantic_tags:
+  - weight
+  - weight_200g
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    balance:
+      object: balance
+      placement:
+        type: pose
+        poses:
+        - id: fixed
+          position:
+          - 0.2
+          - -0.27
+          - -0.240423
+          orientation:
+          - 0.0
+          - 0.0
+          - -0.70711
+          - 0.70711
+    weight_50g_1:
+      object: weight_50g_1
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.8
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    weight_50g_2:
+      object: weight_50g_2
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.7
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    weight_100g_1:
+      object: weight_100g_1
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.6
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    weight_100g_2:
+      object: weight_100g_2
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.5
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    weight_200g_1:
+      object: weight_200g_1
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.4
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    weight_200g_2:
+      object: weight_200g_2
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.3
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+  groups: {}
+variants:
+  materialization: []
+  assignments: []

@@ -1,0 +1,45 @@
+graph_task_generator:
+  definition:
+    task_type: hand_over_coin
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: rack_slots
+            target:
+              type: group
+              id: rack_slots
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the coin with either hand, hand it to the other hand, put
+            it onto the coin rack (left, right, or across the center), then return
+            the arms home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries: []
+  nodes:
+  - id: pick_first
+    include: x2real/task/bimanual_collaboration/hand_over_coin/stages/pick_first.yaml
+    score: 3
+  - id: handover
+    include: x2real/task/bimanual_collaboration/hand_over_coin/stages/handover.yaml
+    score: 3
+  - id: place_rack
+    include: x2real/task/bimanual_collaboration/hand_over_coin/stages/place_rack.yaml
+    score: 3
+  - id: return
+    include: x2real/task/bimanual_collaboration/hand_over_coin/stages/return.yaml
+    score: 1
+  edges:
+  - src: pick_first
+    dst: handover
+  - src: handover
+    dst: place_rack
+  - src: place_rack
+    dst: return

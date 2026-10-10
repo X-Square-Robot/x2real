@@ -1,0 +1,23 @@
+include: x2real/task/bimanual_collaboration/glasses_on_rack/stages/_glasses_on_rack_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: glasses_on_rack_place_center
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_position_in_zone
+          object_cfg: '@pickable'
+          x_range:
+          - 0.0
+          - 0.25
+          y_range:
+          - -0.35
+          - -0.15
+          velocity_threshold: 0.2
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: move @pickable.name to the center of the table

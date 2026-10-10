@@ -1,0 +1,32 @@
+include: x2real/task/visual_reasoning/image_puzzle/stages/_image_puzzle_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: image_puzzle_place_piece_b
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - b_on_paper:
+              _func: object_position_in_zone
+              object_cfg: '@puzzle_piece_b'
+              x_range:
+              - 0.15
+              - 0.26
+              y_range:
+              - -0.36
+              - -0.18
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+          - b_yaw_180:
+              _func: object_yaw_in_range
+              object_cfg: '@puzzle_piece_b'
+              min_yaw_deg: 150.0
+              max_yaw_deg: 180.0
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: place @puzzle_piece_b.name on the green paper target

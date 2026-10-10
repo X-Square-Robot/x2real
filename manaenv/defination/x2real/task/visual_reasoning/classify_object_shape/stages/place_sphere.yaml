@@ -1,0 +1,40 @@
+include: x2real/task/visual_reasoning/classify_object_shape/stages/_classify_object_shape_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: classify_object_shape_place_sphere
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: object_position_in_zone
+          object_cfg: '@sortable_sphere'
+          reference_cfg: '@destination_sphere'
+          xy_distance_threshold: 0.1
+          z_min_offset: -0.06
+          z_max_offset: 0.2
+          velocity_threshold: 0.5
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: put @sortable_sphere.name into @destination_sphere.name
+    planner_skills_component:
+      skills:
+      - type: pick
+        params:
+          grasp_label_asset: '@sortable_sphere'
+          object_name: '@sortable_sphere'
+      - type: place
+        params:
+          object_name: '@sortable_sphere'
+          target:
+            strategy: bbox_ratio
+            object_name: '@destination_sphere'
+            x_ratio_range:
+            - 0.15
+            - 0.85
+            y_ratio_range:
+            - 0.15
+            - 0.85
+      - type: stay

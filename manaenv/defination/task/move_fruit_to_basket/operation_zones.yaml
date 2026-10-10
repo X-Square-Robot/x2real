@@ -1,0 +1,30 @@
+################################################################################
+# Static operation-zone / randomization contract for move_fruit_to_basket (ID).
+# Sourced from mobile_manip5.1 fruit_reset.py constants (not MMP runtime).
+################################################################################
+task: move_fruit_to_basket
+split: id
+roles:
+  pickable: fruit
+  support_pick: fruit_table
+  support_place: basket_table
+  place_target: basket
+robot_start:
+  rectangle:
+    x_range: [-0.7, 0.18]
+    y_range: [-1.1, 1.1]
+    # Face live pickable after runtime_sample (pool fruit has no table_local object_xy).
+    yaw_policy: face_pickable
+operation_zone_sets:
+  fruit_table_operation_zone:
+    zone:
+      frame: world
+      x_range: [0.63858, 0.93246]
+      y_range: [0.62802, 1.37328]
+      yaw_deg_range: [-180.0, 179.999]
+  basket_table_operation_zone:
+    zone:
+      frame: world
+      x_range: [0.63858, 0.93246]
+      y_range: [-1.35137, -0.60714]
+      yaw_deg_range: [-180.0, 179.999]

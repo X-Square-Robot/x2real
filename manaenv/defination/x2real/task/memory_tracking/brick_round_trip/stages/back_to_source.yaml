@@ -1,0 +1,50 @@
+include: x2real/task/memory_tracking/brick_round_trip/stages/_brick_round_trip_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: brick_round_trip_back_to_source
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: any_object_in_indexed_zone
+          object_names:
+          - brick_blue
+          - brick_green
+          - brick_red
+          - brick_orange
+          index_log_key: brick_round_trip_source_slot
+          zones:
+          - x_range:
+            - 0.0
+            - 0.2
+            y_range:
+            - -0.168
+            - 0.032
+            z_range:
+            - -0.24
+            - -0.14
+          - x_range:
+            - -0.04
+            - 0.16
+            y_range:
+            - -0.368
+            - -0.168
+            z_range:
+            - -0.24
+            - -0.14
+          - x_range:
+            - 0.0
+            - 0.2
+            y_range:
+            - -0.568
+            - -0.368
+            z_range:
+            - -0.24
+            - -0.14
+          velocity_threshold: 0.2
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: return the brick to its original front plate

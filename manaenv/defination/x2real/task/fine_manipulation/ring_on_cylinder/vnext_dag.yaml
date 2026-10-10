@@ -1,0 +1,103 @@
+graph_task_generator:
+  definition:
+    task_type: put_ring_onto_rod
+    planner_skill_boundary:
+      prefix:
+      - type: home
+      - type: stay
+    planner_skill_defaults:
+      pick:
+        grasp_label_manifest: manaenv/defination/grasp_labels/manifest.yaml
+        arm: auto
+        approach_distance: 0.08
+        lift_height: 0.08
+        top_k: 20
+        filter_x_dir:
+        - downward
+        - 40.0
+        - 70.0
+        filter_y_dir:
+        - upward
+        - 85.0
+        - 95.0
+        filter_z_dir:
+        - upward
+        - 90.0
+      place:
+        arm: current
+        batch_size: 1
+        pre_place_z_offset: 0.06
+        place_z_offset: 0.04
+        post_place_z_offset: 0.04
+        hesitate_steps: 10
+        object_pose_constraint:
+          enabled: true
+          filter_x_dir:
+          - downward
+          - 40.0
+          - 70.0
+          filter_y_dir:
+          - upward
+          - 85.0
+          - 95.0
+      home:
+        arm: both
+        gripper: closed
+        steps: 20
+      stay:
+        arm: both
+        gripper: open
+        steps: 20
+        left_stay_joints:
+        - -0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - 0.26
+        right_stay_joints:
+        - 0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - -0.26
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: ring
+            target:
+              type: node
+              id: ring
+            sample:
+              type: inherit
+          - id: peg
+            target:
+              type: node
+              id: peg
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instruction: Put the ring onto the vertical pole, then return the arm home.
+        topic: ring_on_cylinder
+      overlay_component:
+        evaluation: true
+        entries: []
+  nodes:
+  - id: pick_ring
+    score: 4
+    include: x2real/task/fine_manipulation/ring_on_cylinder/stages/pick_ring.yaml
+  - id: place_on_cylinder
+    score: 5
+    include: x2real/task/fine_manipulation/ring_on_cylinder/stages/place_on_cylinder.yaml
+  - id: retract_arm
+    score: 1
+    include: x2real/task/fine_manipulation/ring_on_cylinder/stages/retract_arm.yaml
+  edges:
+  - src: pick_ring
+    dst: place_on_cylinder
+  - src: place_on_cylinder
+    dst: retract_arm

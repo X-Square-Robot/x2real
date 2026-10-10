@@ -1,0 +1,62 @@
+################################################################################
+# put_bottle_on_woodshelf graph task (5 scored milestones / 10-point rubric, ID).
+# No separate unscored stability sink: place_bottle owns region + upright +
+# consecutive-frame continuity (stricter upright from former export gate).
+################################################################################
+graph_task_generator:
+  definition:
+    task_type: put_bottle_on_woodshelf
+    episode_length_s: 3600.0
+    max_steps_per_episode: 100000
+    prompt: Navigate to the source table, grasp the bottle on the table, navigate to the wooden shelf, place the bottle on the shelf, and retract the arm safely.
+    layout:
+      runtime_sample:
+        id: runtime
+        seed: 42
+        targets:
+          placements:
+          - {id: table, target: {type: node, id: table}, sample: {type: inherit}}
+          - {id: shelf, target: {type: node, id: shelf}, sample: {type: inherit}}
+          - {id: bottle_nongfuspring, target: {type: node, id: bottle_nongfuspring}, sample: {type: inherit}}
+    component_sections:
+      instruction_component:
+        instruction: Navigate to the source table, grasp the bottle on the table, navigate to the wooden shelf, place the bottle on the shelf, and retract the arm safely.
+        topic: put_bottle_on_woodshelf
+      log_component:
+        entries:
+          instruction_text:
+            trigger: enter
+            value: Navigate to the source table, grasp the bottle on the table, navigate to the wooden shelf, place the bottle on the shelf, and retract the arm safely.
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: instruction_text
+          label: Instruction
+          font_size: 22
+      event_component:
+        terms:
+          apply_case_bank_layout:
+            mode: reset
+            _func: apply_case_bank_layout
+            bank_path: task/put_bottle_on_woodshelf/case_bank.yaml
+            robot_asset: robot
+            object_asset: "@pickable"
+            context_namespace: mobile_manip
+            context_plan_id: put_bottle_on_woodshelf
+            required_zone_keys: [table_approach_success_zone, shelf_operation_zone]
+            seed: 42
+  roles:
+    pickable: bottle_nongfuspring
+    table: table
+    shelf: shelf
+  nodes:
+  - {id: navigate_to_table, include: task/put_bottle_on_woodshelf/stages/navigate_to_table.yaml, score: 2}
+  - {id: pick_bottle, include: task/put_bottle_on_woodshelf/stages/pick_bottle.yaml, score: 2}
+  - {id: navigate_to_shelf, include: task/put_bottle_on_woodshelf/stages/navigate_to_shelf.yaml, score: 2}
+  - {id: place_bottle, include: task/put_bottle_on_woodshelf/stages/place_bottle.yaml, score: 2}
+  - {id: retract_arm, include: task/put_bottle_on_woodshelf/stages/retract_arm.yaml, score: 2}
+  edges:
+  - {src: navigate_to_table, dst: pick_bottle}
+  - {src: pick_bottle, dst: navigate_to_shelf}
+  - {src: navigate_to_shelf, dst: place_bottle}
+  - {src: place_bottle, dst: retract_arm}

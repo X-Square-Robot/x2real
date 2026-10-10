@@ -1,0 +1,530 @@
+definition:
+  scene_type: specific_position_scene
+  metadata:
+    name: ex001_6r_specific_position_vnext
+    source: specific_position/vnext
+    semantic_goal: Pick the bus identified by its row and column and place it in the
+      basket
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: target_bus
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - pickable
+  - target_bus
+  - grid_member
+- id: grid_bus_1
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_2
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_3
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_4
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_5
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_6
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_7
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_8
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_9
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_10
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: grid_bus_11
+  asset:
+    type: pool
+    cache_size: 5
+    candidates:
+    - id: toy_bus_first_20
+      from_file: assets/manipulation/toy_bus.json
+      item_range:
+      - 0
+      - 20
+      scale_normalization:
+        target_longest_edge: 0.08
+  spawn_mass:
+  - 0.05
+  - 0.08
+  semantic_tags:
+  - grid_member
+- id: basket_b
+  asset:
+    type: asset_id
+    id: basket_b
+  semantic_tags:
+  - container
+  scale:
+  - 0.7
+  - 0.7
+  - 0.7
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    target_bus:
+      object: target_bus
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.9
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_1:
+      object: grid_bus_1
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.75
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_2:
+      object: grid_bus_2
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.6
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_3:
+      object: grid_bus_3
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.45
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_4:
+      object: grid_bus_4
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.3
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_5:
+      object: grid_bus_5
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.15
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_6:
+      object: grid_bus_6
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.0
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_7:
+      object: grid_bus_7
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.15
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_8:
+      object: grid_bus_8
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.3
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_9:
+      object: grid_bus_9
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.45
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_10:
+      object: grid_bus_10
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.6
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    grid_bus_11:
+      object: grid_bus_11
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - 0.75
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    basket_b:
+      object: basket_b
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x: 0.24
+          y: 0.0
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.7071
+        - 0.7071
+variants:
+  materialization:
+  - id: target_bus_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - target_bus.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_1_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_1.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_2_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_2.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_3_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_3.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_4_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_4.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_5_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_5.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_6_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_6.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_7_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_7.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_8_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_8.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_9_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_9.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_10_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_10.toy_bus_first_20
+      weight: 1.0
+  - id: grid_bus_11_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - grid_bus_11.toy_bus_first_20
+      weight: 1.0
+  assignments: []

@@ -1,0 +1,51 @@
+name: EX001-6R
+initial_position:
+- -0.32165
+- -0.25918
+- -0.23
+initial_orientation:
+- 0.0
+- 0.0
+- 0.0
+- 1.0
+enable_cameras: true
+gripper_mode: raw_joint
+solver_position_iteration_count: 32
+solver_velocity_iteration_count: 4
+actuator_device: cpu
+actuator_cuda_graph: false
+actuator_params:
+  stablepd:
+    left_arm_acts:
+      joint_names:
+      - left_arm_joint[1-6]
+      stiffness: 1500.0
+      damping: 150.0
+      effort_limit: 200.0
+    right_arm_acts:
+      joint_names:
+      - right_arm_joint[1-6]
+      stiffness: 1500.0
+      damping: 150.0
+      effort_limit: 200.0
+    left_gripper_acts:
+      joint_names:
+      - left_arm_gripper
+      stiffness: 4000.0
+      damping: 50.0
+      effort_limit: 500.0
+      armature: 1.0
+    right_gripper_acts:
+      joint_names:
+      - right_arm_gripper
+      stiffness: 4000.0
+      damping: 50.0
+      effort_limit: 500.0
+      armature: 1.0
+  pd:
+    gripper_mimic_acts:
+      joint_names:
+      - left_arm_gripper_.*
+      - right_arm_gripper_.*
+      stiffness: 40.0
+      damping: 40.0

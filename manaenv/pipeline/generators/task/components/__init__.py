@@ -1,0 +1,1 @@
+"""Task generator concrete components."""

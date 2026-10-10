@@ -1,0 +1,46 @@
+direct_task_generator:
+  definition:
+    gen_method: 0
+    episode_length_s: 600.0
+    num_episodes: 10
+    max_steps_per_episode: 8000
+  roles:
+    disk_1: disk_1
+    disk_2: disk_2
+    disk_3: disk_3
+    disk_4: disk_4
+    disk_5: disk_5
+  component_sections:
+    termination_component:
+      terms:
+        mdp.time_out:
+          time_out: true
+        object_dropped:
+          object_cfg:
+          - ring_a
+          - ring_b
+          - ring_c
+          - ring_d
+          - ring_e
+          minimum_height: -0.25
+          ignore_below: -1.0
+    event_component:
+      terms:
+        mdp.reset_scene_to_default:
+          mode: reset
+          reset_joint_targets: true
+    metric_component:
+      terms:
+        success_rate: {}
+    viewer_component:
+      terms:
+        look_at_object:
+          lookat_object: peg_mid
+          offset:
+          - -1.0
+          - 0.0
+          - 1.5
+    scene_constraint_component:
+      constraints:
+      - mode: 0
+        tags: schema_vnext_tower_of_hanoi

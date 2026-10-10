@@ -1,0 +1,25 @@
+include: task/move_fruit_to_basket/stages/_stage_base.yaml
+direct_task_generator:
+  definition: {task_type: move_fruit_to_basket_navigate_to_fruit_table, stage_timeout_steps: 900}
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - fruit_table_operation_zone:
+              _func: base_in_operation_zone
+              robot_cfg: robot
+              zone_key: fruit_table_operation_zone
+              context_namespace: mobile_manip
+              context_plan_id: move_fruit_to_basket
+              linear_speed_max: 0.05
+              angular_speed_max: 0.12
+              consecutive_steps: 3
+              _latch: true
+          - pickable_in_head_hfov:
+              _func: target_in_head_hfov
+              robot_cfg: robot
+              target_cfgs: "@pickable"
+              consecutive_steps: 3
+              _latch: true
+    log_component: {entries: {progress: {trigger: success, value: navigate to the fruit table}}}

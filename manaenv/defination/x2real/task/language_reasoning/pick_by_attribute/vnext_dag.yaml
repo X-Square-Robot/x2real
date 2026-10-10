@@ -1,0 +1,126 @@
+graph_task_generator:
+  definition:
+    task_type: pick_by_attribute
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: obj_1_asset
+            target:
+              type: node
+              id: obj_1
+            selector:
+              type: uniform
+              distinct_id: attribute_objects
+          - id: obj_2_asset
+            target:
+              type: node
+              id: obj_2
+            selector:
+              type: uniform
+              distinct_id: attribute_objects
+          - id: obj_3_asset
+            target:
+              type: node
+              id: obj_3
+            selector:
+              type: uniform
+              distinct_id: attribute_objects
+          - id: obj_4_asset
+            target:
+              type: node
+              id: obj_4
+            selector:
+              type: uniform
+              distinct_id: attribute_objects
+          placements:
+          - id: object_start_region
+            target:
+              type: group
+              id: object_start_region
+            sample:
+              type: inherit
+          - id: basket_b
+            target:
+              type: node
+              id: basket_b
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_attribute_pick:
+            mode: reset
+            object_names:
+            - obj_1
+            - obj_2
+            - obj_3
+            - obj_4
+            catalog_file: assets/manipulation/attribute_objects.json
+            target_mask_log_key: attribute_target_mask
+            predicate_bank:
+            - id: color_red
+              text: Put the red objects into the basket, then return the arm home.
+              any_of:
+              - color: red
+            - id: color_green
+              text: Put the green objects into the basket, then return the arm home.
+              any_of:
+              - color: green
+            - id: color_blue
+              text: Put the blue objects into the basket, then return the arm home.
+              any_of:
+              - color: blue
+            - id: shape_ball
+              text: Put the balls into the basket, then return the arm home.
+              any_of:
+              - shape: ball
+            - id: shape_cube
+              text: Put the cubes into the basket, then return the arm home.
+              any_of:
+              - shape: cube
+            - id: shape_cylinder
+              text: Put the cylinders into the basket, then return the arm home.
+              any_of:
+              - shape: cylinder
+      log_component:
+        entries:
+          attribute_plan:
+            trigger: enter
+            func: attribute_pick_active_label
+          active_attribute_assets:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - obj_1
+              - obj_2
+              - obj_3
+              - obj_4
+      instruction_component:
+        topic: pick_by_attribute
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: attribute_plan
+          label: Target predicate
+          font_size: 24
+        - log_key: active_attribute_assets
+          label: Active assets
+          font_size: 22
+  nodes:
+  - id: place_targets
+    include: x2real/task/language_reasoning/pick_by_attribute/stages/place_targets.yaml
+    score: 8
+  - id: return
+    include: x2real/task/language_reasoning/pick_by_attribute/stages/return.yaml
+    score: 2
+  - id: validate_basket
+    include: x2real/task/language_reasoning/pick_by_attribute/stages/validate_basket.yaml
+    score: 0
+  edges:
+  - src: place_targets
+    dst: return
+  - src: return
+    dst: validate_basket

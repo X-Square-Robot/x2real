@@ -1,0 +1,31 @@
+include: x2real/task/language_reasoning/pick_by_attribute/stages/_pick_by_attribute_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: pick_by_attribute_place_targets
+  component_sections:
+    termination_component:
+      terms:
+        object_dropped:
+          object_cfg: '@pickable'
+          minimum_height: -0.25
+          ignore_below: -1.0
+        success:
+          _func: attribute_targets_in_basket
+          object_names:
+          - obj_1
+          - obj_2
+          - obj_3
+          - obj_4
+          reference_cfg: '@container'
+          target_mask_log_key: attribute_target_mask
+          xy_distance_threshold: 0.1
+          z_min_offset: -0.06
+          z_max_offset: 0.2
+          velocity_threshold: 0.5
+          strict: true
+          consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: put every predicate-matching object into @container.name

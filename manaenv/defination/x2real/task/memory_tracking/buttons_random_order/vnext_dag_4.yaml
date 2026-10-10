@@ -1,0 +1,137 @@
+graph_task_generator:
+  definition:
+    task_type: buttons_random_order_4
+    component_sections:
+      event_component:
+        terms:
+          mdp.reset_scene_to_default:
+            mode: reset
+            reset_joint_targets: true
+          sample_button_order:
+            mode: reset
+            num_buttons: 4
+            button_colors:
+            - pink
+            - blue
+            - yellow
+            - green
+            button_prefix: button_
+            order_log_key: button_press_order
+            order_log_width: 4
+            order_bank:
+            - - blue
+              - green
+              - pink
+              - yellow
+            - - blue
+              - pink
+              - green
+              - yellow
+            - - blue
+              - pink
+              - yellow
+              - green
+            - - blue
+              - yellow
+              - green
+              - pink
+            - - blue
+              - yellow
+              - pink
+              - green
+            - - green
+              - pink
+              - blue
+              - yellow
+            - - green
+              - pink
+              - yellow
+              - blue
+            - - green
+              - yellow
+              - pink
+              - blue
+            - - pink
+              - blue
+              - yellow
+              - green
+            - - pink
+              - green
+              - blue
+              - yellow
+            - - pink
+              - green
+              - yellow
+              - blue
+            - - pink
+              - yellow
+              - blue
+              - green
+            - - pink
+              - yellow
+              - green
+              - blue
+            - - yellow
+              - blue
+              - green
+              - pink
+            - - yellow
+              - green
+              - blue
+              - pink
+            - - yellow
+              - green
+              - pink
+              - blue
+            instruction_template: 'Press the buttons in this order: {order}, then
+              return the arm home.'
+            region:
+              x:
+              - 0.05
+              - 0.2
+              y:
+              - -0.45
+              - 0.15
+              z:
+              - -0.17
+              - -0.17
+            min_separation: 0.15
+            away_z: -10.0
+      log_component:
+        entries:
+          button_press_order_text:
+            trigger: enter
+            func: button_active_order
+      instruction_component:
+        topic: buttons_random_order
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: button_press_order_text
+          label: Press order
+          font_size: 24
+  nodes:
+  - id: press_1
+    include: x2real/task/memory_tracking/buttons_random_order/stages/press_1.yaml
+    score: 2
+  - id: press_2
+    include: x2real/task/memory_tracking/buttons_random_order/stages/press_2.yaml
+    score: 2
+  - id: press_3
+    include: x2real/task/memory_tracking/buttons_random_order/stages/press_3.yaml
+    score: 2
+  - id: press_4
+    include: x2real/task/memory_tracking/buttons_random_order/stages/press_4.yaml
+    score: 2
+  - id: return
+    include: x2real/task/memory_tracking/buttons_random_order/stages/return.yaml
+    score: 2
+  edges:
+  - src: press_1
+    dst: press_2
+  - src: press_2
+    dst: press_3
+  - src: press_3
+    dst: press_4
+  - src: press_4
+    dst: return

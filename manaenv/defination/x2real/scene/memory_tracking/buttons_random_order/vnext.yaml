@@ -1,0 +1,125 @@
+definition:
+  scene_type: buttons_random_order_scene
+  metadata:
+    name: ex001_6r_buttons_random_order_vnext
+    source: buttons_random_order/vnext
+    semantic_goal: Press the buttons in the randomly instructed color order
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: button_pink
+  asset:
+    type: asset_id
+    id: button_pink
+  semantic_tags:
+  - touchable
+  - btn_pink
+- id: button_blue
+  asset:
+    type: asset_id
+    id: button_blue
+  semantic_tags:
+  - touchable
+  - btn_blue
+- id: button_yellow
+  asset:
+    type: asset_id
+    id: button_yellow
+  semantic_tags:
+  - touchable
+  - btn_yellow
+- id: button_green
+  asset:
+    type: asset_id
+    id: button_green
+  semantic_tags:
+  - touchable
+  - btn_green
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    button_pink:
+      object: button_pink
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.1
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    button_blue:
+      object: button_blue
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.9
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    button_yellow:
+      object: button_yellow
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.7
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    button_green:
+      object: button_green
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.5
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+  groups: {}
+variants:
+  materialization: []
+  assignments: []

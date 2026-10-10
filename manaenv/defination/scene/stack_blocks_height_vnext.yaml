@@ -1,0 +1,280 @@
+definition:
+  scene_type: stack_blocks_height_scene
+  metadata:
+    name: stack_blocks_height_vnext
+    source: stack_blocks_height/vnext
+    semantic_goal: Stack randomly chosen cubes into a language-selected tower height on the green paper
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: green_booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: block_1_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_1
+  - block_blue
+- id: block_2_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_2
+  - block_green
+- id: block_3_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_3
+  - block_red
+- id: block_4_orange
+  asset:
+    type: asset_id
+    id: brick_orange_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_4
+  - block_orange
+- id: block_5_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_5
+  - block_blue
+- id: block_6_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_6
+  - block_green
+- id: block_7_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_7
+  - block_red
+- id: block_8_orange
+  asset:
+    type: asset_id
+    id: brick_orange_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_8
+  - block_orange
+- id: block_9_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_9
+  - block_blue
+- id: block_10_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_10
+  - block_green
+- id: block_11_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_11
+  - block_red
+- id: block_12_orange
+  asset:
+    type: asset_id
+    id: brick_orange_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_12
+  - block_orange
+- id: block_13_blue
+  asset:
+    type: asset_id
+    id: brick_blue_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_13
+  - block_blue
+- id: block_14_green
+  asset:
+    type: asset_id
+    id: brick_green_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_14
+  - block_green
+- id: block_15_red
+  asset:
+    type: asset_id
+    id: brick_red_3cm
+  semantic_tags:
+  - block
+  - pickable
+  - block_slot_15
+  - block_red
+- id: stack_base
+  asset:
+    type: asset_id
+    id: paper_green
+  semantic_tags:
+  - stack_base
+  - destination
+  scale:
+  - 0.2
+  - 0.35
+  - 1.0
+  kinematic: true
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    stack_base:
+      object: stack_base
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x: 0.18
+          y: 0.0
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.0
+        - 1.0
+    block_1_blue:
+      object: block_1_blue
+    block_2_green:
+      object: block_2_green
+    block_3_red:
+      object: block_3_red
+    block_4_orange:
+      object: block_4_orange
+    block_5_blue:
+      object: block_5_blue
+    block_6_green:
+      object: block_6_green
+    block_7_red:
+      object: block_7_red
+    block_8_orange:
+      object: block_8_orange
+    block_9_blue:
+      object: block_9_blue
+    block_10_green:
+      object: block_10_green
+    block_11_red:
+      object: block_11_red
+    block_12_orange:
+      object: block_12_orange
+    block_13_blue:
+      object: block_13_blue
+    block_14_green:
+      object: block_14_green
+    block_15_red:
+      object: block_15_red
+  groups:
+    block_start_region_neg:
+      type: region
+      nodes:
+      - block_1_blue
+      - block_2_green
+      - block_3_red
+      - block_4_orange
+      - block_5_blue
+      - block_6_green
+      - block_7_red
+      - block_8_orange
+      surface: tabletop
+      ranges:
+        x:
+        - 0.02
+        - 0.35
+        y:
+        - -0.5
+        - -0.1
+      yaws:
+      - -0.2
+      - 0.2
+      sample_method: stratified
+      spacing_mode: footprint_gap
+      min_spacing: 0.05
+      jitter: 0.35
+      max_attempts: 3000
+    block_start_region_pos:
+      type: region
+      nodes:
+      - block_9_blue
+      - block_10_green
+      - block_11_red
+      - block_12_orange
+      - block_13_blue
+      - block_14_green
+      - block_15_red
+      surface: tabletop
+      ranges:
+        x:
+        - 0.02
+        - 0.35
+        y:
+        - 0.1
+        - 0.5
+      yaws:
+      - -0.2
+      - 0.2
+      sample_method: stratified
+      spacing_mode: footprint_gap
+      min_spacing: 0.05
+      jitter: 0.35
+      max_attempts: 3000
+variants:
+  materialization: []
+  assignments: []

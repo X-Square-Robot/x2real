@@ -1,0 +1,108 @@
+definition:
+  scene_type: inverted_triangle_cups_scene
+  metadata:
+    name: ex001_6r_inverted_triangle_cups_vnext
+    source: inverted_triangle_cups/vnext
+    semantic_goal: Arrange three upside-down cups into an inverted triangle
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: cup_1
+  asset:
+    type: asset_id
+    id: cup_d
+  semantic_tags:
+  - pickable
+  - pickable_1
+- id: cup_2
+  asset:
+    type: asset_id
+    id: cup_d
+  semantic_tags:
+  - pickable
+  - pickable_2
+- id: cup_3
+  asset:
+    type: asset_id
+    id: cup_d
+  semantic_tags:
+  - pickable
+  - pickable_3
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    cup_1:
+      object: cup_1
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.08
+          - 0.2
+          y:
+          - -0.42
+          - -0.18
+        orientation:
+        - 0.0
+        - 1.0
+        - 0.0
+        - 0.0
+    cup_2:
+      object: cup_2
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.08
+          - 0.2
+          y:
+          - -0.14
+          - 0.06
+        orientation:
+        - 0.0
+        - 1.0
+        - 0.0
+        - 0.0
+    cup_3:
+      object: cup_3
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.08
+          - 0.2
+          y:
+          - 0.1
+          - 0.34
+        orientation:
+        - 0.0
+        - 1.0
+        - 0.0
+        - 0.0
+variants:
+  materialization: []
+  assignments: []

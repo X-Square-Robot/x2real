@@ -1,0 +1,40 @@
+# Stage: press — press the next button in the sampled with-replacement order.
+# DAG nodes include this file and override success.position / task_type.
+# Policy eval does not use planner skill rewrite.
+include: x2real/task/challenge/buttons_press_sequence/stages/_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: buttons_press_sequence_press
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          _func: button_joint_pressed_in_order
+          position: 1
+          button_assets: [button_blue, button_yellow, button_red, button_green]
+          color_order: [blue, yellow, red, green]
+          joint_names: [PrismaticJoint]
+          press_threshold: 0.6
+          release_threshold: 0.25
+          openness_gt: true
+          order_log_key: button_press_order
+          consecutive_steps: 3
+        failure_wrong_button:
+          _func: button_wrong_joint_pressed_in_order
+          button_assets: [button_blue, button_yellow, button_red, button_green]
+          color_order: [blue, yellow, red, green]
+          joint_names: [PrismaticJoint]
+          press_threshold: 0.6
+          release_threshold: 0.25
+          openness_gt: true
+          order_log_key: button_press_order
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          func: button_order_color_at_position
+          params:
+            position: 1
+            color_order: [blue, yellow, red, green]
+            order_log_key: button_press_order
+            template: "press {color}"

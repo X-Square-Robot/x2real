@@ -1,0 +1,27 @@
+include: x2real/task/tool_use/nut_on_screw/stages/_nut_on_screw_stage_base.yaml
+direct_task_generator:
+  definition:
+    task_type: nut_on_screw_twist_nut
+  component_sections:
+    termination_component:
+      terms:
+        success:
+          terms:
+          - nut_seated:
+              _func: object_inserted
+              object_cfg: '@pickable'
+              target_cfg: '@destination'
+              insertion_axis:
+              - 0.0
+              - 0.0
+              - 1.0
+              axial_threshold: 0.045
+              lateral_threshold: 0.018
+              orientation_dot_min: 0.9
+              velocity_threshold: 0.2
+              consecutive_steps: 5
+    log_component:
+      entries:
+        progress:
+          trigger: success
+          value: twist the {nut_color} {nut} nut onto the matching {screw_color} {screw} screw

@@ -1,0 +1,67 @@
+graph_task_generator:
+  definition:
+    task_type: put_in_microwave
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: fruit_asset
+            target:
+              type: node
+              id: fruit
+            selector:
+              type: uniform
+          placements:
+          - id: fruit
+            target:
+              type: node
+              id: fruit
+            sample:
+              type: inherit
+    component_sections:
+      log_component:
+        entries:
+          active_fruit_asset:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - fruit
+      instruction_component:
+        instructions:
+        - text: Open the microwave, put the fruit inside, close the door, then return
+            the arm home.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: active_fruit_asset
+          label: Fruit
+          font_size: 24
+  nodes:
+  - id: open_door
+    include: x2real/task/generalization/put_in_microwave/stages/open_door.yaml
+    score: 2
+  - id: pick_fruit
+    include: x2real/task/generalization/put_in_microwave/stages/pick_fruit.yaml
+    score: 2
+  - id: place_in_microwave
+    include: x2real/task/generalization/put_in_microwave/stages/place_in_microwave.yaml
+    score: 3
+  - id: close_door
+    include: x2real/task/generalization/put_in_microwave/stages/close_door.yaml
+    score: 2
+  - id: return
+    include: x2real/task/generalization/put_in_microwave/stages/return.yaml
+    score: 1
+  edges:
+  - src: open_door
+    dst: pick_fruit
+  - src: pick_fruit
+    dst: place_in_microwave
+  - src: place_in_microwave
+    dst: close_door
+  - src: close_door
+    dst: return

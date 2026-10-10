@@ -1,0 +1,216 @@
+definition:
+  scene_type: schema_vnext_atom_objects_beside_block
+  metadata:
+    source: atom_objects_beside_block
+    semantic_goal: Place the green object beside the block (direction chosen at reset)
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: object
+  asset:
+    type: pool
+    cache_size: 14
+    candidates:
+    - id: object_pool
+      from_file: assets/pools/atom_objects_beside_block/pickables_object.json
+      item_range:
+      - 0
+      - 14
+      scale_normalization:
+        min_shortest_edge: 0.02
+        max_shortest_edge: 0.05
+        max_longest_edge: 0.1
+  orientation:
+  - 0.0
+  - 0.0
+  - 0.70710678
+  - 0.70710678
+  spawn_mass:
+  - 0.05
+  - 0.15
+  semantic_tags:
+  - pickable
+- id: block
+  asset:
+    type: pool
+    cache_size: 8
+    candidates:
+    - id: block_pool
+      from_file: assets/pools/atom_objects_beside_block/references_block.json
+      item_range:
+      - 0
+      - 8
+      scale_normalization:
+        min_shortest_edge: 0.02
+        max_shortest_edge: 0.05
+        max_longest_edge: 0.1
+  orientation:
+  - 0.0
+  - 0.0
+  - 0.70710678
+  - 0.70710678
+  spawn_mass:
+  - 0.05
+  - 0.15
+  semantic_tags:
+  - reference
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    object:
+      object: object
+    block:
+      object: block
+  groups:
+    beside_pair:
+      type: slot
+      nodes:
+      - object
+      - block
+      slots:
+        obj_left_n:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.05
+            - 0.23
+            y:
+            - 0.3
+            - 0.38
+          yaws: 0.0
+        blk_left_s:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.05
+            - 0.23
+            y:
+            - 0.15
+            - 0.2
+          yaws: 0.0
+        obj_left_s:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.05
+            - 0.23
+            y:
+            - 0.15
+            - 0.2
+          yaws: 0.0
+        blk_left_n:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.05
+            - 0.23
+            y:
+            - 0.3
+            - 0.38
+          yaws: 0.0
+        obj_right_n:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.05
+            - 0.23
+            y:
+            - -0.2
+            - -0.15
+          yaws: 0.0
+        blk_right_s:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.05
+            - 0.23
+            y:
+            - -0.38
+            - -0.3
+          yaws: 0.0
+        obj_right_s:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.05
+            - 0.23
+            y:
+            - -0.38
+            - -0.3
+          yaws: 0.0
+        blk_right_n:
+          type: surface
+          surface: tabletop
+          ranges:
+            x:
+            - 0.05
+            - 0.23
+            y:
+            - -0.2
+            - -0.15
+          yaws: 0.0
+      assignments:
+        mode: explicit
+        items:
+        - id: left_object_left
+          bindings:
+            object: obj_left_n
+            block: blk_left_s
+        - id: left_object_right
+          bindings:
+            object: obj_left_s
+            block: blk_left_n
+        - id: right_object_left
+          bindings:
+            object: obj_right_n
+            block: blk_right_s
+        - id: right_object_right
+          bindings:
+            object: obj_right_s
+            block: blk_right_n
+      default_assignment: left_object_left
+variants:
+  materialization:
+  - id: object_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - object.object_pool
+      weight: 1.0
+  - id: block_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - block.block_pool
+      weight: 1.0
+  assignments: []

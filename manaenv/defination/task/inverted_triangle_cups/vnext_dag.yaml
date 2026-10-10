@@ -1,0 +1,855 @@
+graph_task_generator:
+  definition:
+    task_type: arrange_cup_inverted_triangle
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: cup_1
+            target:
+              type: node
+              id: cup_1
+            sample:
+              type: inherit
+          - id: cup_2
+            target:
+              type: node
+              id: cup_2
+            sample:
+              type: inherit
+          - id: cup_3
+            target:
+              type: node
+              id: cup_3
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Arrange the three cups into a triangle. Place the first cup in the center, place the second cup next to it,
+            then place the third cup on top. Finally return the arm to the home position.
+          log:
+            instruction_variant: direct
+      overlay_component:
+        evaluation: true
+        entries: []
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: inverted_triangle_cups_first_cup_picked
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: gripper_nth_object_lifted
+              gripper_contact_sensor_cfgs:
+              - '@gripper_contact_sensor_1'
+              - '@gripper_contact_sensor_2'
+              - '@gripper_contact_sensor_3'
+              object_cfgs:
+              - '@pickable_1'
+              - '@pickable_2'
+              - '@pickable_3'
+              nth: 1
+              min_lift: 0.03
+              force_threshold: 0.01
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: inverted_triangle_cups_scene
+        sensor_component:
+          sensors:
+          - contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '@pickable_2'
+              - '@pickable_3'
+          - contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '@pickable_1'
+              - '@pickable_3'
+          - contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '@pickable_1'
+              - '@pickable_2'
+          - gripper_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up the first cup
+    id: first_cup_picked
+    score: 1
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: inverted_triangle_cups_first_cup_placed
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - first_cup_settled:
+                  _func: gripper_nth_object_settled
+                  gripper_contact_sensor_cfgs:
+                  - '@gripper_contact_sensor_1'
+                  - '@gripper_contact_sensor_2'
+                  - '@gripper_contact_sensor_3'
+                  object_cfgs:
+                  - '@pickable_1'
+                  - '@pickable_2'
+                  - '@pickable_3'
+                  nth: 1
+                  force_threshold: 0.01
+                  max_lift: 0.02
+                  release_force_threshold: 0.01
+                  velocity_threshold: 0.15
+                  consecutive_steps: 5
+              - cups_upside_down:
+                  _func: object_tilt_in_range
+                  object_cfg:
+                  - '@pickable_1'
+                  - '@pickable_2'
+                  - '@pickable_3'
+                  min_dot: -1.0
+                  max_dot: -0.85
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: inverted_triangle_cups_scene
+        sensor_component:
+          sensors:
+          - contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '@pickable_2'
+              - '@pickable_3'
+          - contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '@pickable_1'
+              - '@pickable_3'
+          - contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '@pickable_1'
+              - '@pickable_2'
+          - gripper_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place the first cup upside-down in center
+    id: first_cup_placed
+    score: 1
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: inverted_triangle_cups_second_cup_picked
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: gripper_nth_object_lifted
+              gripper_contact_sensor_cfgs:
+              - '@gripper_contact_sensor_1'
+              - '@gripper_contact_sensor_2'
+              - '@gripper_contact_sensor_3'
+              object_cfgs:
+              - '@pickable_1'
+              - '@pickable_2'
+              - '@pickable_3'
+              nth: 2
+              min_lift: 0.03
+              force_threshold: 0.01
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: inverted_triangle_cups_scene
+        sensor_component:
+          sensors:
+          - contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '@pickable_2'
+              - '@pickable_3'
+          - contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '@pickable_1'
+              - '@pickable_3'
+          - contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '@pickable_1'
+              - '@pickable_2'
+          - gripper_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up the second cup
+    id: second_cup_picked
+    score: 1
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: inverted_triangle_cups_second_cup_near_first
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - second_near_first:
+                  _func: nth_object_near_mth_object
+                  gripper_contact_sensor_cfgs:
+                  - '@gripper_contact_sensor_1'
+                  - '@gripper_contact_sensor_2'
+                  - '@gripper_contact_sensor_3'
+                  object_cfgs:
+                  - '@pickable_1'
+                  - '@pickable_2'
+                  - '@pickable_3'
+                  nth: 2
+                  mth: 1
+                  xy_distance_threshold: 0.15
+                  force_threshold: 0.01
+              - second_cup_settled:
+                  _func: gripper_nth_object_settled
+                  gripper_contact_sensor_cfgs:
+                  - '@gripper_contact_sensor_1'
+                  - '@gripper_contact_sensor_2'
+                  - '@gripper_contact_sensor_3'
+                  object_cfgs:
+                  - '@pickable_1'
+                  - '@pickable_2'
+                  - '@pickable_3'
+                  nth: 2
+                  force_threshold: 0.01
+                  max_lift: 0.02
+                  release_force_threshold: 0.01
+                  velocity_threshold: 0.15
+                  consecutive_steps: 5
+              - cups_upside_down:
+                  _func: object_tilt_in_range
+                  object_cfg:
+                  - '@pickable_1'
+                  - '@pickable_2'
+                  - '@pickable_3'
+                  min_dot: -1.0
+                  max_dot: -0.85
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: inverted_triangle_cups_scene
+        sensor_component:
+          sensors:
+          - contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '@pickable_2'
+              - '@pickable_3'
+          - contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '@pickable_1'
+              - '@pickable_3'
+          - contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '@pickable_1'
+              - '@pickable_2'
+          - gripper_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place the second cup near the first
+    id: second_cup_near_first
+    score: 2
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: inverted_triangle_cups_third_cup_picked
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              _func: gripper_nth_object_lifted
+              gripper_contact_sensor_cfgs:
+              - '@gripper_contact_sensor_1'
+              - '@gripper_contact_sensor_2'
+              - '@gripper_contact_sensor_3'
+              object_cfgs:
+              - '@pickable_1'
+              - '@pickable_2'
+              - '@pickable_3'
+              nth: 3
+              min_lift: 0.03
+              force_threshold: 0.01
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: inverted_triangle_cups_scene
+        sensor_component:
+          sensors:
+          - contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '@pickable_2'
+              - '@pickable_3'
+          - contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '@pickable_1'
+              - '@pickable_3'
+          - contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '@pickable_1'
+              - '@pickable_2'
+          - gripper_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: pick up the third cup
+    id: third_cup_picked
+    score: 1
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: inverted_triangle_cups_third_cup_on_top
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - third_cup_contact_others:
+                  _func: nth_object_contact_others
+                  gripper_contact_sensor_cfgs:
+                  - '@gripper_contact_sensor_1'
+                  - '@gripper_contact_sensor_2'
+                  - '@gripper_contact_sensor_3'
+                  inter_object_contact_sensor_cfgs:
+                  - '@contact_sensor_1'
+                  - '@contact_sensor_2'
+                  - '@contact_sensor_3'
+                  nth: 3
+                  force_threshold_gripper: 0.01
+                  force_threshold_contact: 0.001
+                  consecutive_steps: 5
+              - cup_1_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@contact_sensor_1'
+                  force_threshold: 0.001
+                  consecutive_steps: 5
+              - cup_2_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@contact_sensor_2'
+                  force_threshold: 0.001
+                  consecutive_steps: 5
+              - cup_3_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@contact_sensor_3'
+                  force_threshold: 0.001
+                  consecutive_steps: 5
+              - any_cup_above_height:
+                  _func: object_above_height
+                  _combine: or
+                  object_cfg: '@pickable'
+                  min_height: -0.13
+              - cups_upside_down:
+                  _func: object_tilt_in_range
+                  object_cfg:
+                  - '@pickable_1'
+                  - '@pickable_2'
+                  - '@pickable_3'
+                  min_dot: -1.0
+                  max_dot: -0.85
+                  velocity_threshold: 0.2
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: inverted_triangle_cups_scene
+        sensor_component:
+          sensors:
+          - contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '@pickable_2'
+              - '@pickable_3'
+          - contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '@pickable_1'
+              - '@pickable_3'
+          - contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '@pickable_1'
+              - '@pickable_2'
+          - gripper_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: place the third cup on top of the other two
+    id: third_cup_on_top
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 1000
+        task_type: inverted_triangle_cups_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+            success:
+              terms:
+              - arm_home:
+                  _func: articulation_joints_near_default
+                  asset_cfg: robot
+                  atol: 0.4
+                  consecutive_steps: 10
+              - cup_1_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@contact_sensor_1'
+                  force_threshold: 0.001
+                  consecutive_steps: 5
+              - cup_2_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@contact_sensor_2'
+                  force_threshold: 0.001
+                  consecutive_steps: 5
+              - cup_3_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@contact_sensor_3'
+                  force_threshold: 0.001
+                  consecutive_steps: 5
+              - any_cup_above_height:
+                  _func: object_above_height
+                  _combine: or
+                  object_cfg: '@pickable'
+                  min_height: -0.13
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: inverted_triangle_cups_scene
+        sensor_component:
+          sensors:
+          - contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '@pickable_2'
+              - '@pickable_3'
+          - contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '@pickable_1'
+              - '@pickable_3'
+          - contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '@pickable_1'
+              - '@pickable_2'
+          - gripper_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+          - gripper_contact_sensor_3:
+              type: contact
+              source: '@pickable_3'
+              against:
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/left_arm_gripper_right_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_left_link'
+              - '{ENV_REGEX_NS}/Robot/right_arm_gripper_right_link'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: first_cup_picked
+    dst: first_cup_placed
+  - src: first_cup_placed
+    dst: second_cup_picked
+  - src: second_cup_picked
+    dst: second_cup_near_first
+  - src: second_cup_near_first
+    dst: third_cup_picked
+  - src: third_cup_picked
+    dst: third_cup_on_top
+  - src: third_cup_on_top
+    dst: return

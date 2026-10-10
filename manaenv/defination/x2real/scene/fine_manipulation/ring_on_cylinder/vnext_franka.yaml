@@ -1,0 +1,86 @@
+definition:
+  scene_type: ring_on_cylinder_scene_franka
+  metadata:
+    name: ex001_6r_ring_on_cylinder_vnext
+    source: ring_on_cylinder/vnext/franka
+    semantic_goal: Place the ring-shaped object onto the cylinder
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: ring
+  asset:
+    type: pool
+    candidates:
+    - id: any_ring
+      assets:
+      - ring_d
+      - ring_e
+  semantic_tags:
+  - pickable
+- id: peg
+  asset:
+    type: asset_id
+    id: peg_a
+  semantic_tags:
+  - destination
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    ring:
+      object: ring
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.1
+          - 0.1
+          y:
+          - 0.02
+          - 0.28
+        yaws:
+        - -0.5
+        - 0.5
+    peg:
+      object: peg
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.18
+          - -0.06
+          y:
+          - -0.08
+          - 0.08
+variants:
+  materialization:
+  - id: ring_pick
+    type: asset_pool_choice
+    choices:
+    - id: pick
+      candidate_refs:
+      - ring.any_ring
+      weight: 1.0
+  assignments: []

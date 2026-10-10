@@ -1,0 +1,258 @@
+graph_task_generator:
+  definition:
+    task_type: arrange_flowers_in_vase
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: flower_1_asset
+            target:
+              type: node
+              id: flower_1
+            selector:
+              type: uniform
+          - id: flower_2_asset
+            target:
+              type: node
+              id: flower_2
+            selector:
+              type: uniform
+          - id: vase_asset
+            target:
+              type: node
+              id: vase
+            selector:
+              type: uniform
+          placements:
+          - id: flower_1
+            target:
+              type: node
+              id: flower_1
+            sample:
+              type: inherit
+          - id: flower_2
+            target:
+              type: node
+              id: flower_2
+            sample:
+              type: inherit
+          - id: vase
+            target:
+              type: node
+              id: vase
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instructions:
+        - text: Pick up the flowers by the stem, insert them upright into the vase, then return the arm home.
+          log:
+            instruction_variant: direct
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: flowers_in_vase_place_flower_1
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              terms:
+              - flower_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@vase_contact_sensor_1'
+                  force_threshold: 0.01
+                  consecutive_steps: 5
+              - flower_upright:
+                  _func: object_tilt_in_range
+                  object_cfg: '@pickable_1'
+                  axis: x
+                  min_abs_dot: 0.6
+                  velocity_threshold: 0.5
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: flowers_in_vase_vnext_scene
+        sensor_component:
+          sensors:
+          - vase_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+          - vase_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against: '@container'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: insert @pickable_1.name into @container.name
+    id: place_flower_1
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: flowers_in_vase_place_flower_2
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              terms:
+              - flower_contact:
+                  _func: object_contact_destination
+                  contact_sensor_cfgs: '@vase_contact_sensor_2'
+                  force_threshold: 0.01
+                  consecutive_steps: 5
+              - flower_upright:
+                  _func: object_tilt_in_range
+                  object_cfg: '@pickable_2'
+                  axis: x
+                  min_abs_dot: 0.6
+                  velocity_threshold: 0.5
+                  consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: flowers_in_vase_vnext_scene
+        sensor_component:
+          sensors:
+          - vase_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+          - vase_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against: '@container'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: insert @pickable_2.name into @container.name
+    id: place_flower_2
+    score: 3
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: flowers_in_vase_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@pickable'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: flowers_in_vase_vnext_scene
+        sensor_component:
+          sensors:
+          - vase_contact_sensor_1:
+              type: contact
+              source: '@pickable_1'
+              against: '@container'
+          - vase_contact_sensor_2:
+              type: contact
+              source: '@pickable_2'
+              against: '@container'
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+    id: return
+    score: 1
+  edges:
+  - src: place_flower_1
+    dst: return
+  - src: place_flower_2
+    dst: return

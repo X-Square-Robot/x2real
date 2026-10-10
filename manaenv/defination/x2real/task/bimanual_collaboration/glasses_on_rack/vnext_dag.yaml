@@ -1,0 +1,52 @@
+graph_task_generator:
+  definition:
+    task_type: put_glasses_on_woodshelf
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          placements:
+          - id: glasses
+            target:
+              type: node
+              id: glasses
+            sample:
+              type: inherit
+          - id: rack
+            target:
+              type: node
+              id: rack
+            sample:
+              type: inherit
+    component_sections:
+      instruction_component:
+        instruction: Pick up the glasses and hang them on the rack, then return the arms home.
+        topic: glasses_on_rack
+      overlay_component:
+        evaluation: true
+        entries: []
+  nodes:
+  - id: grab_glasses
+    score: 2
+    include: x2real/task/bimanual_collaboration/glasses_on_rack/stages/grab_glasses.yaml
+  - id: place_center
+    score: 2
+    include: x2real/task/bimanual_collaboration/glasses_on_rack/stages/place_center.yaml
+  - id: adjust_direction
+    score: 2
+    include: x2real/task/bimanual_collaboration/glasses_on_rack/stages/adjust_direction.yaml
+  - id: hang_on_rack
+    score: 3
+    include: x2real/task/bimanual_collaboration/glasses_on_rack/stages/hang_on_rack.yaml
+  - id: retract_arm
+    score: 1
+    include: x2real/task/bimanual_collaboration/glasses_on_rack/stages/retract_arm.yaml
+  edges:
+  - src: grab_glasses
+    dst: place_center
+  - src: place_center
+    dst: adjust_direction
+  - src: adjust_direction
+    dst: hang_on_rack
+  - src: hang_on_rack
+    dst: retract_arm

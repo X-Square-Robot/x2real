@@ -1,0 +1,317 @@
+graph_task_generator:
+  definition:
+    task_type: specific_position
+    planner_skill_boundary:
+      prefix:
+      - type: home
+      - type: stay
+    planner_skill_defaults:
+      pick:
+        grasp_label_manifest: assets/grasp_labels/manifest.yaml
+        arm: auto
+        approach_distance: 0.08
+        lift_height: 0.16
+        top_k: 24
+        winner_plan_failure_cooldown: 8
+      place:
+        arm: current
+        pre_place_z_offset: 0.2
+        place_z_offset: 0.1
+        post_place_z_offset: 0.1
+        hesitate_steps: 15
+        pitch_samples: 8
+        target:
+          strategy: bbox_ratio
+          x_ratio_range:
+          - 0.35
+          - 0.65
+          y_ratio_range:
+          - 0.35
+          - 0.65
+      home:
+        arm: both
+        gripper: closed
+        steps: 20
+      stay:
+        arm: both
+        gripper: open
+        steps: 20
+        left_stay_joints:
+        - -0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - 0.26
+        right_stay_joints:
+        - 0.15
+        - 1.21
+        - -0.8
+        - 0.28
+        - 0.2
+        - -0.26
+    layout:
+      runtime_sample:
+        id: runtime
+        targets:
+          assets:
+          - id: target_bus_asset
+            target:
+              type: node
+              id: target_bus
+            selector:
+              type: uniform
+          - id: grid_bus_1_asset
+            target:
+              type: node
+              id: grid_bus_1
+            selector:
+              type: uniform
+          - id: grid_bus_2_asset
+            target:
+              type: node
+              id: grid_bus_2
+            selector:
+              type: uniform
+          - id: grid_bus_3_asset
+            target:
+              type: node
+              id: grid_bus_3
+            selector:
+              type: uniform
+          - id: grid_bus_4_asset
+            target:
+              type: node
+              id: grid_bus_4
+            selector:
+              type: uniform
+          - id: grid_bus_5_asset
+            target:
+              type: node
+              id: grid_bus_5
+            selector:
+              type: uniform
+          - id: grid_bus_6_asset
+            target:
+              type: node
+              id: grid_bus_6
+            selector:
+              type: uniform
+          - id: grid_bus_7_asset
+            target:
+              type: node
+              id: grid_bus_7
+            selector:
+              type: uniform
+          - id: grid_bus_8_asset
+            target:
+              type: node
+              id: grid_bus_8
+            selector:
+              type: uniform
+          - id: grid_bus_9_asset
+            target:
+              type: node
+              id: grid_bus_9
+            selector:
+              type: uniform
+          - id: grid_bus_10_asset
+            target:
+              type: node
+              id: grid_bus_10
+            selector:
+              type: uniform
+          - id: grid_bus_11_asset
+            target:
+              type: node
+              id: grid_bus_11
+            selector:
+              type: uniform
+          placements:
+          - id: basket_b
+            target:
+              type: node
+              id: basket_b
+            sample:
+              type: inherit
+    component_sections:
+      event_component:
+        terms:
+          sample_specific_position_grid:
+            mode: reset
+            grid_shapes:
+            - - 2
+              - 4
+            - - 3
+              - 3
+            target_name: target_bus
+            grid_member_prefix: grid_bus_
+            max_objects: 12
+            grid_center:
+            - 0.28
+            - -0.268246
+            row_spacing: 0.14
+            column_spacing: 0.15
+            object_height: -0.18
+            object_orientation:
+            - 0.5
+            - -0.5
+            - -0.5
+            - 0.5
+            rows_log_key: specific_position_grid_rows
+            columns_log_key: specific_position_grid_columns
+            target_index_log_key: specific_position_target_index
+            instruction_template: Pick up the object in row {row}, column {column}, and put it in the basket.
+      log_component:
+        entries:
+          specific_position_plan:
+            trigger: enter
+            func: specific_position_active_label
+          active_target_asset:
+            trigger: enter
+            func: schema_vnext_active_asset_ids_label
+            params:
+              object_names:
+              - target_bus
+      instruction_component:
+        topic: specific_position
+      overlay_component:
+        evaluation: true
+        entries:
+        - log_key: specific_position_plan
+          label: Target
+          font_size: 24
+        - log_key: active_target_asset
+          label: Active assets
+          font_size: 22
+  nodes:
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: specific_position_place_target
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            object_dropped:
+              object_cfg: '@target_bus'
+              minimum_height: -0.25
+              ignore_below: -1.0
+            success:
+              _func: object_position_in_zone
+              object_cfg: '@target_bus'
+              reference_cfg: '@container'
+              xy_distance_threshold: 0.1
+              z_min_offset: -0.06
+              z_max_offset: 0.2
+              velocity_threshold: 0.5
+              consecutive_steps: 5
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: specific_position_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: put the requested grid object into @container.name
+        planner_skills_component:
+          skills:
+          - type: pick
+            params:
+              grasp_label_asset: '@target_bus'
+              object_name: '@target_bus'
+              filter_x_dir:
+              - downward
+              - 65.0
+          - type: place
+            params:
+              object_name: '@target_bus'
+              target:
+                strategy: bbox_ratio
+                object_name: '@container'
+                x_ratio_range:
+                - 0.35
+                - 0.65
+                y_ratio_range:
+                - 0.35
+                - 0.65
+          - type: stay
+    id: place_target
+    score: 4
+  - direct_task_generator:
+      definition:
+        gen_method: 0
+        episode_length_s: 180.0
+        num_episodes: 10
+        max_steps_per_episode: 5400
+        task_type: specific_position_return
+      component_sections:
+        termination_component:
+          terms:
+            mdp.time_out:
+              time_out: true
+            success:
+              _func: articulation_joints_near_default
+              asset_cfg: robot
+              atol: 0.4
+              consecutive_steps: 10
+        event_component:
+          terms:
+            mdp.reset_scene_to_default:
+              mode: reset
+              reset_joint_targets: true
+        metric_component:
+          terms:
+            success_rate: {}
+        viewer_component:
+          terms:
+            look_at_position:
+              lookat_position:
+              - 0.204651
+              - -0.268246
+              - -0.240423
+              offset:
+              - -1.0
+              - 0.0
+              - 1.5
+        scene_constraint_component:
+          constraints:
+          - mode: 0
+            tags: specific_position_scene
+        log_component:
+          entries:
+            progress:
+              trigger: success
+              value: return to home
+        planner_skills_component:
+          skills:
+          - type: home
+    id: return
+    score: 1
+  edges:
+  - src: place_target
+    dst: return

@@ -1,0 +1,120 @@
+definition:
+  scene_type: track_object_under_cup_scene
+  metadata:
+    name: ex001_6r_track_object_under_cup_vnext
+    source: track_object_under_cup/vnext
+    semantic_goal: Cover the dice with the target cup, swap the two cups once, lift
+      the cup that still covers the dice, then return home
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: cup_target
+  asset:
+    type: asset_id
+    id: cup_p
+  spawn_mass:
+  - 0.08
+  - 0.1
+  semantic_tags:
+  - pickable
+  - cup
+  - cup_target
+- id: cup_distractor
+  asset:
+    type: asset_id
+    id: cup_p
+  spawn_mass:
+  - 0.08
+  - 0.1
+  semantic_tags:
+  - pickable
+  - cup
+  - cup_distractor
+- id: hidden_object
+  asset:
+    type: asset_id
+    id: toy_dice
+  spawn_mass:
+  - 0.05
+  - 0.05
+  semantic_tags:
+  - hidden
+  - pickable
+layout:
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    cup_target:
+      object: cup_target
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.12
+          - 0.28
+          y:
+          - -0.42
+          - 0.34
+        orientation:
+        - 0.0
+        - 1.0
+        - 0.0
+        - 0.0
+    cup_distractor:
+      object: cup_distractor
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.12
+          - 0.28
+          y:
+          - -0.42
+          - 0.34
+        orientation:
+        - 0.0
+        - 1.0
+        - 0.0
+        - 0.0
+    hidden_object:
+      object: hidden_object
+      placement:
+        type: surface
+        surface: tabletop
+        ranges:
+          x:
+          - -0.12
+          - 0.28
+          y:
+          - -0.42
+          - 0.34
+        orientation:
+        - 0.0
+        - 0.0
+        - 0.0
+        - 1.0
+variants:
+  materialization: []
+  assignments: []

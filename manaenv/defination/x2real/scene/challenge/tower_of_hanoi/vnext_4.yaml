@@ -1,0 +1,229 @@
+definition:
+  scene_type: schema_vnext_tower_of_hanoi_4
+  seed: 42
+  metadata:
+    name: tower of hanoi 4
+    source: tower_of_hanoi
+    semantic_goal: Move the 4-ring tower from the left peg to the right peg following Hanoi rules
+render_settings:
+  gen_method: 0
+  tags: green_booth
+background:
+  id: booth
+  asset:
+    type: asset_id
+    id: green_booth_mesh
+  pose:
+    position:
+    - -0.452
+    - -0.271
+    - -0.985
+    orientation:
+    - 0.0
+    - 0.0
+    - -0.704
+    - 0.709
+  required_surfaces:
+  - tabletop
+objects:
+- id: peg_left
+  asset:
+    type: asset_id
+    id: peg_da
+  kinematic: true
+  semantic_tags:
+  - fixed
+  - peg
+  - peg_left
+  - source_peg
+- id: peg_mid
+  asset:
+    type: asset_id
+    id: peg_db
+  kinematic: true
+  semantic_tags:
+  - fixed
+  - peg
+  - peg_mid
+  - aux_peg
+- id: peg_right
+  asset:
+    type: asset_id
+    id: peg_dc
+  kinematic: true
+  semantic_tags:
+  - fixed
+  - peg
+  - peg_right
+  - destination
+- id: ring_a
+  asset:
+    type: asset_id
+    id: ring_fa
+  semantic_tags:
+  - pickable
+  - ring
+  - ring_size_a
+  - ring_largest
+- id: ring_b
+  asset:
+    type: asset_id
+    id: ring_fb
+  semantic_tags:
+  - pickable
+  - ring
+  - ring_size_b
+- id: ring_c
+  asset:
+    type: asset_id
+    id: ring_fc
+  semantic_tags:
+  - pickable
+  - ring
+  - ring_size_c
+- id: ring_d
+  asset:
+    type: asset_id
+    id: ring_fd
+  semantic_tags:
+  - pickable
+  - ring
+  - ring_size_d
+- id: ring_e
+  asset:
+    type: asset_id
+    id: ring_fe
+  semantic_tags:
+  - pickable
+  - ring
+  - ring_size_e
+  - ring_smallest
+layout:
+  seed: 42
+  surfaces:
+    tabletop:
+      type: ref
+      ref: background.tabletop
+  nodes:
+    peg_left:
+      object: peg_left
+    peg_mid:
+      object: peg_mid
+    peg_right:
+      object: peg_right
+    ring_a:
+      object: ring_a
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.2
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    ring_b:
+      object: ring_b
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.1
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    ring_c:
+      object: ring_c
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -1.0
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    ring_d:
+      object: ring_d
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.9
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+    ring_e:
+      object: ring_e
+      placement:
+        type: pose
+        poses:
+        - id: parked
+          position:
+          - -0.8
+          - 0.0
+          - -10.0
+          orientation:
+          - 0.0
+          - 0.0
+          - 0.0
+          - 1.0
+  groups:
+    pegs:
+      type: slot
+      nodes:
+      - peg_left
+      - peg_mid
+      - peg_right
+      slots:
+        left:
+          type: surface
+          surface: tabletop
+          ranges:
+            x: 0.05
+            y: -0.12
+          yaws: 0.0
+        mid:
+          type: surface
+          surface: tabletop
+          ranges:
+            x: 0.05
+            y: 0.0
+          yaws: 0.0
+        right:
+          type: surface
+          surface: tabletop
+          ranges:
+            x: 0.05
+            y: 0.12
+          yaws: 0.0
+      assignments:
+        mode: explicit
+        items:
+        - id: fixed_lmr
+          bindings:
+            peg_left: left
+            peg_mid: mid
+            peg_right: right
+      default_assignment: fixed_lmr
+variants:
+  materialization: []
+  assignments: []
