@@ -88,6 +88,7 @@
 | [Repository Structure](#repository-structure) | Key files and directories. |
 | [Outputs and Scoring](#outputs-and-scoring) | Reports, videos, and resume runs. |
 | [Release Scope](#release-scope) | Included release content. |
+| [Citation](#citation) | Cite the X2Real paper. |
 | [License](#license) | License status. |
 
 <a id="install-and-evaluation"></a>
@@ -232,6 +233,29 @@ Reports are indexed in `benchmark_report.json`. Process completion and task
 - Evaluation requires a compatible Policy Space v2 endpoint and registered ID cases.
 - Simulation assets and the [X2Real Dataset](https://huggingface.co/datasets/x-square-robot/X2Real-Dataset)
   are distributed separately; download assets from [X2Real assets](https://huggingface.co/datasets/x-square-robot/x2real-assets).
+
+<a id="citation"></a>
+
+## 📖 Citation
+
+If you use X2Real in your research, please cite our [paper](https://arxiv.org/abs/2609.27449):
+
+```bibtex
+@misc{ruan2026x2realextensivesimulationbenchmark,
+  title={X2Real: an eXtensive simulation benchmark for real-world generalist policies},
+  author={Lian Ruan and Jade Yang and Sherphylan Gao and Felix Gao and
+          Kyson Liang and Galen Liu and Ligo Wu and Lane Jin and Guu Gu and
+          Bevan Xie and Cloud Yan and Zongzi Yuan and Kino Luo and Emma Chen and
+          Shuwen Chen and Yang Ping and Miles Guo and Rain Sun and Kayden Zhang and
+          Alex Du and Ruihai Wu and Liang Hao and Zhaoshuo Li and Roy Gan and
+          Hao Wang and Qian Wang},
+  year={2026},
+  eprint={2609.27449},
+  archivePrefix={arXiv},
+  primaryClass={cs.RO},
+  url={https://arxiv.org/abs/2609.27449},
+}
+```
 
 <a id="acknowledgements"></a>
 

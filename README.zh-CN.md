@@ -80,6 +80,7 @@
 | [仓库结构](#repository-structure-zh) | 关键文件和目录。 |
 | [输出与评分](#outputs-and-scoring-zh) | 报告、视频和续跑。 |
 | [范围](#release-scope-zh) | 内容范围。 |
+| [论文引用](#citation-zh) | 引用 X2Real 论文。 |
 | [许可证](#license-zh) | 许可证状态。 |
 
 <a id="install-and-evaluation-zh"></a>
@@ -219,6 +220,29 @@ python manaenv/scripts/x2real_eval.py   --board artixon_arm6a_tabletop   --env a
 
 - 评测需要兼容的 Policy Space v2 端点和已注册的 ID case。
 - 仿真资产与 [X2Real 数据集](https://huggingface.co/datasets/x-square-robot/X2Real-Dataset) 单独分发；仿真资产请从 [X2Real 仿真资产](https://huggingface.co/datasets/x-square-robot/x2real-assets) 下载。
+
+<a id="citation-zh"></a>
+
+## 📖 论文引用
+
+研究中使用 X2Real 时，请引用我们的[论文](https://arxiv.org/abs/2609.27449)：
+
+```bibtex
+@misc{ruan2026x2realextensivesimulationbenchmark,
+  title={X2Real: an eXtensive simulation benchmark for real-world generalist policies},
+  author={Lian Ruan and Jade Yang and Sherphylan Gao and Felix Gao and
+          Kyson Liang and Galen Liu and Ligo Wu and Lane Jin and Guu Gu and
+          Bevan Xie and Cloud Yan and Zongzi Yuan and Kino Luo and Emma Chen and
+          Shuwen Chen and Yang Ping and Miles Guo and Rain Sun and Kayden Zhang and
+          Alex Du and Ruihai Wu and Liang Hao and Zhaoshuo Li and Roy Gan and
+          Hao Wang and Qian Wang},
+  year={2026},
+  eprint={2609.27449},
+  archivePrefix={arXiv},
+  primaryClass={cs.RO},
+  url={https://arxiv.org/abs/2609.27449},
+}
+```
 
 <a id="acknowledgements-zh"></a>
 
