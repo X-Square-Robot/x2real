@@ -219,37 +219,25 @@ python manaenv/scripts/x2real_eval.py   --board artixon_arm6a_tabletop   --env a
 
 <a id="manual-collection-zh"></a>
 
-## 人工遥操作数采
+## 🎮 人工遥操作数采
 
-在 ArtiXon Arm-6A 或 Quanta X1 的单个 ID 环境采集人工示范，无需策略服务。
-先发现任务、检查配置和资产，再预览命令；移除 `--dry-run` 后启动：
+通过键盘、Vuer/WebXR 或主从臂，在 ArtiXon Arm-6A 或 Quanta X1 的 ID 任务中
+采集人工示范，无需策略服务。
 
 ```bash
-python manaenv/scripts/x2real_collect.py --mode gendata --list
-python manaenv/scripts/x2real_collect.py --mode gendata --check
-python manaenv/scripts/x2real_collect.py --mode gendata --asset-check
 python manaenv/scripts/x2real_collect.py --mode gendata \
   --env artixon_arm6a_G_pick_fruits_into_basket_id_env \
   --teleop keyboard --num-demos 10 --seed 42 \
-  --save-path ./outputs/manual/fruits --dry-run
+  --save-path ./outputs/manual/fruits
 ```
 
-键盘模式需要 Kit 窗口。`B` 切换手臂／底盘，`W/S/A/D/Q/E` 移动，
-`Z/X/T/G/C/V` 旋转，`K` 切换夹爪开合。`Enter` 保存示范，`R` 丢弃并重置。
-可用 `--episode-length-s` 调整单次尝试的超时。
-Kit 数采会打开相机预览，并在已适配的 G 夹爪腕部画面显示夹尖准星。
-准星仅用于显示，不写入 HDF5 图像。设置 `MANAENV_EX001_6R_TIP_CROSSHAIR=0`
-可关闭准星；未标定的 H 夹爪资产自动跳过。Kit 的 `Sim FPS` 窗口会显示实测数采
-频率和单步耗时。`--viz none` 不打开预览或 FPS 窗口。
+键盘数采会打开 Kit 窗口，`Enter` 保存示范，`R` 丢弃并重置。
+`--num-demos` 统计已保存为 HDF5 的成功示范数。
+添加 `--dry-run` 可预览命令而不启动仿真。
 
-Vuer/WebXR 使用 `--teleop vuer`（或 `vr`），需在仿真环境安装可选依赖
-`python -m pip install -e '.[teleop-vr]'`。主从臂使用
-`--teleop masterslave --master-address <host> --master-port <port>`。
-这两种方式支持 `--viz none`。设备设置和消息格式见
+其他输入方式使用 `--teleop vuer` 或 `--teleop masterslave`。
+任务选择、设备配置、按键和数据检查见
 [gendata skill](.agents/skills/x2real-gendata/SKILL.md)。
-
-`--num-demos` 只统计已经保存的成功示范。HDF5 包含动作、观测、状态、相机图像和元数据。
-使用 `python manaenv/scripts/x2real_collect.py --inspect <saved-hdf5>` 检查输出。
 
 <a id="release-scope-zh"></a>
 

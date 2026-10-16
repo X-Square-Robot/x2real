@@ -231,42 +231,25 @@ Reports are indexed in `benchmark_report.json`. Process completion and task
 
 <a id="manual-collection"></a>
 
-## Manual collection
+## 🎮 Manual Collection
 
-Collect human demonstrations on one ArtiXon Arm-6A or Quanta X1 ID environment.
-No policy service is required. Discover cases, validate the setup, and preview
-the command before removing `--dry-run` to launch:
+Collect demonstrations on ArtiXon Arm-6A or Quanta X1 ID tasks with keyboard,
+Vuer/WebXR, or master-arm input. No policy service is required.
 
 ```bash
-python manaenv/scripts/x2real_collect.py --mode gendata --list
-python manaenv/scripts/x2real_collect.py --mode gendata --check
-python manaenv/scripts/x2real_collect.py --mode gendata --asset-check
 python manaenv/scripts/x2real_collect.py --mode gendata \
   --env artixon_arm6a_G_pick_fruits_into_basket_id_env \
   --teleop keyboard --num-demos 10 --seed 42 \
-  --save-path ./outputs/manual/fruits --dry-run
+  --save-path ./outputs/manual/fruits
 ```
 
-Keyboard input requires the Kit window. `B` selects the arm/base,
-`W/S/A/D/Q/E` moves it, `Z/X/T/G/C/V` rotates it, and `K` toggles the gripper.
-`Enter` saves a demonstration; `R` discards the attempt and resets.
-Use `--episode-length-s` to adjust the attempt timeout.
-Kit collection opens camera previews with gripper-tip crosshairs on supported
-G-jaw wrist views. The crosshairs are display-only and do not appear in HDF5
-images. Set `MANAENV_EX001_6R_TIP_CROSSHAIR=0` to hide them; the uncalibrated
-H-jaw asset skips them automatically. The Kit `Sim FPS` window shows measured
-collection rate and step time. `--viz none` opens no
-preview or FPS windows.
+Keyboard collection opens the Kit window. `Enter` saves; `R` discards and resets.
+`--num-demos` counts successful demonstrations saved as HDF5.
+Add `--dry-run` to preview the command without launching.
 
-Vuer/WebXR input uses `--teleop vuer` (or `vr`) and the optional
-`python -m pip install -e '.[teleop-vr]'` dependency. Master arms use
-`--teleop masterslave --master-address <host> --master-port <port>`.
-Both support `--viz none`. See the [gendata skill](.agents/skills/x2real-gendata/SKILL.md)
-for device setup and message formats.
-
-`--num-demos` counts saved successful demonstrations. Each HDF5 episode contains
-actions, observations, states, camera frames, and metadata. Inspect an output with
-`python manaenv/scripts/x2real_collect.py --inspect <saved-hdf5>`.
+Use `--teleop vuer` or `--teleop masterslave` for other input devices. See the
+[gendata skill](.agents/skills/x2real-gendata/SKILL.md) for task discovery,
+device setup, controls, and data inspection.
 
 <a id="release-scope"></a>
 

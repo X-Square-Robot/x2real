@@ -18,8 +18,8 @@ Run commands from the repository root. Read the collector's `--help`, its
 when it has another editable ManaEnv installed, pin `PYTHONPATH` to this checkout.
 
 Use the [README collection instructions](../../../README.md#manual-collection) or
-[Chinese instructions](../../../README.zh-CN.md#manual-collection-zh) for keyboard
-controls. Device setup is described below. Do not copy device addresses,
+[Chinese instructions](../../../README.zh-CN.md#manual-collection-zh) for a quick
+start. Device setup and controls are described below. Do not copy device addresses,
 private configuration, asset locations, or environment names from another checkout.
 
 Preserve the user's method, robot/board, case, gripper, demonstration target,
@@ -53,6 +53,10 @@ parallelism and episode-budget flags do not apply.
   Use `MANAENV_MASTER_TOKEN` when authentication is required; do not print or
   embed its value in commands or YAML. Do not start or replace the remote server
   as a side effect of composing a collection command.
+
+For keyboard input, `B` selects the arm/base, `W/S/A/D/Q/E` moves it,
+`Z/X/T/G/C/V` rotates it, and `K` toggles the gripper. `Enter` saves a
+demonstration; `R` discards the attempt and resets.
 
 For simulator installation or repair, use the repository's `$x2real-install`
 workflow. Retain the current asset-root setting or the repository asset default;
