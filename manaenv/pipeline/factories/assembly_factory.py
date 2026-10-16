@@ -399,6 +399,7 @@ class AssembledEnvironment:
         benchmark_video_output_dir: str | None = None,
         benchmark_video_fps: float = 20.0,
         benchmark_video_camera_order: tuple[str, ...] = tuple(),
+        collection_output_path: str | None = None,
     ):
         """Build the Gym environment used by the policy-evaluation loop.
 
@@ -477,6 +478,10 @@ class AssembledEnvironment:
             self._apply_task_runtime_env_overrides(env_cfg)
 
             self._apply_mode_overrides(env_cfg, mode=mode)
+            if collection_output_path:
+                from manaenv.pipeline.datacollection.recorder import configure_collection_recorder
+
+                configure_collection_recorder(env_cfg, output_path=collection_output_path)
             if benchmark_video_output_dir:
                 from manaenv.pipeline.evaluation.video_recorder import configure_benchmark_video_recorder
 
@@ -496,6 +501,10 @@ class AssembledEnvironment:
 
             self._gym_env = gym.make(env_name, cfg=env_cfg, **env_kwargs).unwrapped
             self._gym_env._mana_assembled_environment = self
+            if collection_output_path:
+                from manaenv.pipeline.datacollection.staging import install_collection_staging
+
+                install_collection_staging(getattr(self._gym_env, "recorder_manager", None))
             self._run_post_spawn_hooks()
             from manaenv.utils.asset_utils import install_kinematic_velocity_write_guards
 
@@ -669,7 +678,7 @@ class AssembledEnvironment:
         """Apply the small set of observation settings needed by evaluation."""
         if hasattr(env_cfg, "observations") and hasattr(env_cfg.observations, "policy"):
             env_cfg.observations.policy.concatenate_terms = False
-        if mode not in {"evaluate", "raw"}:
+        if mode not in {"evaluate", "raw", "collect"}:
             raise ValueError(f"unsupported public environment mode: {mode!r}")
 
     def _apply_task_runtime_env_overrides(self, env_cfg: Any) -> None:

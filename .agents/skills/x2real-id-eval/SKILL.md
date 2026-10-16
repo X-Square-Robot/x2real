@@ -111,7 +111,7 @@ The evaluator is headless by default, so omit visualization flags for the
 normal command. Choose an override only when the user requests a different mode:
 
 - Kit window: add `--viz kit`.
-- Explicit headless camera/video mode: `--headless --viz none` (optional and
+- Explicit headless camera/video mode: `--viz none` (optional and
   equivalent to the default).
 
 Do not add a separate recorder flag when the generated suite already retains

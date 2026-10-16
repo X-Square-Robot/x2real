@@ -728,8 +728,7 @@ def _build_main_argv(
         str(main_py),
         "--config",
         config_arg,
-        # The public pipeline CLI is evaluation-only and intentionally has no
-        # runtime ``--mode`` switch.  ID is enforced by this entry point and
+        # This evaluator emits policy-only suites. ID is enforced here;
         # benchmark output is declared by the generated suite itself.
         "--env-name",
         ",".join(env_names),

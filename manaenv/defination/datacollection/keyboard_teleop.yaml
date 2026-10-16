@@ -1,0 +1,5 @@
+planner:
+  KeyboardTeleopPlanner:
+    position_scale: 0.005
+    rotation_scale: 0.05
+    min_recorded_actions_for_export: 5

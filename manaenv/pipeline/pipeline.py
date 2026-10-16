@@ -1,4 +1,4 @@
-"""Evaluation-only ManaEnv pipeline."""
+"""Public ManaEnv pipeline for evaluation and manual demonstration collection."""
 
 from __future__ import annotations
 

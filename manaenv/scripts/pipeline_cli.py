@@ -1,4 +1,4 @@
-"""Command-line runtime for public policy evaluation."""
+"""Command-line runtime for public evaluation and manual demonstration collection."""
 
 from __future__ import annotations
 
@@ -113,7 +113,11 @@ def _build_parser() -> Any:
         parser.add_argument("--enable_cameras", action="store_true", default=False)
     if "seed" not in existing:
         parser.add_argument("--seed", type=int, default=None)
-    parser.add_argument("--config", required=True, help="Evaluation suite YAML")
+    parser.add_argument("--config", required=True, help="Evaluation or manual-collection suite YAML")
+    parser.add_argument(
+        "--mode", choices=("benchmark", "gendata"), default=None,
+        help="Select policy evaluation or manual collection orders",
+    )
     parser.add_argument("--env-name", default=None, help="Comma-separated rollout env_ref filter")
     parser.add_argument(
         "--policy-config",
@@ -137,6 +141,8 @@ def _build_parser() -> Any:
     args = parser.parse_args()
     if args.policy_config and not _parse_env_names(args.env_name):
         parser.error("--policy-config requires --env-name so it cannot replace the full suite accidentally")
+    if args.mode == "gendata" and args.policy_config:
+        parser.error("--policy-config is not applicable to manual --mode gendata")
     raw_visualizers = getattr(args, "visualizer", None)
     if isinstance(raw_visualizers, str):
         raw_visualizers = raw_visualizers.split(",")
@@ -229,11 +235,13 @@ def _configure_runtime(args: Any) -> None:
     from manaenv.pipeline.runtime import master_seed as master_seed_runtime
 
     master_seed_runtime.set_cli_seed_override(_explicit_cli_seed(args))
+    runtime_flags.set_value("mode", args.mode)
 
 
 def _run(args: Any) -> int:
     _bootstrap_isaac(args)
     from manaenv.pipeline.pipeline import ManaPipeline, ManaPipelineCFG
+    from manaenv.pipeline.factories.rollout_factory_cfg import select_rollout_orders
 
     selected = _parse_env_names(args.env_name)
     pipeline = ManaPipeline()
@@ -247,15 +255,21 @@ def _run(args: Any) -> int:
                 enable_cameras=True if args._robot_enable_cameras else None,
             )
         )
-        available = {str(order.env_ref) for order in pipeline.rollout_factory._orders}
+        active_orders = select_rollout_orders(pipeline.rollout_factory._orders, mode=args.mode)
+        available = {str(order.env_ref) for order in active_orders}
+        if not active_orders:
+            manaprint(f"ERROR: no rollout orders match --mode {args.mode}")
+            return 2
         missing = sorted((selected or set()) - available)
         if missing:
             manaprint(f"ERROR: unknown evaluation environment(s): {', '.join(missing)}")
             return 2
-        pipeline.warmup(env_refs=selected)
-        results = pipeline.run_rollout(env_name=selected)
+        active_names = selected or available
+        pipeline.warmup(env_refs=active_names)
+        results = pipeline.run_rollout(env_name=active_names)
         failures = [item for item in results if item.get("error")]
-        manaprint(f"INFO: evaluation complete: {len(results) - len(failures)} passed, {len(failures)} failed")
+        label = "collection" if results and all(item.get("mode") == "collection" for item in results) else "evaluation"
+        manaprint(f"INFO: {label} complete: {len(results) - len(failures)} passed, {len(failures)} failed")
         return 1 if failures else 0
     except KeyboardInterrupt:
         manaprint("INFO: evaluation interrupted")

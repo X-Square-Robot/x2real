@@ -1,4 +1,4 @@
-"""Typed output orders for the evaluation-only pipeline."""
+"""Typed benchmark and manual-dataset output orders for the public pipeline."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class OutputOrderCFG:
-    """One benchmark report and optional episode-video sink declaration."""
+    """One benchmark report, episode-video, or manual HDF5 sink declaration."""
 
     type: str = "benchmark"
     enabled: bool = True

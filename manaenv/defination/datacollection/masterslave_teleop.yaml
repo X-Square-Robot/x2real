@@ -1,0 +1,7 @@
+planner:
+  MasterSlaveTeleopPlanner:
+    remote_ip: "127.0.0.1"
+    remote_port: 5555
+    reconnect_interval: 2.0
+    debug: false
+    min_recorded_actions_for_export: 5

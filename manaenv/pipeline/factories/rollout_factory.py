@@ -1,4 +1,4 @@
-"""Policy-evaluation factory used by the public ManaEnv runtime."""
+"""Policy evaluation and manual-collection factory for the public runtime."""
 
 from __future__ import annotations
 
@@ -13,7 +13,12 @@ from manaenv.pipeline.artifacts.evaluation import EvalArtifact, failure_cases_fr
 from manaenv.pipeline.data_types import DataBucket
 from manaenv.pipeline.datacenter.export_spec import resolve_benchmark_report_dir
 from manaenv.pipeline.evaluation.rollout_loop import prepare_evaluation_loop
-from manaenv.pipeline.factories.rollout_factory_cfg import RolloutOrderCFG, RolloutOrdersCFG
+from manaenv.pipeline.factories.rollout_factory_cfg import (
+    MANUAL_PLANNERS,
+    RolloutOrderCFG,
+    RolloutOrdersCFG,
+    select_rollout_orders,
+)
 from manaenv.pipeline.factory import BaseFactory, BaseFactoryCFG
 from manaenv.pipeline.planners.planner_base import PlannerBase, PlannerCFG, create_planner, get_planner_class
 from manaenv.pipeline.runtime import runtime_flags
@@ -23,6 +28,10 @@ from manaenv.policy.policy_embodiment import PolicyEmbodimentCFG, bind_embodimen
 from manaenv.utils.config_io import create_config_from_dict_strict
 from manaenv.utils.debug_print import manaprint
 from manaenv.utils.gpu_capacity import resolve_num_parallel_envs
+
+
+def _planner_method(order: RolloutOrderCFG) -> str:
+    return type(order.planner).__name__.removesuffix("CFG")
 
 
 def _apply_episode_step_cap(gym_env: Any, max_steps: int) -> int:
@@ -95,7 +104,7 @@ class RolloutFactoryCFG(BaseFactoryCFG):
 
 
 class RolloutFactory(BaseFactory):
-    """Evaluate PolicyPlanner orders and write a benchmark report."""
+    """Run policy evaluations or manual collection with their selected output sinks."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -133,11 +142,17 @@ class RolloutFactory(BaseFactory):
 
     def _build_planner(self, environment: Any, order: RolloutOrderCFG) -> PlannerBase:
         if not isinstance(order.planner, PlannerCFG):
-            raise TypeError("Every public rollout order must declare a typed PolicyPlanner.")
+            raise TypeError("Every public rollout order must declare a typed planner.")
         cfg = copy.deepcopy(order.planner)
         method = type(cfg).__name__.removesuffix("CFG")
+        if method in MANUAL_PLANNERS:
+            planner_cls = get_planner_class(method)
+            if planner_cls is None:
+                raise RuntimeError(f"{method} implementation is unavailable")
+            cfg.class_type = planner_cls
+            return create_planner(cfg)
         if method != "PolicyPlanner":
-            raise ValueError(f"Public rollout supports PolicyPlanner only, got {method!r}.")
+            raise ValueError(f"Public rollout supports PolicyPlanner and manual teleoperation, got {method!r}.")
 
         policy_cfg = getattr(cfg, "policy_cfg", None)
         if isinstance(policy_cfg, dict):
@@ -179,6 +194,10 @@ class RolloutFactory(BaseFactory):
         selected = self._selected_env_names(env_name)
         environments = list(self.data_center.get(DataBucket.ENVIRONMENTS) or [])
         orders = [order for order in self._orders if selected is None or str(order.env_ref) in selected]
+        mode = runtime_flags.get_value("mode")
+        orders = select_rollout_orders(orders, mode=mode)
+        if mode is not None and not orders:
+            raise ValueError(f"No rollout orders match --mode {mode}; select a suite with the corresponding planner")
         self._results = []
         self._artifacts = []
 
@@ -196,7 +215,8 @@ class RolloutFactory(BaseFactory):
             for environment in matched:
                 manaprint(f"INFO: evaluation {index}/{len(orders)} start: {environment.name}")
                 try:
-                    result = self._run_evaluation(
+                    run = self._run_collection if _planner_method(order) in MANUAL_PLANNERS else self._run_evaluation
+                    result = run(
                         environment,
                         order,
                         external_gym_env=external_gym_env,
@@ -205,14 +225,49 @@ class RolloutFactory(BaseFactory):
                     manaprint(f"ERROR: evaluation failed for {environment.name}: {type(exc).__name__}: {exc}")
                     result = self._failed_order_result(environment, order, exc)
                 self._results.append(result)
-                self._artifacts.append(self._build_eval_artifact(result))
+                if result.get("mode") != "collection":
+                    self._artifacts.append(self._build_eval_artifact(result))
 
         if self._results:
-            self.data_center.store_benchmark_results(self._results)
+            evaluations = [item for item in self._results if item.get("mode") != "collection"]
+            collections = [item for item in self._results if item.get("mode") == "collection"]
+            self.data_center.store_benchmark_results(evaluations)
+            self.data_center.get(DataBucket.DATASETS).extend(collections)
             report_dir = resolve_benchmark_report_dir(self.data_center)
-            if report_dir is not None:
-                self._write_benchmark_report(self._results, report_dir, self._provenance(report_dir))
+            if report_dir is not None and evaluations:
+                self._write_benchmark_report(evaluations, report_dir, self._provenance(report_dir))
         return list(self._results)
+
+    def _run_collection(
+        self, environment: Any, order: RolloutOrderCFG, *, external_gym_env: Any = None,
+    ) -> dict[str, Any]:
+        from manaenv.pipeline.datacollection.teleop_loop import run_manual_collection
+        from manaenv.teleop_devices.differential_drive import DifferentialDriveKeyboardControllerCfg
+
+        output = self.data_center.get_order_cfg(DataBucket.DATASETS)
+        if output is None or not output.enabled:
+            raise ValueError("Manual collection requires enabled output: type: datagen with format: hdf5")
+        if order.num_parallel_envs != 1:
+            raise ValueError("Manual collection requires num_parallel_envs: 1")
+        if order.resume:
+            raise ValueError("Evaluation resume is not a manual-collection option")
+        if getattr(environment.embodiment, "name", None) == "ex001":
+            environment.embodiment.diff_drive_keyboard_controller_cfg = DifferentialDriveKeyboardControllerCfg(
+                mode_name="ex001_differential", linear_velocity=0.5, angular_velocity=2.0,
+                wheel_radius=0.078, wheel_track_width=0.48,
+            )
+        planner = self._build_planner(environment, order)
+        try:
+            if order.episode_length_s is not None:
+                environment.task.episode_length_s = float(order.episode_length_s)
+            if not planner.setup(environment, environment.task):
+                raise RuntimeError("Teleop planner setup failed")
+            return run_manual_collection(
+                environment, planner, output_dir=output.save_path, num_demos=order.num_demos or 1,
+                external_gym_env=external_gym_env,
+            )
+        finally:
+            planner.cleanup()
 
     @staticmethod
     def _selected_env_names(value: Any) -> set[str] | None:
@@ -578,8 +633,8 @@ class RolloutFactory(BaseFactory):
         return {
             "env_name": name,
             "instruction": environment.get_prompt() if environment is not None and hasattr(environment, "get_prompt") else "",
-            "actor": "PolicyPlanner",
-            "mode": "evaluation",
+            "actor": _planner_method(order),
+            "mode": "collection" if _planner_method(order) in MANUAL_PLANNERS else "evaluation",
             "num_episodes": 0,
             "success_count": 0,
             "num_frames": 0,

@@ -32,6 +32,7 @@ class DataBucket(Enum):
     POLICY_CFGS = "policy_cfgs"
     POLICIES = "policies"
     BENCHMARKS = "benchmarks"
+    DATASETS = "datasets"
 
     def new_container(self) -> list:
         """Create the empty list container for this bucket."""

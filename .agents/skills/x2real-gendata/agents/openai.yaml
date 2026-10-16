@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run X2Real Manual Gendata"
+  short_description: "Select and launch manual X2Real data collection"
+  default_prompt: "Use $x2real-gendata to select, validate, and run manual X2Real collection with --mode gendata from this repository."

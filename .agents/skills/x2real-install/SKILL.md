@@ -23,6 +23,9 @@ bash ./install.sh --help
   `main` checkout, and editable ManaEnv/source installs.
 - `README.md` and `README.zh-CN.md` describe the supported workflow.
 - `pyproject.toml` declares the Python and direct-package requirements.
+- `manaenv/scripts/x2real_runtime_wheels.py` owns the tested Isaac Sim dependency
+  profile. See [runtime dependency profile](#runtime-dependency-profile) when
+  diagnosing conflicting pins.
 
 Run `install.py` directly only for a source-level diagnostic the shell installer cannot
 express. Normal installations go through `install.sh`.
@@ -124,6 +127,30 @@ Retain the installer's final verification unless the user explicitly accepts the
 Import and catalog checks do not establish Kit startup, camera rendering, physics, or
 model inference. Run a Kit smoke test or X2Real episode only when the user requests
 that separate runtime validation.
+
+## Runtime dependency profile
+
+The installer creates explicitly versioned `+x2real.1` core/kernel wheels from
+NVIDIA originals, verifies unchanged runtime payloads, and preserves source hashes
+inside `MANAENV_COMPAT.json`. Report these as downstream compatibility builds.
+Treat a failing raw `pip check` as an unresolved installation failure; the local
+profile is encoded in the wheels rather than filtered out of the check output.
+
+`manaenv/scripts/x2real_runtime_wheels.py` pins the SHA-256 hashes of NVIDIA's
+CPython 3.12 / Linux x86-64 originals and the seven revised dependency declarations.
+It retains runtime files and licenses, rebuilds `RECORD`, and refuses unexpected
+upstream requirements or locally modified payloads. Wheels are cached under
+`$XDG_CACHE_HOME/manaenv/isaacsim-x2real` (default `~/.cache`), overridable with
+`MANAENV_RUNTIME_WHEEL_CACHE`.
+
+Preview or repair an existing environment without recreating it or updating
+simulation sources:
+
+```bash
+<target-python> -P manaenv/scripts/x2real_runtime_wheels.py --dry-run
+bash ./install.sh --python <target-python> --skip-sources
+<target-python> -m pip check
+```
 
 ## Diagnose at the failing boundary
 

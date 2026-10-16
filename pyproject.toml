@@ -1,14 +1,15 @@
 [project]
 name = "manaenv"
 version = "0.9.0"
-description = "ManaEnv public task-evaluation runtime for Isaac Sim and IsaacLab"
+description = "ManaEnv public evaluation and manual demonstration collection for Isaac Sim and IsaacLab"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 # Isaac Sim 6.0.1.0 remains an external pip prerequisite; install.sh prepares
 # the Newton, IsaacLab, and Arena publication sources. Keep this list limited
-# to packages imported directly by ManaEnv's evaluation and policy transport
+# to packages imported directly by ManaEnv's evaluation, manual collection, and policy transport
 # surfaces.
 dependencies = [
+    "h5py>=3.11",
     "msgpack>=1.1.2",
     "msgpack-numpy>=0.4.8",
     "numpy>=2,<3",
@@ -20,8 +21,12 @@ dependencies = [
     "websockets>=14,<17",
 ]
 
+[project.optional-dependencies]
+teleop-vr = ["vuer>=0.1,<0.2"]
+
 [project.scripts]
 manaenv-x2real = "manaenv.scripts.x2real_eval:main"
+manaenv-x2real-collect = "manaenv.scripts.x2real_collect:main"
 
 [build-system]
 requires = ["hatchling"]

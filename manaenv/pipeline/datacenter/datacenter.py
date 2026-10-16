@@ -1,4 +1,4 @@
-"""Small in-memory product store used by the public evaluation pipeline."""
+"""In-memory products and artifact locations for the public pipeline."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterable, List
 
 from manaenv.pipeline.data_types import DataBucket
 from manaenv.pipeline.datacenter.database import DataBase
-from manaenv.pipeline.datacenter.export_spec import BenchmarkExportCFG
+from manaenv.pipeline.datacenter.export_spec import BenchmarkExportCFG, DatasetExportCFG
 from manaenv.pipeline.datacenter.output_orders import OutputOrderCFG, OutputOrdersCFG
 from manaenv.utils.debug_print import manaprint
 
@@ -53,8 +53,14 @@ class DataCenter(DataBase):
             if not isinstance(raw, OutputOrderCFG):
                 raise TypeError(f"unsupported output order: {type(raw).__name__}")
             kind = str(raw.type or "benchmark").strip().lower()
+            if kind == "datagen":
+                self.set_order_cfg(
+                    DataBucket.DATASETS,
+                    DatasetExportCFG(enabled=raw.enabled, save_path=raw.save_path, format=raw.format or "hdf5"),
+                )
+                continue
             if kind not in {"benchmark", "evaluation", "report"}:
-                raise ValueError(f"public evaluation accepts only benchmark output, got {raw.type!r}")
+                raise ValueError(f"unsupported public output type: {raw.type!r}")
             cfg = BenchmarkExportCFG(
                 enabled=raw.enabled,
                 save_path=raw.save_path,
@@ -96,14 +102,24 @@ class DataCenter(DataBase):
 
     # Report sink -----------------------------------------------------
     def save(self, buckets: list[DataBucket] | None = None, prefix: str | None = None) -> Dict[str, List[str]]:
-        """Return report paths already produced by the evaluation runner."""
+        """Return report and dataset paths already produced by the runners."""
         selected = buckets or [DataBucket.BENCHMARKS]
+        if buckets is None and self.get(DataBucket.DATASETS):
+            selected = [*selected, DataBucket.DATASETS]
         paths: list[str] = []
         for item in self.get(DataBucket.BENCHMARKS):
             path = item.get("evaluation_report_path") if isinstance(item, dict) else None
             if path:
                 paths.append(str(path))
-        return {bucket.value: paths for bucket in selected if bucket is DataBucket.BENCHMARKS}
+        result = {bucket.value: paths for bucket in selected if bucket is DataBucket.BENCHMARKS}
+        if DataBucket.DATASETS in selected:
+            result[DataBucket.DATASETS.value] = [
+                str(artifact["path"])
+                for item in self.get(DataBucket.DATASETS)
+                for artifact in item.get("datasets", [])
+                if artifact.get("path")
+            ]
+        return result
 
     def clear(self) -> None:
         self.reset_storage()

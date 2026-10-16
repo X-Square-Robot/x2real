@@ -420,6 +420,7 @@ def _install_editables(
                 command.extend(("--editable", target))
             installer.run(*command)
     installer.run(python, "-m", "pip", "install", "--editable", ROOT)
+    installer.run(python, "-P", ROOT / "manaenv/scripts/x2real_runtime_wheels.py", "--install")
 
 
 def _verify_install(
@@ -479,6 +480,7 @@ print("ManaEnv publication source install: OK")
         ],
         check=True,
     )
+    subprocess.run([str(python), "-m", "pip", "check"], check=True)
 
 
 def _parser() -> argparse.ArgumentParser:

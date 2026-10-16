@@ -52,8 +52,8 @@
 
 <p align="center"><em>Mana 系统概览。Physical DSL 通过两个迭代循环连接任务设计、环境编译、策略 rollout 与轨迹评测。</em></p>
 
-> X2Real **仅用于评测**。ManaEnv 负责环境构建、机器人控制、任务执行、
-> 评分和结果产物；Policy Space v2 服务在独立运行环境中保留模型依赖与策略推理。
+> X2Real 提供 ID 评测和人工示范数采。ManaEnv 负责环境构建、机器人控制、任务执行、
+> 评分和结果产物；Policy Space v2 服务独立运行策略推理。键盘、Vuer/WebXR 和主从臂数采无需策略服务。
 
 - 🎯 **忠实的仿真—实机评测** — 通过视觉、物理与底层控制标定对齐仿真和真实机器人；
   论文在所报告的实验设置下得到 `0.84` 的仿真—实机评测分数线性相关系数。
@@ -79,6 +79,7 @@
 | [评测套件](#evaluation-suite-zh) | Board 和 ID case 数量。 |
 | [仓库结构](#repository-structure-zh) | 关键文件和目录。 |
 | [输出与评分](#outputs-and-scoring-zh) | 报告、视频和续跑。 |
+| [人工遥操作数采](#manual-collection-zh) | 键盘、Vuer/WebXR、主从臂与 HDF5 示范数据。 |
 | [范围](#release-scope-zh) | 内容范围。 |
 | [论文引用](#citation-zh) | 引用 X2Real 论文。 |
 | [许可证](#license-zh) | 许可证状态。 |
@@ -106,6 +107,8 @@ source ./install.sh
 
 - 创建或激活 `manaenv` Conda 环境。
 - 安装轻量的 `policy-space-protocol` 客户端。
+- 按 [X2Real 依赖配置](.agents/skills/x2real-install/SKILL.md#runtime-dependency-profile) 构建可追溯的本地 Isaac Sim
+  兼容 wheel，并要求 `pip check` 通过。
 
 ### 2. 准备本地资产
 
@@ -214,11 +217,47 @@ python manaenv/scripts/x2real_eval.py   --board artixon_arm6a_tabletop   --env a
 
 报告路径记录在 `benchmark_report.json`。进程完成与任务 `success=true` 是两个不同信号。
 
+<a id="manual-collection-zh"></a>
+
+## 人工遥操作数采
+
+在 ArtiXon Arm-6A 或 Quanta X1 的单个 ID 环境采集人工示范，无需策略服务。
+先发现任务、检查配置和资产，再预览命令；移除 `--dry-run` 后启动：
+
+```bash
+python manaenv/scripts/x2real_collect.py --mode gendata --list
+python manaenv/scripts/x2real_collect.py --mode gendata --check
+python manaenv/scripts/x2real_collect.py --mode gendata --asset-check
+python manaenv/scripts/x2real_collect.py --mode gendata \
+  --env artixon_arm6a_G_pick_fruits_into_basket_id_env \
+  --teleop keyboard --num-demos 10 --seed 42 \
+  --save-path ./outputs/manual/fruits --dry-run
+```
+
+键盘模式需要 Kit 窗口。`B` 切换手臂／底盘，`W/S/A/D/Q/E` 移动，
+`Z/X/T/G/C/V` 旋转，`K` 切换夹爪开合。`Enter` 保存示范，`R` 丢弃并重置。
+可用 `--episode-length-s` 调整单次尝试的超时。
+Kit 数采会打开相机预览，并在已适配的 G 夹爪腕部画面显示夹尖准星。
+准星仅用于显示，不写入 HDF5 图像。设置 `MANAENV_EX001_6R_TIP_CROSSHAIR=0`
+可关闭准星；未标定的 H 夹爪资产自动跳过。Kit 的 `Sim FPS` 窗口会显示实测数采
+频率和单步耗时。`--viz none` 不打开预览或 FPS 窗口。
+
+Vuer/WebXR 使用 `--teleop vuer`（或 `vr`），需在仿真环境安装可选依赖
+`python -m pip install -e '.[teleop-vr]'`。主从臂使用
+`--teleop masterslave --master-address <host> --master-port <port>`。
+这两种方式支持 `--viz none`。设备设置和消息格式见
+[gendata skill](.agents/skills/x2real-gendata/SKILL.md)。
+
+`--num-demos` 只统计已经保存的成功示范。HDF5 包含动作、观测、状态、相机图像和元数据。
+使用 `python manaenv/scripts/x2real_collect.py --inspect <saved-hdf5>` 检查输出。
+
 <a id="release-scope-zh"></a>
 
 ## ⚖️ 范围
 
 - 评测需要兼容的 Policy Space v2 端点和已注册的 ID case。
+- 人工数采支持 ArtiXon Arm-6A、Quanta X1，提供键盘、Vuer/WebXR 和 WebSocket
+  主从臂输入与本地 HDF5 导出，详见[操作说明](#manual-collection-zh)和[公开范围](OPEN_SOURCE_SCOPE.md)。
 - 仿真资产与 [X2Real 数据集](https://huggingface.co/datasets/x-square-robot/X2Real-Dataset) 单独分发；仿真资产请从 [X2Real 仿真资产](https://huggingface.co/datasets/x-square-robot/x2real-assets) 下载。
 
 <a id="citation-zh"></a>

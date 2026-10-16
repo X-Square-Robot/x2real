@@ -52,10 +52,10 @@
 
 <p align="center"><em>Mana system overview. Physical DSL connects task design, environment compilation, policy rollout, and trajectory evaluation in two iterative loops.</em></p>
 
-> X2Real is **evaluation-only** in this release. ManaEnv owns environment
-> construction, robot control, task execution, scoring, and result artifacts;
-> Policy Space v2 services keep model dependencies and policy inference in
-> separate runtimes.
+> X2Real provides ID evaluation and manual demonstration collection. ManaEnv
+> owns environment construction, robot control, task execution, scoring, and
+> result artifacts; Policy Space v2 services run policy inference separately.
+> Keyboard, Vuer/WebXR, and master-arm collection run without a policy service.
 
 - 🎯 **Faithful sim-to-real evaluation** — visual, physical, and low-level
   control calibration; the technical report records a `0.84` linear
@@ -87,6 +87,7 @@
 | [Evaluation Suite](#evaluation-suite) | Boards and ID-case counts. |
 | [Repository Structure](#repository-structure) | Key files and directories. |
 | [Outputs and Scoring](#outputs-and-scoring) | Reports, videos, and resume runs. |
+| [Manual Collection](#manual-collection) | Keyboard, Vuer/WebXR, master arms, and HDF5 demonstrations. |
 | [Release Scope](#release-scope) | Included release content. |
 | [Citation](#citation) | Cite the X2Real paper. |
 | [License](#license) | License status. |
@@ -114,6 +115,8 @@ The installer:
 
 - Creates or activates the `manaenv` Conda environment.
 - Installs the lightweight `policy-space-protocol` client.
+- Builds traceable local Isaac Sim compatibility wheels for the
+  [X2Real dependency profile](.agents/skills/x2real-install/SKILL.md#runtime-dependency-profile) and verifies `pip check`.
 
 ### 2. Prepare local assets
 
@@ -226,11 +229,53 @@ python manaenv/scripts/x2real_eval.py   --board artixon_arm6a_tabletop   --env a
 Reports are indexed in `benchmark_report.json`. Process completion and task
 `success=true` are separate signals.
 
+<a id="manual-collection"></a>
+
+## Manual collection
+
+Collect human demonstrations on one ArtiXon Arm-6A or Quanta X1 ID environment.
+No policy service is required. Discover cases, validate the setup, and preview
+the command before removing `--dry-run` to launch:
+
+```bash
+python manaenv/scripts/x2real_collect.py --mode gendata --list
+python manaenv/scripts/x2real_collect.py --mode gendata --check
+python manaenv/scripts/x2real_collect.py --mode gendata --asset-check
+python manaenv/scripts/x2real_collect.py --mode gendata \
+  --env artixon_arm6a_G_pick_fruits_into_basket_id_env \
+  --teleop keyboard --num-demos 10 --seed 42 \
+  --save-path ./outputs/manual/fruits --dry-run
+```
+
+Keyboard input requires the Kit window. `B` selects the arm/base,
+`W/S/A/D/Q/E` moves it, `Z/X/T/G/C/V` rotates it, and `K` toggles the gripper.
+`Enter` saves a demonstration; `R` discards the attempt and resets.
+Use `--episode-length-s` to adjust the attempt timeout.
+Kit collection opens camera previews with gripper-tip crosshairs on supported
+G-jaw wrist views. The crosshairs are display-only and do not appear in HDF5
+images. Set `MANAENV_EX001_6R_TIP_CROSSHAIR=0` to hide them; the uncalibrated
+H-jaw asset skips them automatically. The Kit `Sim FPS` window shows measured
+collection rate and step time. `--viz none` opens no
+preview or FPS windows.
+
+Vuer/WebXR input uses `--teleop vuer` (or `vr`) and the optional
+`python -m pip install -e '.[teleop-vr]'` dependency. Master arms use
+`--teleop masterslave --master-address <host> --master-port <port>`.
+Both support `--viz none`. See the [gendata skill](.agents/skills/x2real-gendata/SKILL.md)
+for device setup and message formats.
+
+`--num-demos` counts saved successful demonstrations. Each HDF5 episode contains
+actions, observations, states, camera frames, and metadata. Inspect an output with
+`python manaenv/scripts/x2real_collect.py --inspect <saved-hdf5>`.
+
 <a id="release-scope"></a>
 
 ## ⚖️ Release Scope
 
 - Evaluation requires a compatible Policy Space v2 endpoint and registered ID cases.
+- Manual collection supports ArtiXon Arm-6A and Quanta X1 with keyboard,
+  Vuer/WebXR, or WebSocket master-arm input and local HDF5 output. See the
+  [instructions](#manual-collection) and [public scope](OPEN_SOURCE_SCOPE.md).
 - Simulation assets and the [X2Real Dataset](https://huggingface.co/datasets/x-square-robot/X2Real-Dataset)
   are distributed separately; download assets from [X2Real assets](https://huggingface.co/datasets/x-square-robot/x2real-assets).
 

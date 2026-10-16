@@ -42,6 +42,8 @@ assets/*
 *.log
 logs/
 doc/build/
+# Local Markdown notes; public usage belongs in README and repository skills.
+/docs/**/*.md
 
 # ── OS artifacts ───────────────────────────────────────────────
 .DS_Store
@@ -53,7 +55,6 @@ Thumbs.db
 # ── Project-specific ───────────────────────────────────────────
 _repo
 /.githooks/
-/OPEN_SOURCE_SCOPE.md
 packages/environment/src/mana_environment/py.typed
 .tmp_*
 tmp/
@@ -123,6 +124,8 @@ AFFORDANCE_INTEGRATION.md
 .agents/skills/*
 !.agents/skills/x2real-id-eval/
 !.agents/skills/x2real-id-eval/**
+!.agents/skills/x2real-gendata/
+!.agents/skills/x2real-gendata/**
 !.agents/skills/x2real-install/
 !.agents/skills/x2real-install/**
 !.agents/skills/policy-service/
@@ -148,6 +151,7 @@ tools/
 # Generated validation outputs and smoke-test config copies.
 /outputs/
 manaenv/defination/_x2real_eval_*.yaml
+manaenv/defination/_x2real_collect_*.yaml
 
 # local MCP config (generated per-environment by install_agent_tools.py, not repo-owned)
 .mcp.json

@@ -1,0 +1,21 @@
+# Browser-based Vuer/WebXR controller input with direct end-effector IK.
+planner:
+  VRTeleopPlanner:
+    gen_method: 0
+    input_backend: vuer
+    disable_all_cameras_in_vr: false
+    vuer_host: "127.0.0.1"
+    vuer_port: 8012
+    vuer_apply_xr_anchor: false
+    vuer_use_delta_targets: true
+    vuer_delta_position_axes: ["-z", "-x", "y"]
+    vuer_delta_rotation_mode: controller
+    use_motion_controller_buttons: true
+    motion_controller_left_x_starts_teleop: true
+    motion_controller_left_y_marks_success: true
+    motion_controller_right_a_resets_episode: true
+    use_motion_controller_base: true
+    enable_visualization: false
+    visualize_target_positions: false
+    visualize_commanded_target_positions: false
+    min_recorded_actions_for_export: 5

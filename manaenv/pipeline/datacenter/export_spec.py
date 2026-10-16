@@ -39,6 +39,24 @@ class BenchmarkExportCFG:
         self.record_video = bool(self.record_video)
 
 
+@dataclass
+class DatasetExportCFG:
+    """Local HDF5 destination for manual demonstrations."""
+
+    enabled: bool = True
+    save_path: str | None = None
+    format: str = "hdf5"
+
+    def __post_init__(self) -> None:
+        if self.format != "hdf5":
+            raise ValueError("Manual collection exports format: hdf5")
+        if not self.save_path:
+            raise ValueError("datagen output requires an explicit save_path")
+        if "://" in str(self.save_path):
+            raise ValueError("datagen output requires a local save_path")
+        self.save_path = os.path.expanduser(os.path.expandvars(str(self.save_path)))
+
+
 def resolve_benchmark_report_dir(data_center: Any) -> str | None:
     """Return the local report directory when the benchmark sink is enabled."""
 
@@ -53,4 +71,4 @@ def resolve_benchmark_report_dir(data_center: Any) -> str | None:
     return os.path.expanduser(os.path.expandvars(str(save_path)))
 
 
-__all__ = ["BenchmarkExportCFG", "resolve_benchmark_report_dir"]
+__all__ = ["BenchmarkExportCFG", "DatasetExportCFG", "resolve_benchmark_report_dir"]

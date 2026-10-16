@@ -487,6 +487,10 @@ print("ManaEnv publication install: OK")
         print_error 'Publication import verification failed.'
         return 1
     }
+    "$python_bin" -m pip check || {
+        print_error 'Publication dependency verification failed.'
+        return 1
+    }
 }
 
 print_plan() {
@@ -507,6 +511,7 @@ ManaEnv publication install plan
   Isaac Sim install:    pip / NVIDIA 6.0.1.0
   Policy Space branch:  main (protocol package installed)
   Isaac Sim package:    $MANAENV_ISAACSIM_VERSION (NVIDIA pip index)
+  Core/kernel wheels:   local X2Real dependency profile (runtime payloads verified)
   Optional policies:    not installed
 EOF
 }
