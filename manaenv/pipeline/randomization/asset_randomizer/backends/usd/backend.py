@@ -49,6 +49,16 @@ def _require_pxr() -> tuple[Any, Any]:
     return UsdShade, Sdf
 
 
+def _anchor_asset_paths(value: Any) -> Any:
+    """Keep source-layer asset locations when authoring values into another layer."""
+    _, Sdf = _require_pxr()
+    if isinstance(value, Sdf.AssetPath):
+        return Sdf.AssetPath(value.resolvedPath or value.path)
+    if isinstance(value, Sdf.AssetPathArray):
+        return Sdf.AssetPathArray([_anchor_asset_paths(item) for item in value])
+    return value
+
+
 class UsdSceneBackend:
     def __init__(
         self,
@@ -1248,12 +1258,12 @@ class UsdSceneBackend:
                 attr_name,
                 source_attr.GetTypeName(),
                 variability=source_attr.GetVariability(),
-            ).Set(value)
+            ).Set(_anchor_asset_paths(value))
         for shader_input in source_shader.GetInputs():
             clone_input = clone_shader.CreateInput(shader_input.GetBaseName(), shader_input.GetTypeName())
             value = shader_input.Get()
             if value is not None:
-                clone_input.Set(value)
+                clone_input.Set(_anchor_asset_paths(value))
             connections = shader_input.GetAttr().GetConnections()
             if connections:
                 clone_input.GetAttr().SetConnections(connections)
