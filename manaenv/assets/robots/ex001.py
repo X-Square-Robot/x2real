@@ -49,7 +49,6 @@ from manaenv.assets.robots.ex001_6r import (
 )
 from manaenv.assets.robots.ex001_6r import _resolve_ik_urdf_paths as _resolve_ex001_arm_ik_urdf_paths
 from manaenv.assets.sensors.async_camera import ManaAsyncCamera
-from manaenv.assets.sensors.ex001_chassis_front_camera import EX001_CHASSISFRONT_PINHOLE_DEPTH_CAMERA_CFG
 from manaenv.assets.sensors.ex001_head_front_camera import EX001_HEADFRONT_PINHOLE_COLOR_CAMERA_CFG
 from manaenv.assets.sensors.ex001_imu import EX001_IMU_CFG
 from manaenv.assets.sensors.ex001_left_gripper_camera import EX001_LEFTGRIPPER_FISHEYE_CAMERA_CFG
@@ -119,16 +118,15 @@ class EX001Embodiment(EmbodimentBase):
                 ),
             ),
             prim_path="{ENV_REGEX_NS}/Robot",
-            # Mirror USD authored joint state (ex001 v00.05.05: lift 0.379 m,
-            # head_pitch -28.65 deg = -0.5 rad). Isaac Lab zeros unspecified
-            # init_state.joint_pos, which otherwise drops the USD defaults on
-            # reset_scene_to_default (P10D1/B1). Not a runtime joint-map event.
+            # Match the mobile data-collection home: lift 0.379 m and head
+            # pitch -15 degrees. USD angular targets use degrees; Isaac Lab
+            # init_state uses radians and zeros unspecified joints on reset.
             init_state=ArticulationCfg.InitialStateCfg(
                 pos=(0.0, 0.0, 0.0),
                 rot=(0.0, 0.0, 0.0, 1.0),
                 joint_pos={
                     "lift_joint": 0.379,
-                    "head_pitch_joint": -0.5,
+                    "head_pitch_joint": -0.2617993877991494,
                 },
             ),
             actuators={
@@ -224,6 +222,8 @@ class EX001Embodiment(EmbodimentBase):
     class CameraCfg(ArenaCameraCfg):
         _use_tiled_camera: ClassVar[bool] = False
 
+        # The mobile policy uses three RGB views. Enabling chassis depth
+        # alongside these cameras can leave all three RGB outputs black.
         left_wrist_camera: CameraCfg = EX001_LEFTGRIPPER_FISHEYE_CAMERA_CFG.replace(
             prim_path=EX001_PATHS.left_gripper,
             update_period=0.0333,
@@ -236,11 +236,6 @@ class EX001Embodiment(EmbodimentBase):
         )
         head_camera: CameraCfg = EX001_HEADFRONT_PINHOLE_COLOR_CAMERA_CFG.replace(
             prim_path=EX001_PATHS.head_front_color,
-            update_period=0.0333,
-            class_type=ManaAsyncCamera,
-        )
-        chassis_camera: CameraCfg = EX001_CHASSISFRONT_PINHOLE_DEPTH_CAMERA_CFG.replace(
-            prim_path=EX001_PATHS.chassis_front_depth,
             update_period=0.0333,
             class_type=ManaAsyncCamera,
         )
@@ -568,14 +563,6 @@ class EX001Embodiment(EmbodimentBase):
                 params={
                     "sensor_cfg": SceneEntityCfg("head_camera"),
                     "data_type": "rgb",
-                    "normalize": False,
-                },
-            )
-            chassis_cam = ObsTerm(
-                func=mdp.image,
-                params={
-                    "sensor_cfg": SceneEntityCfg("chassis_camera"),
-                    "data_type": "depth",
                     "normalize": False,
                 },
             )
