@@ -63,6 +63,8 @@ wire_pose_reference: init_ee_pose
 # for the same simulator embodiment. The policy-level ``action_mode`` selects
 # this override before the environment is built. EX001-6R's JointActionsCfg is
 # 14-D: six joint targets and one gripper target for each arm.
+# The 26-D Policy Space joint wire includes 12 master-EE recording channels.
+# PolicySpaceImpl selects the 14 physical targets for this simulator layout.
 metadata:
     # Gripper columns of the 14-D wire, for policies that declare
     # ``gripper_convention: normalized_01`` in their deploy.yaml metadata. Indices
@@ -86,10 +88,8 @@ metadata:
             slot_layout:
                 action:
                     joint_pos: [0, 14]
-            # DreamZero predicts relative joint deltas. Keep its stable wire
-            # names while sourcing them from the simulator's actual joint
-            # observations; the default follow1/follow2 terms above are WallX
-            # end-effector position + Euler observations and are not joints.
+            # Joint-position policies consume simulator joint observations
+            # under the stable follow1/follow2 wire names.
             obs_field_map:
                 follow1_pos: follow_left_joint_pos
                 follow2_pos: follow_right_joint_pos
