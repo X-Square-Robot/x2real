@@ -26,6 +26,7 @@ from isaaclab_arena.terms.events import set_object_pose as _arena_set_object_pos
 from isaaclab_arena.terms.events import set_object_pose_per_env as _arena_set_object_pose_per_env
 from isaaclab_arena.utils.pose import Pose
 
+from manaenv.assets.resolver import is_asset_reference, resolve_asset_path
 from manaenv.pipeline.generators.scene_layout_solver.manaenv_bridge.runtime_events import apply_runtime_slot_activation
 from manaenv.pipeline.runtime.log_store import write_committed
 from manaenv.terms.attribute_instruction import compose_attribute_instruction_with_confusion
@@ -2718,6 +2719,8 @@ _ATTRIBUTE_CATALOG_CACHE_ATTR = "_mana_attribute_catalog_cache"
 
 def _resolve_definition_path(path_text: str) -> Path:
     """Resolve a defination-relative asset path the same way the vNext parser does."""
+    if is_asset_reference(path_text):
+        return resolve_asset_path(path_text)
     path = Path(str(path_text)).expanduser()
     if path.is_absolute():
         return path

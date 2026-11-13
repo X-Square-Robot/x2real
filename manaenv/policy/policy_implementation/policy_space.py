@@ -952,10 +952,8 @@ class PolicySpaceImpl(PolicyImplementationBase):
         if not np.isfinite(arr).all():
             raise RuntimeError("PolicySpace actions exceed the finite float32 range")
 
-        # Convert before decoding: EEAbsoluteIKTransform copies the wire gripper
-        # column into the sim action verbatim, and the joint path passes the whole
-        # row through, so this is the last point where the gripper channel is still
-        # identifiable by index.
+        # Convert while gripper columns still use wire indices, before the EE
+        # transform or joint-channel selection.
         if self._gripper_conversion_active():
             assert self._gripper_limits is not None
             arr = gripper_convention.convert_wire_actions(
@@ -966,6 +964,11 @@ class PolicySpaceImpl(PolicyImplementationBase):
 
         if self._ee_transform is not None:
             return self._decode_ee(arr, env, env_idx)
+
+        # The 26-D joint wire appends master-EE recording channels to 14 joint targets.
+        # Desktop's action manager consumes the physical targets.
+        if self.action_dim == 14 and arr.shape[1] == 26:
+            arr = arr[:, : self.action_dim]
 
         chunk = torch.as_tensor(arr, dtype=torch.float32)
         device = getattr(env, "device", "cpu") if env else "cpu"

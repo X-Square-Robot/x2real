@@ -75,7 +75,7 @@ def _dual_ee_contract(name: str, *, policy_space: bool) -> PolicyEmbodimentCFG:
             "gripper_state_indices": {"follow1_pos": 6, "follow2_pos": 6},
             "action_mode_layouts": {
                 "joint_position": {
-                    "action_dim": 26,
+                    "action_dim": 14,
                     "action_field_map": {"action[0:14]": "joint_action"},
                     "slot_layout": {"action": {"joint_pos": [0, 14]}},
                     "obs_field_map": {
