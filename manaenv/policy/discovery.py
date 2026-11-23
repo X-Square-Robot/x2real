@@ -22,6 +22,7 @@ _POLICY_SYMBOLS: dict[str, str] = {
     # client.wire_interceptors.
     "SaveRequestImages": "manaenv.policy.wire_interceptors",
     "WallXRtc": "manaenv.policy.wire_interceptors",
+    "WallXApiRtc": "manaenv.policy.wallx_api_rtc",
     # client.chunk_scheduler plugins.
     "SyncChunkScheduler": "manaenv.policy.chunk_scheduler.sync",
     "AsyncChunkScheduler": "manaenv.policy.chunk_scheduler.async",
