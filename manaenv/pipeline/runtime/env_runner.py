@@ -439,6 +439,9 @@ class GymEnvRunner:
         try:
             self._apply_global_hooks()
 
+            from manaenv.utils.texture_cache import repair_active_stage_epoch_textures
+
+            repair_active_stage_epoch_textures()
             self._call_hook(SESSION_START, ctx)
             self._call_hook(GYM_READY, ctx)
 
@@ -521,6 +524,7 @@ class GymEnvRunner:
                             # from the just-destroyed Gym instance.  It cannot
                             # be consumed against the rebuilt USD topology.
                             ctx.extra.pop("override_obs", None)
+                            repair_active_stage_epoch_textures()
                             self._call_hook(GYM_READY, ctx)
                             rebuilt_obs = self._first_hook_result(INITIAL_OBS, ctx)
                             if rebuilt_obs is None:

@@ -1,0 +1,27 @@
+name: wallx_api_rtc@v1.0.0
+implementation:
+  policy_space:
+    policy_name: wallx_api
+    endpoint: ws://127.0.0.1:18861
+    timeout_ms: 120000
+    action_type: absolute_ee
+    action_horizon: 32
+    image_height: 480
+    image_width: 640
+    ingest_observation_each_step: false
+    log_timing: true
+client:
+  chunk_executor:
+    per_env_independent:
+      execute_horizon: 6
+      refill_threshold: 1
+  chunk_scheduler:
+    async_chunk_scheduler:
+      inference_trigger_ratio: 0.3333333333333333
+      crop_overlap: true
+  wire_interceptors:
+  - wall_x_api_rtc:
+      temporal_multiplier: 1.0
+      max_delay: 4
+      model_action_horizon: 32
+  chunk_postprocessors: []
