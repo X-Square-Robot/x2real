@@ -26,4 +26,3 @@ class Tests(unittest.TestCase):
         np.testing.assert_equal(second['prev_action_chunk'][1],rows2[7])
         hook.reset()
         self.assertNotIn('use_rtc',hook.on_request(request(),env_idx=0)['obs'])
-
